@@ -16,7 +16,7 @@
 
 namespace Backdrop\Attr;
 
-use Backdrop\Tools\ServiceProvider;
+use Backdrop\Core\ServiceProvider;
 use Backdrop\Contracts\Attr\Attributes;
 
 /**
