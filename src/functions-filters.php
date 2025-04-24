@@ -549,7 +549,6 @@ function post_class_filter( $classes, $class, $post_id ) {
 	$classes[] = 'entry';
 
 	// Post field classes.
-	$classes[] = sprintf( 'entry-%s',      $post_id        );
 	$classes[] = sprintf( 'entry-type-%s', get_post_type() );
 
 	// Status class.
