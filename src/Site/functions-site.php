@@ -87,8 +87,8 @@ function display_description( array $args = [] ) {
 function render_description( array $args = [] ) {
 
 	$args = wp_parse_args( $args, [
-		'tag'   => 'div',
-		'class' => 'app-header__description',
+		'tag'   => 'span',
+		'class' => 'site-header-description',
 	] );
 
 	$html = '';
