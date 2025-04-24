@@ -26,16 +26,6 @@ add_filter( 'get_the_archive_title',       __NAMESPACE__ . '\archive_title_filte
 add_filter( 'get_the_archive_description', __NAMESPACE__ . '\archive_description_filter', 0           );
 add_filter( 'get_the_archive_description', __NAMESPACE__ . '\archive_description_format', PHP_INT_MAX );
 
-# Use same default filters as 'the_content' with a little more flexibility.
-add_filter( 'backdrop/archive/description', [ $GLOBALS['wp_embed'], 'run_shortcode' ],   5  );
-add_filter( 'backdrop/archive/description', [ $GLOBALS['wp_embed'], 'autoembed'     ],   5  );
-add_filter( 'backdrop/archive/description',                         'wptexturize',       10 );
-add_filter( 'backdrop/archive/description',                         'convert_smilies',   15 );
-add_filter( 'backdrop/archive/description',                         'convert_chars',     20 );
-add_filter( 'backdrop/archive/description',                         'wpautop',           25 );
-add_filter( 'backdrop/archive/description',                         'do_shortcode',      30 );
-add_filter( 'backdrop/archive/description',                         'shortcode_unautop', 35 );
-
 # Don't strip tags on single post titles.
 remove_filter( 'single_post_title', 'strip_tags' );
 
