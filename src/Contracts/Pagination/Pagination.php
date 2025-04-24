@@ -11,10 +11,10 @@
  * @license   https://www.gnu.org/licenses/gpl-2.0.html
  */
 
-namespace Hybrid\Contracts\Pagination;
+namespace Backdrop\Contracts\Pagination;
 
-use Hybrid\Contracts\Renderable;
-use Hybrid\Contracts\Displayable;
+use Backdrop\Contracts\Renderable;
+use Backdrop\Contracts\Displayable;
 
 /**
  * Pagination interface.
