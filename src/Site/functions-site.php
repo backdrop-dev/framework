@@ -11,7 +11,7 @@
  * @link      https://github.com/backdrop-dev/framework
  */
 
-namespace Hybrid\Site;
+namespace Backdrop\Site;
 
 /**
  * Outputs the site title HTML.
