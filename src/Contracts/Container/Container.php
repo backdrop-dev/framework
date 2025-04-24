@@ -13,6 +13,7 @@
  */
 
 namespace Backdrop\Contracts\Container;
+use Closure;
 
 /**
  * Container interface.
