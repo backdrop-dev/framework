@@ -11,7 +11,7 @@
  * @link      https://github.com/backdrop-dev/framework
  */
 
-namespace Hybrid\Post;
+namespace Backdrop\Post;
 
 /**
  * Creates a hierarchy based on the current post. Its primary purpose is for
