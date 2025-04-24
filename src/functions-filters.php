@@ -550,15 +550,6 @@ function post_class_filter( $classes, $class, $post_id ) {
 	// Post field classes.
 	$classes[] = sprintf( 'entry-type-%s', get_post_type() );
 
-	// Status class.
-	$classes[] = sprintf( 'entry-status-%s', get_post_status() );
-
-	// Author class.
-	$classes[] = sprintf(
-		'entry-author-%s',
-		sanitize_html_class( get_the_author_meta( 'user_nicename' ), get_the_author_meta( 'ID' ) )
-	);
-
 	// Add post formt class.
 	if ( post_type_supports( get_post_type(), 'post-formats' ) ) {
 
