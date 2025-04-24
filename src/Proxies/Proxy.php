@@ -1,18 +1,20 @@
 <?php
 /**
- * Proxy class
+ * Static proxy class.
+ *
+ * The base static proxy class. This allows us to create easy-to-use, static
+ * classes around shared objects in the container.
  *
  * @package   Backdrop
  * @author    Benjamin Lu <benlumia007@gmail.com>
- * @copyright 2019-2023. Benjamin Lu
- * @link      https://github.com/benlumia007/backdrop
+ * @copyright 2019 Benjamin Lu
  * @license   https://www.gnu.org/licenses/gpl-2.0.html
+ * @link      https://github.com/backdrop-dev/framework
  */
 
 namespace Backdrop\Proxies;
 
-use Backdrop\Core\Container;
-use ReflectionException;
+use Backdrop\Contracts\Container\Container;
 
 /**
  * Base static proxy class.
@@ -38,7 +40,7 @@ class Proxy {
 	 * @access protected
 	 * @return string
 	 */
-	protected static function accessor(): string {
+	protected static function accessor() {
 
 		return '';
 	}
@@ -50,7 +52,7 @@ class Proxy {
 	 * @access public
 	 * @return void
 	 */
-	public static function setContainer( $container ) {
+	public static function setContainer( Container $container ) {
 
 		static::$container = $container;
 	}
@@ -60,7 +62,6 @@ class Proxy {
 	 *
 	 * @since  1.0.0
 	 * @access protected
-	 * @throws ReflectionException
 	 * @return object
 	 */
 	protected static function instance() {
@@ -74,15 +75,14 @@ class Proxy {
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param string $method
-	 * @param array $args
-	 * @throws ReflectionException
+	 * @param  string  $method
+	 * @param  array   $args
 	 * @return mixed
 	 */
-	public static function __callStatic( string $method, array $args ) {
+	public static function __callStatic( $method, $args ) {
 
 		$instance = static::instance();
 
-		return $instance->$method(...$args);
+		return $instance ? $instance->$method( ...$args ) : null;
 	}
 }
