@@ -13,7 +13,7 @@
  * @link      https://github.com/backdrop-dev/framework
  */
 
- namespace Backdrop\Attr\Contracts;
+ namespace Backdrop\Contracts\Attr;
 
  use Backdrop\Contracts\Displayable;
  use Backdrop\Contracts\Renderable;
