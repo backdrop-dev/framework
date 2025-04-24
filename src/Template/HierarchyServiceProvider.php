@@ -15,7 +15,7 @@
 namespace Backdrop\Template;
 
 use Backdrop\Contracts\Template\Hierarchy as TemplateHierarchy;
-use Backdrop\Tools\ServiceProvider;
+use Backdrop\Core\ServiceProvider;
 
 /**
  * Template hierarchy provider class.

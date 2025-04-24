@@ -12,7 +12,7 @@
  * @link      https://github.com/backdrop-dev/framework
  */
 
-namespace Backdrop\Tools;
+namespace Backdrop\Core;
 
 use Backdrop\Contracts\Core\Application;
 

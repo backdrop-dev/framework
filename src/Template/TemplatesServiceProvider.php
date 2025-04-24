@@ -14,7 +14,7 @@
 
 namespace Backdrop\Template;
 
-use Backdrop\Tools\ServiceProvider;
+use Backdrop\Core\ServiceProvider;
 
 /**
  * Object templates provider class.

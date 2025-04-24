@@ -15,7 +15,7 @@
 namespace Backdrop\Lang;
 
 use Backdrop\Contracts\Lang\Language as LanguageContract;
-use Backdrop\Tools\ServiceProvider;
+use Backdrop\Core\ServiceProvider;
 
 /**
  * Language provider.
