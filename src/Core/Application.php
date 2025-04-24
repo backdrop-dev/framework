@@ -26,6 +26,7 @@ use Backdrop\Proxies\App;
 use Backdrop\Template\HierarchyServiceProvider;
 use Backdrop\Template\TemplatesServiceProvider;
 use Backdrop\View\ViewServiceProvider;
+use Backdrop\Mix\MixServiceProvider;
 
 /**
  * Application class.
@@ -125,6 +126,7 @@ class Application extends Container implements ApplicationContract, Bootable {
 		}, [
 			AttrServiceProvider::class,
 			LanguageServiceProvider::class,
+			MixServiceProvider::class,
 			TemplatesServiceProvider::class,
 			HierarchyServiceProvider::class,
 			ViewServiceProvider::class
