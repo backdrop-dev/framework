@@ -17,7 +17,6 @@ namespace Backdrop;
 # Filters the WordPress element classes.
 add_filter( 'body_class',    __NAMESPACE__ . '\body_class_filter',    ~PHP_INT_MAX, 2 );
 add_filter( 'post_class',    __NAMESPACE__ . '\post_class_filter',    ~PHP_INT_MAX, 3 );
-add_filter( 'comment_class', __NAMESPACE__ . '\comment_class_filter', ~PHP_INT_MAX, 4 );
 
 # Add extra support for post types.
 add_action( 'init', __NAMESPACE__ . '\post_type_support', 15 );
@@ -51,9 +50,6 @@ add_filter( 'get_custom_logo', __NAMESPACE__ . '\custom_logo_class', 5 );
 
 # Allow the posts page to be edited.
 add_action( 'edit_form_after_title', __NAMESPACE__ . '\enable_posts_page_editor', 0 );
-
-# Filters widget classes.
-add_filter( 'dynamic_sidebar_params', __NAMESPACE__ . '\widget_class_filter', ~PHP_INT_MAX );
 
 # Adds common theme items to <head>.
 add_action( 'wp_head', __NAMESPACE__ . '\meta_charset',   0 );

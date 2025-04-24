@@ -312,64 +312,6 @@ function enable_posts_page_editor( $post ) {
 }
 
 /**
- * Attempts to fix widget class naming woes. If the theme author uses the
- * `widget--%1$s` class, we'll strip the widget instance. If the theme author
- * uses the `widget--%2$s` class, we'll fix any double `widget--widget` problems.
- * And, if the author does use a widget ID in the class, we'll try to add that in.
- *
- * @since  1.0.0
- * @access public
- * @param  array   $params
- * @return array
- */
-function widget_class_filter( $params ) {
-
-	$widget_id = $params[0]['widget_id'];
-	$instance  = $params[1]['number'];
-	$context   = str_replace( "-{$instance}", '', $widget_id );
-
-	// Check to see if we can find a class.
-	preg_match( '/((class=[\'"])(.*?)([\'"]))/i', $params[0]['before_widget'], $matches );
-
-	// If we have matches for all 4 captured groups, let's go.
-	if ( ! empty( $matches ) && ! array_diff_key( array_flip( [ 1, 2, 3, 4 ] ), $matches ) ) {
-
-		$classes  = explode( ' ', $matches[3] );
-		$_classes = [];
-
-		// Create BEM-style widget classes.
-		$_classes[] = 'widget';
-		$_classes[] = sprintf( 'widget--%s', str_replace( '_', '-', $context ) );
-
-		// Build BEM-style classes from original classes.
-		foreach ( $classes as $class ) {
-
-			$class = str_replace( [ 'widget-', 'widget_', 'widget' ], '', $class );
-
-			if ( $class ) {
-				$_classes[] = sprintf( 'widget--%s', $class );
-			}
-		}
-
-		// Merge original classes and make sure there are no duplicates.
-		$_classes = array_map(
-			'sanitize_html_class',
-			array_unique( array_merge( $_classes, $classes ) )
-		);
-
-		// Replaces the exact class string we captured earlier with the
-		// new class string.
-		$params[0]['before_widget'] = str_replace(
-			$matches[1],
-			$matches[2] . join( ' ', $_classes ) . $matches[4],
-			$params[0]['before_widget']
-		);
-	}
-
-	return $params;
-}
-
-/**
  * Filters the WordPress body class with a better set of classes that are more
  * consistently handled and are backwards compatible with the original body
  * class functionality that existed prior to WordPress core adopting this feature.
@@ -540,7 +482,7 @@ function body_class_filter( $classes, $class ) {
 		$classes[] = 'paged';
 		$classes[] = 'paged-' . intval( get_query_var( 'paged' ) );
 
-	// Singular post paged views using <!-- nextpage -->.
+	// Singular post paged views using <!- nextpage ->.
 	} elseif ( is_singular() && 1 < get_query_var( 'page' ) ) {
 		$classes[] = 'paged';
 		$classes[] = 'paged-' . intval( get_query_var( 'page' ) );
@@ -607,15 +549,15 @@ function post_class_filter( $classes, $class, $post_id ) {
 	$classes[] = 'entry';
 
 	// Post field classes.
-	$classes[] = sprintf( 'entry--%s',      $post_id        );
-	$classes[] = sprintf( 'entry--type-%s', get_post_type() );
+	$classes[] = sprintf( 'entry-%s',      $post_id        );
+	$classes[] = sprintf( 'entry-type-%s', get_post_type() );
 
 	// Status class.
-	$classes[] = sprintf( 'entry--status-%s', get_post_status() );
+	$classes[] = sprintf( 'entry-status-%s', get_post_status() );
 
 	// Author class.
 	$classes[] = sprintf(
-		'entry--author-%s',
+		'entry-author-%s',
 		sanitize_html_class( get_the_author_meta( 'user_nicename' ), get_the_author_meta( 'ID' ) )
 	);
 
@@ -625,7 +567,7 @@ function post_class_filter( $classes, $class, $post_id ) {
 		$format = \get_post_format();
 
 		$classes[] = sprintf(
-			'entry--format-%s',
+			'entry-format-%s',
 			$format && ! is_wp_error( $format ) ? $format : 'standard'
 		);
 	}
@@ -645,7 +587,7 @@ function post_class_filter( $classes, $class, $post_id ) {
 				$name = 'post_tag' === $taxonomy ? 'tag' : $taxonomy;
 				$slug = sanitize_html_class( $term->slug, $term->term_id );
 
-				$classes[] = sprintf( 'entry--%s-%s', $name, $slug );
+				$classes[] = sprintf( 'entry-%s-%s', $name, $slug );
 			}
 		}
 	}
@@ -672,80 +614,14 @@ function post_class_filter( $classes, $class, $post_id ) {
 		$classes[] = 'has-excerpt';
 	}
 
-	// Has <!--more--> link.
-	if ( ! is_singular() && false !== strpos( $post->post_content, '<!--more' ) ) {
+	// Has <!-more-> link.
+	if ( ! is_singular() && false !== strpos( $post->post_content, '<!-more' ) ) {
 		$classes[] = 'has-more-link';
 	}
 
-	// Has <!--nextpage--> links.
-	if ( false !== strpos( $post->post_content, '<!--nextpage' ) ) {
+	// Has <!-nextpage-> links.
+	if ( false !== strpos( $post->post_content, '<!-nextpage' ) ) {
 		$classes[] = 'has-pages';
-	}
-
-	return array_map( 'esc_attr', array_unique( array_merge( $classes, (array) $class ) ) );
-}
-
-/**
- * Adds custom classes to the WordPress comment class.
- *
- * @since  1.0.0
- * @access public
- * @param  array        $classes
- * @param  string|array $class
- * @param  int          $comment_id
- * @global int          $comment_depth
- * @return array
- */
-function comment_class_filter( $classes, $class, $comment_id, $post_id ) {
-	global $comment_depth;
-
-	if ( is_admin() ) {
-		return $classes;
-	}
-
-	$comment = get_comment( $comment_id );
-	$classes = [];
-
-	// Base comment class.
-	$classes[] = 'comment';
-
-	// Comment type class.
-	$classes[] = sprintf( 'comment--type-%s', $comment->comment_type ?: 'comment' );
-
-	if ( in_array( $comment->comment_type, [ 'pingback', 'trackback'] ) ) {
-		$classes[] = 'comment--type-ping';
-	}
-
-	// Status class. Note that status can be `null`.
-	if ( $status = wp_get_comment_status( $comment_id ) ) {
-		$classes[] = sprintf( 'comment--status-%s', $status );
-	}
-
-	// Depth class.
-	$classes[] = sprintf( 'comment--depth-%s', $comment_depth ?: 1 );
-
-	// Comment author classes.
-	if ( 0 < $comment->user_id && $user = get_userdata( $comment->user_id ) ) {
-
-		$classes[] = sprintf(
-			'comment--author-%s',
-			sanitize_html_class( $user->user_nicename, $comment->user_id )
-		);
-
-		// Add a class if the comment author is also the post author.
-		$post = get_post( $post_id );
-
-		if ( $comment->user_id == $post->post_author ) {
-			$classes[] = 'bypostauthor';
-		}
-	}
-
-	// Get comment types that are allowed to have an avatar.
-	$avatar_types = apply_filters( 'get_avatar_comment_types', [ 'comment' ] );
-
-	// If avatars are enabled and the comment types can display avatars, add the 'has-avatar' class.
-	if ( get_option( 'show_avatars' ) && in_array( $comment->comment_type, $avatar_types ) ) {
-		$classes[] = 'has-avatar';
 	}
 
 	return array_map( 'esc_attr', array_unique( array_merge( $classes, (array) $class ) ) );
