@@ -12,7 +12,7 @@
  * @link      https://github.com/backdrop-dev/framework
  */
 
-namespace Hybrid;
+namespace Backdrop;
 
 # Filters the WordPress element classes.
 add_filter( 'body_class',    __NAMESPACE__ . '\body_class_filter',    ~PHP_INT_MAX, 2 );
