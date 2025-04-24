@@ -20,7 +20,7 @@ require_once( 'Attr/functions-attr.php'             );
 require_once( 'Comment/functions-comment.php'       );
 require_once( 'Lang/functions-lang.php'             );
 require_once( 'Menu/functions-menu.php'             );
-require_once( 'Mix/functions-mix.php'.              );
+require_once( 'Mix/functions-mix.php'               );
 require_once( 'Pagination/functions-pagination.php' );
 require_once( 'Post/functions-post.php'             );
 require_once( 'Sidebar/functions-sidebar.php'       );
