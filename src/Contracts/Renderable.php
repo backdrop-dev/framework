@@ -34,5 +34,5 @@ interface Renderable {
 	 * @access public
 	 * @return string
 	 */
-	public function render(): string;
+	public function render();
 }
