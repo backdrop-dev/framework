@@ -342,7 +342,6 @@ function body_class_filter( $classes, $class ) {
 	// Multisite check adds the 'multisite' class and the blog ID.
 	if ( is_multisite() ) {
 		$classes[] = 'multisite';
-		$classes[] = 'blog-' . sanitize_html_class( sanitize_title( get_bloginfo( 'name' ) ) );
 	}
 
 	// Plural/multiple-post view (opposite of singular).
