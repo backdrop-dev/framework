@@ -115,6 +115,96 @@ function render_description( array $args = [] ) {
  * @param  array  $args
  * @return void
  */
+function display_site_link( array $args = [] ): void {
+
+	echo render_site_link( $args );
+}
+
+/**
+ * Return the site link HTML.
+ *
+ * @since  1.0.0
+ * @access public
+ * @param  array  $args
+ * @return string
+ */
+function render_site_link( array $args = [] ): string {
+
+	$args = wp_parse_args(
+		$args,
+		[
+			'text'   => '%s',
+			'class'  => 'site-link',
+			'before' => '',
+			'after'  => '',
+		]
+	);
+	$html = sprintf(
+		'<a class="%1$s" href="%2$s">%3$s</a>',
+		esc_attr( $args['class'] ),
+		esc_url( home_url( '/' ) ),
+		sprintf( $args['text'], get_bloginfo( 'name' ) )
+	);
+	return apply_filters( 'backdrop/render/site/link', $html );
+}
+
+/**
+ * Return the site link HTML.
+ *
+ * @since  1.0.0
+ * @access public
+ * @param  array  $args
+ * @return string
+ */
+function display_theme_link( array $args = [] ): void {
+
+	echo render_theme_link( $args );
+}
+
+/**
+ * Returns the Theme Link.
+ *
+ * @since  1.0.0
+ * @access public
+ * @param  array  $args
+ * @return void
+ */
+function render_theme_link( array $args = [] ): string {
+    
+	$args = wp_parse_args( $args, [
+		'class'  => 'theme-link',
+		'before' => '',
+		'after'  => ''
+	] );
+
+	$theme = wp_get_theme( get_template() );
+
+	$allowed = [
+		'abbr'    => [ 'title' => true ],
+		'acronym' => [ 'title' => true ],
+		'code'    => true,
+		'em'      => true,
+		'strong'  => true
+	];
+
+	$html = sprintf(
+		'<a class="%s" href="%s">%s</a>',
+		esc_attr( $args['class'] ),
+		esc_url( $theme->display( 'ThemeURI' ) ),
+		wp_kses( $theme->display( 'Name' ), $allowed )
+	);
+
+	return apply_filters( 'backdrop/render/theme/link', $args['before'] . $html . $args['after'] );
+}
+
+/**
+ * Outputs the site link HTML.
+ *
+ * @since  1.0.0
+ * @access public
+ * @param  array  $args
+ * @return void
+ */
 function display_home_link( array $args = [] ) {
 
 	echo render_home_link( $args );
