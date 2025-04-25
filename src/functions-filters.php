@@ -235,31 +235,6 @@ function excerpt_more( $text ) {
 }
 
 /**
- * Adds custom classes to the core WP logo.
- *
- * @since  1.0.0
- * @access public
- * @param  string  $logo
- * @return string
- */
-function custom_logo_class( $logo ) {
-
-	$logo = preg_replace(
-		"/(<a.+?)class=(['\"])(.+?)(['\"])/i",
-		'$1class=$2app-header__logo-link $3$4',
-		$logo,
-		1
-	);
-
-	return preg_replace(
-		"/(<img.+?)class=(['\"])(.+?)(['\"])/i",
-		'$1class=$2app-header__logo $3$4',
-		$logo,
-		1
-	);
-}
-
-/**
  * Overrides the default comments template.  This filter allows for a
  * `comments-{$post_type}.php` template based on the post type of the current
  * single post view.  If this template is not found, it falls back to the

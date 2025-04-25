@@ -35,9 +35,6 @@ add_filter( 'the_title', __NAMESPACE__ . '\untitled_post' );
 # Default excerpt more.
 add_filter( 'excerpt_more', __NAMESPACE__ . '\excerpt_more', 5 );
 
-# Adds custom CSS classes to the custom logo.
-add_filter( 'get_custom_logo', __NAMESPACE__ . '\custom_logo_class', 5 );
-
 # Allow the posts page to be edited.
 add_action( 'edit_form_after_title', __NAMESPACE__ . '\enable_posts_page_editor', 0 );
 
