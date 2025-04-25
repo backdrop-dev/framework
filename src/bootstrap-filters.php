@@ -24,7 +24,6 @@ add_action( 'init', __NAMESPACE__ . '\post_type_support', 15 );
 # Filters the archive title and description.
 add_filter( 'get_the_archive_title',       __NAMESPACE__ . '\archive_title_filter',       5           );
 add_filter( 'get_the_archive_description', __NAMESPACE__ . '\archive_description_filter', 0           );
-add_filter( 'get_the_archive_description', __NAMESPACE__ . '\archive_description_format', PHP_INT_MAX );
 
 # Don't strip tags on single post titles.
 remove_filter( 'single_post_title', 'strip_tags' );

@@ -178,19 +178,6 @@ function archive_description_filter( $desc ) {
 }
 
 /**
- * Filters `get_the_archve_description` to add custom formatting.
- *
- * @since  1.0.0
- * @access public
- * @param  string  $desc
- * @return string
- */
-function archive_description_format( $desc ) {
-
-	return apply_filters( 'backdrop/archive/description', $desc );
-}
-
-/**
  * The WordPress.org theme review requires that a link be provided to the single
  * post page for untitled posts.  This is a filter on 'the_title' so that an
  * `(Untitled)` title appears in that scenario, allowing for the normal method
