@@ -51,3 +51,6 @@ remove_action( 'wp_print_styles', 'print_emoji_styles' );
 
 # Filter the comments template.
 add_filter( 'comments_template', __NAMESPACE__ . '\comments_template', 5 );
+
+# Filter the plugin if active
+add_action( 'init', __NAMESPACE__ . '\is_plugin_or_class_active' );

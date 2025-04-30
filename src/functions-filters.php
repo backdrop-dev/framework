@@ -577,3 +577,33 @@ function post_class_filter( $classes, $class, $post_id ) {
 
 	return array_map( 'esc_attr', array_unique( array_merge( $classes, (array) $class ) ) );
 }
+
+/**
+ * Check if a specific plugin is active.
+ *
+ * @param string $plugin The path to the plugin file relative to the plugins directory.
+ * @return bool True if the plugin is active, false otherwise.
+ */
+/**
+ * Checks if a plugin is active, active for the network, or if a class exists.
+ *
+ * @param string $plugin_path The path to the plugin file relative to wp-content/plugins.
+ * @param string $class_name  The name of the class to check for existence (optional).
+ * @return bool True if the plugin is active, active for the network, or the class exists. False otherwise.
+ */
+function is_plugin_or_class_active( $plugin, $class_name = '' ): bool {
+    if ( ! function_exists( 'is_plugin_active' ) ) {
+        include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+    }
+    
+    if ( is_plugin_active( $plugin ) || is_plugin_active_for_network( $plugin ) ) { 
+        
+		return true;
+    }
+    if ( $class_name && class_exists( $class_name ) ) {
+        
+		return true;
+    }
+	
+    return false;
+}
