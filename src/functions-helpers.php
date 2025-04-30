@@ -213,3 +213,11 @@ function is_plural() {
 
 	return is_home() || is_archive() || is_search();
 }
+
+function is_classicpress(): bool {
+    if ( function_exists( 'classicpress_version' ) ) {
+        return true;
+    } else {
+        return false;
+    }
+}
