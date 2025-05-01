@@ -222,6 +222,54 @@ function excerpt_more( $text ) {
 }
 
 /**
+ * Simplifies the nav menu class system.
+ *
+ * @since  1.0.0
+ * @param  array  $classes
+ * @param  object $item
+ * @return array
+ *
+ * @access public
+ */
+function nav_menu_css_class( $classes, $item ) {
+
+    $_classes = [ 'menu__item' ];
+
+    foreach ( [ 'item', 'parent', 'ancestor' ] as $type ) {
+
+        if ( ! in_array( "current-menu-{$type}", $classes ) && ! in_array( "current_page_{$type}", $classes ) ) {
+            continue;
+        }
+
+        $_classes[] = 'item' === $type ? 'menu__item--current' : "menu__item--{$type}";
+    }
+
+    // If the menu item is a post type archive and we're viewing a single
+    // post of that post type, the menu item should be an ancestor.
+    if (
+        'post_type_archive' === $item->type
+        && is_singular( $item->object )
+        && ! in_array( 'menu__item--ancestor', $_classes )
+    ) {
+        $_classes[] = 'menu__item--ancestor';
+    }
+
+    // Add a class if the menu item has children.
+    if ( in_array( 'menu-item-has-children', $classes ) ) {
+        $_classes[] = 'has-children';
+    }
+
+    // Add custom user-added classes if we have any.
+    $custom = get_post_meta( $item->ID, '_menu_item_classes', true );
+
+    if ( $custom ) {
+        $_classes = array_merge( $_classes, (array) $custom );
+    }
+
+    return $_classes;
+}
+
+/**
  * Overrides the default comments template.  This filter allows for a
  * `comments-{$post_type}.php` template based on the post type of the current
  * single post view.  If this template is not found, it falls back to the

@@ -34,6 +34,9 @@ add_filter( 'the_title', __NAMESPACE__ . '\untitled_post' );
 # Default excerpt more.
 add_filter( 'excerpt_more', __NAMESPACE__ . '\excerpt_more', 5 );
 
+// Adds custom CSS classes to nav menu items.
+add_filter( 'nav_menu_css_class', __NAMESPACE__ . '\nav_menu_css_class', 5, 2 );
+
 # Allow the posts page to be edited.
 add_action( 'edit_form_after_title', __NAMESPACE__ . '\enable_posts_page_editor', 0 );
 
