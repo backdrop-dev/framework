@@ -167,7 +167,7 @@ class Pagination implements PaginationContract {
 
 		// Merge defaults and contextual default args.
 		$defaults = apply_filters(
-			"hybrid/pagination/{$this->context}/defaults",
+			"backdrop/pagination/{$this->context}/defaults",
 			array_merge(
 				$defaults,
 				method_exists( $this, $method ) ? $this->$method() : $this->postArgs()
@@ -176,7 +176,7 @@ class Pagination implements PaginationContract {
 
 		// Parse the args with the defaults.
 		$this->args = apply_filters(
-			"hybrid/pagination/{$this->context}/args",
+			"backdrop/pagination/{$this->context}/args",
 			wp_parse_args( $args, $defaults )
 		);
 
@@ -380,7 +380,7 @@ class Pagination implements PaginationContract {
 			);
 		}
 
-		return apply_filters( "hybrid/pagination/{$this->context}", $template, $this->args );
+		return apply_filters( "backdrop/pagination/{$this->context}", $template, $this->args );
 	}
 
 	/**
@@ -532,7 +532,7 @@ class Pagination implements PaginationContract {
 
 				$this->items[] = [
 					'type'    => 'dots',
-					'content' => __( '&hellip;', 'hybrid-core' )
+					'content' => __( '&hellip;', 'backdrop' )
 				];
 
 				$this->dots = false;

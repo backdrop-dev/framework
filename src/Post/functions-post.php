@@ -331,7 +331,7 @@ function render_terms( array $args = [] ) {
 		'text'     => '%s',
 		'class'    => '',
 		// Translators: Separates tags, categories, etc. when displaying a post.
-		'sep'      => _x( ', ', 'taxonomy terms separator', 'hybrid-core' ),
+		'sep'      => _x( ', ', 'taxonomy terms separator', 'backdrop' ),
 		'before'   => '',
 		'after'    => ''
 	] );
