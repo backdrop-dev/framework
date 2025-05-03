@@ -49,7 +49,7 @@ interface Attributes extends Renderable, Displayable {
 	/**
 	 * Adds custom data to the attribute object.
 	 *
-	 * @since  5.2.0
+	 * @since  1.0.0
 	 * @access public
 	 * @param  string|array  $name
 	 * @param  mixed         $value

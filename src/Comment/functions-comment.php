@@ -77,7 +77,7 @@ function render_author( array $args = [] ) {
 /**
  * Displays the comment author link HTML.
  *
- * @since  5.2.0
+ * @since  1.0.0
  * @access public
  * @param  array   $args
  * @return void
@@ -90,7 +90,7 @@ function display_author_link( array $args = [] ) {
 /**
  * Returns the comment author link HTML.
  *
- * @since  5.2.0
+ * @since  1.0.0
  * @access public
  * @param  array   $args
  * @return string
