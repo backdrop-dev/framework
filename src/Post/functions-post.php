@@ -195,7 +195,7 @@ function render_author( array $args = [] ) {
 	$author = get_the_author_meta( 'display_name', $author_id );
 
 	if ( $args['link'] ) {
-		$url = get_author_posts_url( get_the_author_meta( 'ID' ) );
+		$url = get_author_posts_url( $author_id );
 
 		$author = sprintf(
 			'<a class="entry-author-link" href="%s">%s</a>',
