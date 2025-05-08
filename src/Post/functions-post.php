@@ -183,7 +183,11 @@ function render_author( array $args = [] ) {
 		'after'  => ''
 	] );
 
-	$author = get_the_author();
+	$post = get_queried_object();
+
+	$id = $post->post_author;
+
+	$author = get_the_author_meta( 'display_name', $id );
 
 	if ( $args['link'] ) {
 		$url = get_author_posts_url( get_the_author_meta( 'ID' ) );
