@@ -89,7 +89,7 @@ function render_title( array $args = [] ) {
 		'text'   => '%s',
 		'tag'    => $is_single ? 'h1' : 'h2',
 		'link'   => ! $is_single,
-		'class'  => 'entry-title',
+		'class'  => 'entry__title',
 		'before' => '',
 		'after'  => ''
 	] );
@@ -135,7 +135,7 @@ function render_permalink( array $args = [] ) {
 
 	$args = wp_parse_args( $args, [
 		'text'   => '%s',
-		'class'  => 'entry-permalink',
+		'class'  => 'entry__permalink',
 		'before' => '',
 		'after'  => ''
 	] );
@@ -173,11 +173,11 @@ function display_author( array $args = [] ) {
  * @param  array  $args
  * @return string
  */
-function render_author( array $args = [] ) {
+function render_author( array $args = [] ) { 
 
 	$args = wp_parse_args( $args, [
 		'text'   => '%s',
-		'class'  => 'entry-author',
+		'class'  => 'entry__author',
 		'link'   => true,
 		'before' => '',
 		'after'  => ''
@@ -198,7 +198,7 @@ function render_author( array $args = [] ) {
 		$url = get_author_posts_url( $author_id );
 
 		$author = sprintf(
-			'<a class="entry-author-link" href="%s">%s</a>',
+			'<a class="entry__author-link" href="%s">%s</a>',
 			esc_url( $url ),
 			$author
 		);
@@ -237,7 +237,7 @@ function render_date( array $args = [] ) {
 
 	$args = wp_parse_args( $args, [
 		'text'   => '%s',
-		'class'  => 'entry-published',
+		'class'  => 'entry__published',
 		'format' => '',
 		'before' => '',
 		'after'  => ''
@@ -283,7 +283,7 @@ function render_comments_link( array $args = [] ) {
 		'zero'   => false,
 		'one'    => false,
 		'more'   => false,
-		'class'  => 'entry-comments',
+		'class'  => 'entry__comments',
 		'before' => '',
 		'after'  => ''
 	] );
@@ -347,7 +347,7 @@ function render_terms( array $args = [] ) {
 
 	// Append taxonomy to class name.
 	if ( ! $args['class'] ) {
-		$args['class'] = "entry-terms entry-terms--{$args['taxonomy']}";
+		$args['class'] = "entry__terms entry__terms--{$args['taxonomy']}";
 	}
 
 	$terms = get_the_term_list( get_the_ID(), $args['taxonomy'], '', $args['sep'], '' );
@@ -391,7 +391,7 @@ function render_format( array $args = [] ) {
 
 	$args = wp_parse_args( $args, [
 		'text'   => '%s',
-		'class'  => 'entry-format',
+		'class'  => 'entry__format',
 		'before' => '',
 		'after'  => ''
 	] );
