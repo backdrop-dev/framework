@@ -39,7 +39,7 @@ function render_title( array $args = [] ) {
 	$args = wp_parse_args( $args, [
 		'class'      => 'site-header__title',
 		'link_class' => 'site-header__title-link',
-		'tag'        => is_front_page() ? 'h1' : 'div',
+		'tag'        => 'h1'
 	] );
 
 	$html  = '';
