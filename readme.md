@@ -51,4 +51,4 @@ $slug->boot();
 ## Copyright and Licenses
 This project is licensed under the GNU GPL, version 2 or later.
 
-2019–2023 © Benjamin Lu
+2019–2025 © Benjamin Lu
