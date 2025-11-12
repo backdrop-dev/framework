@@ -279,7 +279,7 @@ class Container implements ContainerContract, ArrayAccess {
 	 * @param  Closure $closure
 	 * @return void
 	 */
-	public function extend( $abstract, Closure $closure ) {
+	public function extend( string $abstract, Closure $closure ): void {
 
 		$abstract = $this->getAbstract( $abstract );
 
