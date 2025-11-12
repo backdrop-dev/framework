@@ -95,7 +95,7 @@ class Container implements ContainerContract, ArrayAccess {
 	 * @param  bool    $shared
 	 * @return void
 	 */
-	public function bind( $abstract, $concrete = null, $shared = false ) {
+	public function bind( string $abstract, $concrete = null, bool $shared = false ): void {
 
 		unset( $this->instances[ $abstract ] );
 
