@@ -35,7 +35,7 @@ class ViewServiceProvider extends ServiceProvider {
 	 * @access public
 	 * @return void
 	 */
-	public function register() {
+	public function register(): void {
 
 		// Bind the view contract.
 		$this->app->bind( ViewContract::class, View::class );
