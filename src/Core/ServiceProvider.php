@@ -5,6 +5,10 @@
  * This is the base service provider class. This is an abstract class that must
  * be extended to create new service providers for the application.
  *
+ * Compatible with PHP 8.0+ (typed property and return types).
+ * - `void` return type introduced in PHP 7.1
+ * - Typed properties introduced in PHP 7.4
+ *
  * @package   Backdrop
  * @author    Benjamin Lu <benlumia007@gmail.com>
  * @copyright 2019 Benjamin Lu
@@ -32,7 +36,7 @@ abstract class ServiceProvider {
 	 * @access protected
 	 * @var    Application
 	 */
-	protected $app;
+	protected Application $app;
 
 	/**
 	 * Accepts the application and sets it to the `$app` property.
@@ -43,7 +47,6 @@ abstract class ServiceProvider {
 	 * @return void
 	 */
 	public function __construct( Application $app ) {
-
 		$this->app = $app;
 	}
 
@@ -54,7 +57,7 @@ abstract class ServiceProvider {
 	 * @access public
 	 * @return void
 	 */
-	public function register() {}
+	public function register(): void {}
 
 	/**
 	 * Callback executed after all the service providers have been registered.
@@ -65,5 +68,5 @@ abstract class ServiceProvider {
 	 * @access public
 	 * @return void
 	 */
-	public function boot() {}
+	public function boot(): void {}
 }
