@@ -38,7 +38,6 @@ interface Attributes extends Renderable, Displayable {
 	 */
 	public function all(): array;
 
-
 	/**
 	 * Returns a single, unescaped attribute's value.
 	 *
@@ -51,14 +50,13 @@ interface Attributes extends Renderable, Displayable {
 	 */
 	public function get( string $name ): string;
 
-
 	/**
 	 * Adds custom data to the attribute object.
 	 *
-	 * Compatible with PHP 7.0+ (scalar and array type hints documented only).
-	 * - `string` and `array` type hints introduced in PHP 7.0 (documented, not enforced)
-	 * - Fluent `$this` return pattern supported since PHP 5.0
-	 * - `mixed` type not available until PHP 8.0, so only documented here
+	 * Compatible with PHP 8.0+ (uses union and `mixed` types).
+	 * - `string` and `array` type hints introduced in PHP 7.0
+	 * - Union types (`|`) and `mixed` introduced in PHP 8.0
+	 * - `static` return type supported since PHP 8.0
 	 *
 	 * @since  1.0.0
 	 * @access public
@@ -66,5 +64,5 @@ interface Attributes extends Renderable, Displayable {
 	 * @param  mixed         $value  The value to assign (optional).
 	 * @return static
 	 */
-	public function with( $key, $value = null );
+	public function with( string|array $key, mixed $value = null ): static;
 }
