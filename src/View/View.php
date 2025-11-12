@@ -213,7 +213,7 @@ class View implements ViewContract {
 	 * @access public
 	 * @return string
 	 */
-	public function render() {
+	public function render(): string {
 
 		ob_start();
 		$this->display();
