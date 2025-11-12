@@ -117,7 +117,7 @@ class Container implements ContainerContract, ArrayAccess {
 	* @param  bool    $shared
 	* @return void
 	*/
-	public function add( $abstract, $concrete = null, $shared = false ) {
+	public function add( string $abstract, $concrete = null, bool $shared = false ): void {
 
 		$this->bind( $abstract, $concrete, $shared );
 	}
