@@ -163,7 +163,7 @@ class Application extends Container implements ApplicationContract, Bootable {
 	 * @param  string|object  $provider
 	 * @return void
 	 */
-	public function provider( $provider ) {
+	public function provider( mixed $provider ): void;
 
 		if ( is_string( $provider ) ) {
 			$provider = $this->resolveProvider( $provider );
