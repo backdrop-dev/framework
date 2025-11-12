@@ -262,7 +262,7 @@ class Container implements ContainerContract, ArrayAccess {
 	 * @param  mixed   $instance
 	 * @return mixed
 	 */
-	public function instance( string $abstract, $instance ) {
+	public function instance( string $abstract, mixed $instance ): mixed {
 
 		$this->instances[ $abstract ] = $instance;
 
