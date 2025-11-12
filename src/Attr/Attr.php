@@ -151,7 +151,7 @@ class Attr implements Attributes {
 	 * @param  mixed         $value
 	 * @return $this
 	 */
-	public function with( $name, $value = null ) {
+	public function with( string|array $key, mixed $value = null ): static {
 
 		if ( is_array( $name ) ) {
 			$this->data = array_merge( $this->data, $name );
