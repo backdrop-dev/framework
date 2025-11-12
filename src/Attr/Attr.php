@@ -170,7 +170,7 @@ class Attr implements Attributes {
 	 * @param  string  $name
 	 * @return string
 	 */
-	public function get( $name ) {
+	public function get( string $name ): string {
 
 		$attr = $this->all();
 
