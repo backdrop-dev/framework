@@ -233,7 +233,7 @@ class Container implements ContainerContract, ArrayAccess {
 	* @param  string  $abstract
 	* @return bool
 	*/
-	public function has( $abstract ) {
+	public function has( string $abstract ): bool {
 
 		return isset( $this->bindings[ $abstract ] ) || isset( $this->instances[ $abstract ] );
 	}
