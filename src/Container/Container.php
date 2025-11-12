@@ -220,7 +220,7 @@ class Container implements ContainerContract, ArrayAccess {
 	* @param  string  $abstract
 	* @return object
 	*/
-	public function get( string $abstract ): object {
+	public function get( string $abstract ) {
 
 		return $this->resolve( $abstract );
 	}

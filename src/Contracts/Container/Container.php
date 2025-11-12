@@ -99,7 +99,7 @@ interface Container {
 	 * @param  string  $abstract  The key, interface, or abstract class name.
 	 * @return object
 	 */
-	public function get( string $abstract ): object;
+	public function get( string $abstract );
 
 	/**
 	 * Check if a binding exists.
