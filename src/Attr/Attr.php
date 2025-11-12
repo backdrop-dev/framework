@@ -120,7 +120,7 @@ class Attr implements Attributes {
 	 * @access public
 	 * @return string
 	 */
-	public function render() {
+	public function render(): string {
 
 		$html = '';
 
