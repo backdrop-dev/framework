@@ -25,25 +25,34 @@ use Backdrop\Contracts\Container\Container;
 interface Application extends Container {
 
 	/**
-	 * Adds a service provider. Developers can pass in an object or a fully-
+	 * Adds a service provider. Developers can pass in an object or a fully
 	 * qualified class name.
 	 *
-	 * @since  1.0.0
-	 * @access public
-	 * @param  string|object  $provider
-	 * @return void
-	 */
-	public function provider( $provider );
-
-	/**
-	 * Adds a static proxy alias. Developers must pass in fully-qualified
-	 * class name and alias class name.
+	 * Compatible with PHP 8.0+ (uses `mixed` type).
+	 * - `string` type hint introduced in PHP 7.0
+	 * - `object` type hint introduced in PHP 7.2
+	 * - `mixed` type introduced in PHP 8.0
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param  string  $class_name
-	 * @param  string  $alias
+	 * @param  mixed  $provider  A service-provider instance or class name.
 	 * @return void
 	 */
-	public function proxy( $class_name, $alias );
+	public function provider( mixed $provider ): void;
+
+	/**
+	 * Adds a static proxy alias. Developers must pass in a fully qualified
+	 * class name and an alias class name.
+	 *
+	 * Compatible with PHP 8.0+ (uses scalar and `void` type hints).
+	 * - `string` type hint introduced in PHP 7.0
+	 * - `void` return type introduced in PHP 7.1
+	 *
+	 * @since  1.0.0
+	 * @access public
+	 * @param  string  $class_name  The fully qualified class name.
+	 * @param  string  $alias       The alias class name.
+	 * @return void
+	 */
+	public function proxy( string $class_name, string $alias ): void;
 }
