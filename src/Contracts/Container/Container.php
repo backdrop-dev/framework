@@ -28,8 +28,10 @@ interface Container {
 	 * interface name. The concrete should be the concrete implementation of
 	 * the abstract.
 	 *
+	 * Compatible with PHP 8.0+ (uses `mixed` type).
 	 * - `string` and `bool` type hints introduced in PHP 7.0
 	 * - `void` return type introduced in PHP 7.1
+	 * - `mixed` type introduced in PHP 8.0
 	 *
 	 * @since  1.0.0
 	 * @access public
@@ -38,7 +40,8 @@ interface Container {
 	 * @param  bool    $shared    Whether the binding is shared (singleton).
 	 * @return void
 	 */
-	public function bind( string $abstract, $concrete = null, bool $shared = false ): void;
+	public function bind( string $abstract, mixed $concrete = null, bool $shared = false ): void;
+
 
 
 	/**
