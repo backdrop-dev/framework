@@ -83,7 +83,7 @@ class Hierarchy implements TemplateHierarchy {
 	 * @access public
 	 * @return void
 	 */
-	public function boot() {
+	public function boot(): void {
 
 		// Filter the front page template.
 		add_filter( 'frontpage_template_hierarchy',  [ $this, 'frontPage' ], 5 );
