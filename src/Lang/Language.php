@@ -116,7 +116,7 @@ class Language implements LanguageContract {
 	 * @access public
 	 * @return string
 	 */
-	public function parentTextdomain() {
+	public function parentTextdomain(): string {
 
 		return $this->parent_textdomain;
 	}
@@ -129,7 +129,7 @@ class Language implements LanguageContract {
 	 * @access public
 	 * @return string
 	 */
-	public function childTextdomain() {
+	public function childTextdomain(): string {
 
 		return $this->child_textdomain;
 	}
@@ -143,7 +143,7 @@ class Language implements LanguageContract {
 	 * @param  string  $file
 	 * @return string
 	 */
-	public function parentPath( $file = '' ) {
+	public function parentPath( $file = '' ): string {
 
 		$file = ltrim( $file, '/' );
 
@@ -159,7 +159,7 @@ class Language implements LanguageContract {
 	 * @param  string  $file
 	 * @return string
 	 */
-	public function childPath( $file = '' ) {
+	public function childPath( $file = '' ): string {
 
 		$file = ltrim( $file, '/' );
 
