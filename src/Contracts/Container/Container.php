@@ -59,11 +59,10 @@ interface Container {
 	 */
 	public function add( string $abstract, mixed $concrete = null, bool $shared = false ): void;
 
-
-
 	/**
 	 * Remove a binding.
 	 *
+	 * Compatible with PHP 8.0+ (scalar type hints and `void` return type).
 	 * - `string` type hint introduced in PHP 7.0
 	 * - `void` return type introduced in PHP 7.1
 	 *
@@ -74,12 +73,12 @@ interface Container {
 	 */
 	public function remove( string $abstract ): void;
 
-
 	/**
 	 * Resolve and return the binding.
 	 *
-	 * - `string` and `array` type hints supported since PHP 7.0
-	 * - `mixed` return type not available until PHP 8.0, so only documented here
+	 * Compatible with PHP 8.0+ (uses `mixed` return type).
+	 * - `string` and `array` type hints introduced in PHP 7.0
+	 * - `mixed` return type introduced in PHP 8.0
 	 *
 	 * @since  1.0.0
 	 * @access public
@@ -87,7 +86,7 @@ interface Container {
 	 * @param  array   $parameters  Optional parameters to pass when resolving.
 	 * @return mixed
 	 */
-	public function resolve( string $abstract, array $parameters = [] );
+	public function resolve( string $abstract, array $parameters = [] ): mixed;
 
 	/**
 	 * Alias for `resolve()`.
@@ -95,15 +94,16 @@ interface Container {
 	 * Follows the PSR-11 standard. Do not alter.
 	 * @link https://www.php-fig.org/psr/psr-11/
 	 *
+	 * Compatible with PHP 8.0+ (uses `mixed` return type).
 	 * - `string` type hint introduced in PHP 7.0
-	 * - `object` return type introduced in PHP 7.2
+	 * - `mixed` return type introduced in PHP 8.0
 	 *
 	 * @since  1.0.0
 	 * @access public
 	 * @param  string  $abstract  The key, interface, or abstract class name.
-	 * @return object
+	 * @return mixed
 	 */
-	public function get( string $abstract );
+	public function get( string $abstract ): mixed;
 
 	/**
 	 * Check if a binding exists.
@@ -111,6 +111,7 @@ interface Container {
 	 * Follows the PSR-11 standard. Do not alter.
 	 * @link https://www.php-fig.org/psr/psr-11/
 	 *
+	 * Compatible with PHP 8.0+ (scalar type hints and `bool` return type).
 	 * - `string` and `bool` type hints introduced in PHP 7.0
 	 *
 	 * @since  1.0.0
@@ -123,14 +124,16 @@ interface Container {
 	/**
 	 * Add a shared binding.
 	 *
+	 * Compatible with PHP 8.0+ (uses nullable and typed parameters).
 	 * - `string` type hint introduced in PHP 7.0
-	 * - `object` type hint introduced in PHP 7.2
 	 * - `void` return type introduced in PHP 7.1
+	 * - `object` type hint introduced in PHP 7.2
+	 * - Nullable types (`?type`) introduced in PHP 7.1
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param  string  $abstract  The key, interface, or abstract class name.
-	 * @param  object|null  $concrete  The concrete implementation (optional).
+	 * @param  string       $abstract  The key, interface, or abstract class name.
+	 * @param  ?object|null $concrete  The concrete implementation (optional).
 	 * @return void
 	 */
 	public function singleton( string $abstract, ?object $concrete = null ): void;
@@ -138,8 +141,9 @@ interface Container {
 	/**
 	 * Add an existing instance.
 	 *
+	 * Compatible with PHP 8.0+ (uses `mixed` type).
 	 * - `string` type hint introduced in PHP 7.0
-	 * - `mixed` type not available until PHP 8.0, so only documented here
+	 * - `mixed` type introduced in PHP 8.0
 	 *
 	 * @since  1.0.0
 	 * @access public
@@ -147,13 +151,15 @@ interface Container {
 	 * @param  mixed   $instance  The existing instance to register.
 	 * @return mixed
 	 */
-	public function instance( string $abstract, $instance );
+	public function instance( string $abstract, mixed $instance ): mixed;
 
 	/**
 	 * Extend a binding.
 	 *
+	 * Compatible with PHP 8.0+ (uses scalar and `void` type hints).
 	 * - `string` type hint introduced in PHP 7.0
-	 * - `Closure` type hint available since PHP 5.4 (imported from global namespace)
+	 * - `void` return type introduced in PHP 7.1
+	 * - `Closure` type hint available since PHP 5.4 (from global namespace)
 	 *
 	 * @since  1.0.0
 	 * @access public
@@ -166,6 +172,7 @@ interface Container {
 	/**
 	 * Create an alias for an abstract type.
 	 *
+	 * Compatible with PHP 8.0+ (uses scalar and `void` type hints).
 	 * - `string` type hint introduced in PHP 7.0
 	 * - `void` return type introduced in PHP 7.1
 	 *
