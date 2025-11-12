@@ -184,7 +184,7 @@ class Attr implements Attributes {
 	 * @access protected
 	 * @return void
 	 */
-	public function all() {
+	public function all(): array {
 
 		// If we already have attributes, let's return them and bail.
 		if ( $this->attr ) {
