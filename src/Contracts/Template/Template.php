@@ -16,7 +16,7 @@ namespace Backdrop\Contracts\Template;
 /**
  * Template interface.
  *
- * @since  5.0.0
+ * @since  1.0.0
  * @access public
  */
 interface Template {
@@ -24,7 +24,7 @@ interface Template {
 	/**
 	 * Returns the filename relative to the templates location.
 	 *
-	 * @since  5.0.0
+	 * @since  1.0.0
 	 * @access public
 	 * @return string
 	 */
@@ -33,7 +33,7 @@ interface Template {
 	/**
 	 * Returns the internationalized text label for the template.
 	 *
-	 * @since  5.0.0
+	 * @since  1.0.0
 	 * @access public
 	 * @return string
 	 */
@@ -42,7 +42,7 @@ interface Template {
 	/**
 	 * Conditional function to check what type of template this is.
 	 *
-	 * @since  5.0.0
+	 * @since  1.0.0
 	 * @access public
 	 * @return bool
 	 */
@@ -51,7 +51,7 @@ interface Template {
 	/**
 	 * Conditional function to check if the template has a specific subtype.
 	 *
-	 * @since  5.0.0
+	 * @since  1.0.0
 	 * @access public
 	 * @return bool
 	 */
@@ -60,7 +60,7 @@ interface Template {
 	/**
 	 * Conditional function to check if the template is for a post type.
 	 *
-	 * @since  5.0.0
+	 * @since  1.0.0
 	 * @access public
 	 * @return bool
 	 */

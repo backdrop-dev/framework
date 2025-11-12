@@ -16,7 +16,7 @@ namespace Backdrop\Proxies;
 /**
  * App static proxy class.
  *
- * @since  5.0.0
+ * @since  1.0.0
  * @access public
  */
 class App extends Proxy {
@@ -24,7 +24,7 @@ class App extends Proxy {
 	/**
 	 * Returns the name of the accessor for object registered in the container.
 	 *
-	 * @since  5.0.0
+	 * @since  1.0.0
 	 * @access protected
 	 * @return string
 	 */
