@@ -93,7 +93,7 @@ class Language implements LanguageContract {
 	 * @access public
 	 * @return void
 	 */
-	public function boot() {
+	public function boot(): void {
 
 		// Load the locale functions files.
 		add_action( 'after_setup_theme', [ $this, 'loadLocaleFunctions' ], ~PHP_INT_MAX );
