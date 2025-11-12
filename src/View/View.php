@@ -181,7 +181,7 @@ class View implements ViewContract {
 	 * @access public
 	 * @return void
 	 */
-	public function display() {
+	public function display(): void {
 
 		// Compatibility with core WP's template parts.
 		$this->templatePartCompat();
