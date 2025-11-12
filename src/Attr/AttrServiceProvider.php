@@ -34,7 +34,7 @@ class AttrServiceProvider extends ServiceProvider {
 	 * @access public
 	 * @return void
 	 */
-	public function register() {
+	public function register(): void {
 
 		$this->app->bind( Attributes::class, Attr::class );
 
