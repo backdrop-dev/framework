@@ -55,8 +55,9 @@ interface Attributes extends Renderable, Displayable {
 	/**
 	 * Adds custom data to the attribute object.
 	 *
-	 * - `string` and `array` type hints introduced in PHP 7.0
-	 * - Return type `$this` (fluent interface) supported since PHP 5.0
+	 * Compatible with PHP 7.0+ (scalar and array type hints documented only).
+	 * - `string` and `array` type hints introduced in PHP 7.0 (documented, not enforced)
+	 * - Fluent `$this` return pattern supported since PHP 5.0
 	 * - `mixed` type not available until PHP 8.0, so only documented here
 	 *
 	 * @since  1.0.0
@@ -65,6 +66,5 @@ interface Attributes extends Renderable, Displayable {
 	 * @param  mixed         $value  The value to assign (optional).
 	 * @return static
 	 */
-	public function with( string|array $key, $value = null ): static;
-
+	public function with( $key, $value = null );
 }
