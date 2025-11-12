@@ -21,6 +21,8 @@ namespace Backdrop\Contracts;
 
 /**
  * Renderable interface
+ * 
+ * Introduced in PHP 7.1 (scalar return types supported, e.g. `string`).
  *
  * @since  1.0.0
  * @access public
@@ -34,5 +36,5 @@ interface Renderable {
 	 * @access public
 	 * @return string
 	 */
-	public function render();
+	public function render(): string;
 }

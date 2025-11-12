@@ -19,6 +19,8 @@ namespace Backdrop\Contracts;
 
 /**
  * Bootable interface.
+ * 
+ * Introduced in PHP 7.1 ( use `void` return when applicable ).
  *
  * @since  1.0.0
  * @access public
@@ -32,5 +34,5 @@ interface Bootable {
      * @access public
      * @return void
      */
-	public function boot();
+	public function boot(): void;
 }

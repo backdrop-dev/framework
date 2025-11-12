@@ -17,6 +17,8 @@ namespace Backdrop\Contracts;
 
 /**
  * Displayable interface
+ * 
+ * Introduced in PHP 7.1 ( use `void` return when applicable ).
  *
  * @since  1.0.0
  * @access public
@@ -30,5 +32,5 @@ interface Displayable {
 	 * @access public
 	 * @return void
 	 */
-	public function display();
+	public function display(): void;
 }
