@@ -85,7 +85,7 @@ class Application extends Container implements ApplicationContract, Bootable {
 	 * @access public
 	 * @return void
 	 */
-	public function boot() {
+	public function boot(): void {
 
 		$this->registerProviders();
 		$this->bootProviders();
