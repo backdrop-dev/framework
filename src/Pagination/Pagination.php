@@ -390,7 +390,7 @@ class Pagination implements PaginationContract {
 	 * @access public
 	 * @return PaginationContract
 	 */
-	public function make() {
+	public function make(): Pagination {
 
 		if ( 2 <= $this->total ) {
 
