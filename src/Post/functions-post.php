@@ -94,10 +94,18 @@ function render_title( array $args = [] ) {
 		'after'  => ''
 	] );
 
-	$text = sprintf( $args['text'], $is_single ? single_post_title( '', false ) : the_title( '', '', false ) );
+	$text = sprintf(
+		$args['text'],
+		$is_single ? single_post_title( '', false ) : the_title( '', '', false )
+	);
 
+	// If we want the title linked, wrap it here instead of calling render_permalink()
 	if ( $args['link'] ) {
-		$text = render_permalink( [ 'text' => $text ] );
+		$text = sprintf(
+			'<a class="entry__permalink" href="%s">%s</a>',
+			esc_url( get_permalink( $post_id ) ),
+			$text
+		);
 	}
 
 	$html = sprintf(
@@ -142,11 +150,19 @@ function render_permalink( array $args = [] ) {
 
 	$url = get_permalink();
 
+	// Only treat 'text' as a sprintf format string if it actually has a '%s'.
+	// Otherwise, use it as-is to avoid "Unknown format specifier" fatals.
+	$link_text = $args['text'];
+
+	if ( false !== strpos( $link_text, '%s' ) ) {
+		$link_text = sprintf( $link_text, esc_html( $url ) );
+	}
+
 	$html = sprintf(
 		'<a class="%s" href="%s">%s</a>',
 		esc_attr( $args['class'] ),
 		esc_url( $url ),
-		sprintf( $args['text'], esc_url( $url ) )
+		$link_text
 	);
 
 	return apply_filters( 'backdrop/post/permalink', $args['before'] . $html . $args['after'] );
