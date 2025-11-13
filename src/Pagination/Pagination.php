@@ -326,7 +326,7 @@ class Pagination implements PaginationContract {
 	 * @access public
 	 * @return void
 	 */
-	public function display() {
+	public function display(): void {
 
 		echo $this->render();
 	}
@@ -338,7 +338,7 @@ class Pagination implements PaginationContract {
 	 * @access public
 	 * @return string
 	 */
-	public function render() {
+	public function render(): void {
 
 		$title = $list = $template = '';
 
