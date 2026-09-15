@@ -186,15 +186,15 @@ class Container implements ContainerContract, ArrayAccess {
 			return $object;
 		}
 
-		// If shared instance, make sure to store it in the instances
-		// array so that we're not creating new objects later.
-		if ( $this->bindings[ $abstract ]['shared'] && ! isset( $this->instances[ $abstract ] ) ) {
-			$this->instances[ $abstract ] = $object;
-		}
-
 		// Run through each of the extensions for the object.
 		foreach ( $this->extensions[ $abstract ] as $extension ) {
-			$object = new $extension( $object, $this );
+			$object = $extension( $object, $this );
+		}
+
+		// If shared, store the final extended object so future resolutions
+		// return the same instance.
+		if ( $this->bindings[ $abstract ]['shared'] && ! isset( $this->instances[ $abstract ] ) ) {
+			$this->instances[ $abstract ] = $object;
 		}
 
 		// Return the object.
