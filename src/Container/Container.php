@@ -20,6 +20,7 @@ namespace Backdrop\Container;
 use ArrayAccess;
 use Closure;
 use ReflectionClass;
+use RuntimeException;
 use Backdrop\Contracts\Container\Container as ContainerContract;
 
 /**
@@ -386,7 +387,15 @@ class Container implements ContainerContract, ArrayAccess {
 	/**
 	 * Resolves the dependencies for a method's parameters.
 	 *
-	 * @todo Handle errors when we can't solve a dependency.
+	 * Dependencies are resolved in the following order:
+	 *
+	 * 1. Explicit parameters passed to the container.
+	 * 2. Class or interface type dependencies.
+	 * 3. Default parameter values.
+	 * 4. Null for nullable parameters.
+	 *
+	 * If a required dependency cannot be resolved, an exception is thrown
+	 * instead of silently omitting the parameter.
 	 *
 	 * @since  1.0.0
 	 * @access protected
@@ -394,6 +403,8 @@ class Container implements ContainerContract, ArrayAccess {
 	 * @param  array $dependencies Method dependencies.
 	 * @param  array $parameters   Parameters passed when resolving.
 	 * @return array
+	 *
+	 * @throws RuntimeException If a required dependency cannot be resolved.
 	 */
 	protected function resolveDependencies( array $dependencies, array $parameters ) {
 
@@ -401,35 +412,60 @@ class Container implements ContainerContract, ArrayAccess {
 
 		foreach ( $dependencies as $dependency ) {
 
-			// If a dependency is set via the parameters passed in, use it.
-			if ( isset( $parameters[ $dependency->getName() ] ) ) {
+			// If a dependency is explicitly passed in, use it.
+			if ( array_key_exists( $dependency->getName(), $parameters ) ) {
 				$args[] = $parameters[ $dependency->getName() ];
 
 				continue;
 			}
 
-			// If the parameter is a class, resolve it.
+			// If the parameter has a class or interface type, attempt to
+			// resolve the first buildable type.
 			$types = $this->getReflectionTypes( $dependency );
 
-			if ( $types ) {
-				$resolved_type = false;
+			foreach ( $types as $type ) {
 
-				foreach ( $types as $type ) {
-					if ( class_exists( $type->getName() ) ) {
-						$args[] = $this->resolve( $type->getName() );
-						$resolved_type = true;
-					}
-				}
-
-				if ( $resolved_type ) {
+				// Built-in types cannot be resolved through the container.
+				if ( $type->isBuiltin() ) {
 					continue;
 				}
+
+				$type_name = $type->getName();
+
+				if ( class_exists( $type_name ) || interface_exists( $type_name ) ) {
+					$resolved = $this->resolve( $type_name );
+
+					if ( false !== $resolved ) {
+						$args[] = $resolved;
+
+						continue 2;
+					}
+				}
 			}
 
-			// Else, use the default parameter value.
+			// If the parameter has a default value, use it.
 			if ( $dependency->isDefaultValueAvailable() ) {
 				$args[] = $dependency->getDefaultValue();
+
+				continue;
 			}
+
+			// If the parameter allows null, use null.
+			if ( $dependency->allowsNull() ) {
+				$args[] = null;
+
+				continue;
+			}
+
+			// Required dependencies should never be silently omitted because
+			// doing so can shift later constructor arguments out of position.
+			throw new RuntimeException(
+				sprintf(
+					'Unable to resolve dependency [%s] for parameter [$%s].',
+					$this->getDependencyTypeName( $dependency ),
+					$dependency->getName()
+				)
+			);
 		}
 
 		return $args;
@@ -460,6 +496,35 @@ class Container implements ContainerContract, ArrayAccess {
 		}
 
 		return [ $types ];
+	}
+
+	/**
+	 * Returns a readable type name for a dependency.
+	 *
+	 * This is primarily used when reporting dependencies that the container
+	 * cannot automatically resolve.
+	 *
+	 * @since  1.0.0
+	 * @access protected
+	 *
+	 * @param  object $dependency Reflection parameter dependency.
+	 * @return string
+	 */
+	protected function getDependencyTypeName( $dependency ) {
+
+		$types = $this->getReflectionTypes( $dependency );
+
+		if ( ! $types ) {
+			return 'untyped';
+		}
+
+		$names = [];
+
+		foreach ( $types as $type ) {
+			$names[] = $type->getName();
+		}
+
+		return implode( '|', $names );
 	}
 
 	/**
