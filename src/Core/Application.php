@@ -6,7 +6,7 @@
  * specific to the framework. This class is meant to be used as the single,
  * one-true instance of the framework. It's used to load up service providers
  * that interact with the container.
- *5
+ *
  * @package   Backdrop
  * @author    Benjamin Lu <benlumia007@gmail.com>
  * @copyright 2019 Benjamin Lu
@@ -18,14 +18,14 @@ namespace Backdrop\Core;
 
 use Backdrop\Attr\AttrServiceProvider;
 use Backdrop\Container\Container;
-use Backdrop\Contracts\Core\Application as ApplicationContract;
 use Backdrop\Contracts\Bootable;
+use Backdrop\Contracts\Core\Application as ApplicationContract;
 use Backdrop\Lang\LanguageServiceProvider;
-use Backdrop\Proxies\Proxy;
 use Backdrop\Proxies\App;
+use Backdrop\Proxies\Proxy;
 use Backdrop\Template\HierarchyServiceProvider;
 use Backdrop\Template\TemplatesServiceProvider;
-use Backdrop\View\ViewServiceProvider; 
+use Backdrop\View\ViewServiceProvider;
 
 /**
  * Application class.
@@ -40,7 +40,8 @@ class Application extends Container implements ApplicationContract, Bootable {
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @var    string
+	 *
+	 * @var string
 	 */
 	const VERSION = '1.0.0';
 
@@ -49,7 +50,8 @@ class Application extends Container implements ApplicationContract, Bootable {
 	 *
 	 * @since  1.0.0
 	 * @access protected
-	 * @var    array
+	 *
+	 * @var array
 	 */
 	protected $providers = [];
 
@@ -58,7 +60,8 @@ class Application extends Container implements ApplicationContract, Bootable {
 	 *
 	 * @since  1.0.0
 	 * @access protected
-	 * @var    array
+	 *
+	 * @var array
 	 */
 	protected $proxies = [];
 
@@ -68,6 +71,7 @@ class Application extends Container implements ApplicationContract, Bootable {
 	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
 	 * @return void
 	 */
 	public function __construct() {
@@ -83,6 +87,7 @@ class Application extends Container implements ApplicationContract, Bootable {
 	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
 	 * @return void
 	 */
 	public function boot(): void {
@@ -97,6 +102,7 @@ class Application extends Container implements ApplicationContract, Bootable {
 	 *
 	 * @since  1.0.0
 	 * @access protected
+	 *
 	 * @return void
 	 */
 	protected function registerDefaultBindings() {
@@ -104,8 +110,8 @@ class Application extends Container implements ApplicationContract, Bootable {
 		// Add the instance of this application.
 		$this->instance( 'app', $this );
 
-		// Adds the directory path for the framework.
-		$this->instance( 'path', untrailingslashit( BACKDROP_DIR  ) );
+		// Add the directory path for the framework.
+		$this->instance( 'path', untrailingslashit( BACKDROP_DIR ) );
 
 		// Add the version for the framework.
 		$this->instance( 'version', static::VERSION );
@@ -116,6 +122,7 @@ class Application extends Container implements ApplicationContract, Bootable {
 	 *
 	 * @since  1.0.0
 	 * @access protected
+	 *
 	 * @return void
 	 */
 	protected function registerDefaultProviders() {
@@ -136,6 +143,7 @@ class Application extends Container implements ApplicationContract, Bootable {
 	 *
 	 * @since  1.0.0
 	 * @access protected
+	 *
 	 * @return void
 	 */
 	protected function registerDefaultProxies() {
@@ -148,6 +156,7 @@ class Application extends Container implements ApplicationContract, Bootable {
 	 *
 	 * @since  1.0.0
 	 * @access protected
+	 *
 	 * @return void
 	 */
 	protected function bootstrapFilters() {
@@ -160,10 +169,11 @@ class Application extends Container implements ApplicationContract, Bootable {
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param  string|object  $provider
+	 *
+	 * @param  string|object $provider Service provider class name or object.
 	 * @return void
 	 */
-	public function provider( mixed $provider ): void {
+	public function provider( $provider ): void {
 
 		if ( is_string( $provider ) ) {
 			$provider = $this->resolveProvider( $provider );
@@ -177,7 +187,8 @@ class Application extends Container implements ApplicationContract, Bootable {
 	 *
 	 * @since  1.0.0
 	 * @access protected
-	 * @param  string    $provider
+	 *
+	 * @param  string $provider Service provider class name.
 	 * @return object
 	 */
 	protected function resolveProvider( $provider ) {
@@ -190,7 +201,8 @@ class Application extends Container implements ApplicationContract, Bootable {
 	 *
 	 * @since  1.0.0
 	 * @access protected
-	 * @param  string    $provider
+	 *
+	 * @param  object $provider Service provider object.
 	 * @return void
 	 */
 	protected function registerProvider( $provider ) {
@@ -205,7 +217,8 @@ class Application extends Container implements ApplicationContract, Bootable {
 	 *
 	 * @since  1.0.0
 	 * @access protected
-	 * @param  string    $provider
+	 *
+	 * @param  object $provider Service provider object.
 	 * @return void
 	 */
 	protected function bootProvider( $provider ) {
@@ -220,6 +233,7 @@ class Application extends Container implements ApplicationContract, Bootable {
 	 *
 	 * @since  1.0.0
 	 * @access protected
+	 *
 	 * @return array
 	 */
 	protected function getProviders() {
@@ -232,6 +246,7 @@ class Application extends Container implements ApplicationContract, Bootable {
 	 *
 	 * @since  1.0.0
 	 * @access protected
+	 *
 	 * @return void
 	 */
 	protected function registerProviders() {
@@ -246,6 +261,7 @@ class Application extends Container implements ApplicationContract, Bootable {
 	 *
 	 * @since  1.0.0
 	 * @access protected
+	 *
 	 * @return void
 	 */
 	protected function bootProviders() {
@@ -256,13 +272,14 @@ class Application extends Container implements ApplicationContract, Bootable {
 	}
 
 	/**
-	 * Adds a static proxy alias. Developers must pass in fully-qualified
-	 * class name and alias class name.
+	 * Adds a static proxy alias. Developers must pass in a fully qualified
+	 * class name and an alias class name.
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param  string  $class_name
-	 * @param  string  $alias
+	 *
+	 * @param  string $class_name The fully qualified class name.
+	 * @param  string $alias      The alias class name.
 	 * @return void
 	 */
 	public function proxy( string $class_name, string $alias ): void {
@@ -275,6 +292,7 @@ class Application extends Container implements ApplicationContract, Bootable {
 	 *
 	 * @since  1.0.0
 	 * @access protected
+	 *
 	 * @return void
 	 */
 	protected function registerProxies() {
