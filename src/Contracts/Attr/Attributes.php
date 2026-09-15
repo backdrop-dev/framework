@@ -13,10 +13,10 @@
  * @link      https://github.com/backdrop-dev/framework
  */
 
- namespace Backdrop\Contracts\Attr;
+namespace Backdrop\Contracts\Attr;
 
- use Backdrop\Contracts\Displayable;
- use Backdrop\Contracts\Renderable;
+use Backdrop\Contracts\Displayable;
+use Backdrop\Contracts\Renderable;
 
 /**
  * Attributes interface.
@@ -30,10 +30,9 @@ interface Attributes extends Renderable, Displayable {
 	 * Returns an array of HTML attributes in name/value pairs. Attributes
 	 * are not expected to be escaped. Escaping should be handled on output.
 	 *
-	 * - `array` return type hint introduced in PHP 7.0
-	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
 	 * @return array
 	 */
 	public function all(): array;
@@ -41,28 +40,23 @@ interface Attributes extends Renderable, Displayable {
 	/**
 	 * Returns a single, unescaped attribute's value.
 	 *
-	 * - `string` type hint introduced in PHP 7.0
-	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param  string  $name  The name of the attribute.
+	 *
+	 * @param  string $name The name of the attribute.
 	 * @return string
 	 */
 	public function get( string $name ): string;
 
 	/**
-	 * Adds custom data to the attribute object.
-	 *
-	 * Compatible with PHP 8.0+ (uses union and `mixed` types).
-	 * - `string` and `array` type hints introduced in PHP 7.0
-	 * - Union types (`|`) and `mixed` introduced in PHP 8.0
-	 * - `static` return type supported since PHP 8.0
+	 * Add one or more attributes.
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param  string|array  $key    The attribute key or an array of key/value pairs.
-	 * @param  mixed         $value  The value to assign (optional).
+	 *
+	 * @param  string|array $key   Attribute name or array of attributes.
+	 * @param  mixed        $value Attribute value.
 	 * @return static
 	 */
-	public function with( string|array $key, mixed $value = null ): static;
+	public function with( $key, $value = null );
 }
