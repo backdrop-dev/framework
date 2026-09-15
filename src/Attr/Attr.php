@@ -143,20 +143,20 @@ class Attr implements Attributes {
 	}
 
 	/**
-	 * Adds custom data to the attribute object.
+	 * Add one or more attributes.
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param  string|array  $name
-	 * @param  mixed         $value
-	 * @return $this
+	 * @param  string|array $key   Attribute name or array of attributes.
+	 * @param  mixed        $value Attribute value.
+	 * @return static
 	 */
-	public function with( string|array $key, mixed $value = null ): static {
+	public function with( $key, $value = null ) {
 
-		if ( is_array( $name ) ) {
-			$this->data = array_merge( $this->data, $name );
+		if ( is_array( $key ) ) {
+			$this->data = array_merge( $this->data, $key );
 		} else {
-			$this->data[ $name ] = $value;
+			$this->data[ $key ] = $value;
 		}
 
 		return $this;
