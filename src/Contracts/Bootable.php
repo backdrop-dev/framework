@@ -2,11 +2,11 @@
 /**
  * Bootable interface.
  *
- * Defines the contract that bootable classes should utilize. The Bootable
- * classes should have a `boot()` method with the singular purpose of
- * "booting" the action and filter hooks for that class.This keeps the
- * action/filters out of the class constructor. Most bootable classes
- * are meant to be single-instance classes that get loaded once per page request.
+ * Defines the contract that bootable classes should utilize. Bootable classes
+ * should have a `boot()` method with the singular purpose of booting the action
+ * and filter hooks for that class. This keeps action and filter registration
+ * out of the class constructor. Most bootable classes are meant to be
+ * single-instance classes that get loaded once per page request.
  *
  * @package   Backdrop
  * @author    Benjamin Lu <benlumia007@gmail.com>
@@ -19,20 +19,22 @@ namespace Backdrop\Contracts;
 
 /**
  * Bootable interface.
- * 
- * Introduced in PHP 7.1 ( use `void` return when applicable ).
  *
  * @since  1.0.0
  * @access public
  */
 interface Bootable {
 
-    /**
-     * Boots the class by running `add_action()` and `add_filter()` calls.
-     *
-     * @since  1.0.0
-     * @access public
-     * @return void
-     */
+	/**
+	 * Boots the class.
+	 *
+	 * Bootable classes should use this method to register their actions,
+	 * filters, and other initialization hooks.
+	 *
+	 * @since  1.0.0
+	 * @access public
+	 *
+	 * @return void
+	 */
 	public function boot(): void;
 }
