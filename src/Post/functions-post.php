@@ -19,15 +19,14 @@ namespace Backdrop\Post;
  *
  * @since  1.0.0
  * @access public
+ *
  * @return array
  */
 function hierarchy() {
 
-	// Set up an empty array and get the post type.
 	$hierarchy = [];
 	$post_type = get_post_type();
 
-	// If attachment, add attachment type templates.
 	if ( 'attachment' === $post_type ) {
 
 		extract( mime_types() );
@@ -40,20 +39,14 @@ function hierarchy() {
 		$hierarchy[] = "attachment-{$type}";
 	}
 
-	// If the post type supports 'post-formats', get the template based on the format.
 	if ( post_type_supports( $post_type, 'post-formats' ) ) {
 
-		// Get the post format.
 		$post_format = get_post_format() ?: 'standard';
 
-		// Template based off post type and post format.
 		$hierarchy[] = "{$post_type}-{$post_format}";
-
-		// Template based off the post format.
 		$hierarchy[] = $post_format;
 	}
 
-	// Template based off the post type.
 	$hierarchy[] = $post_type;
 
 	return apply_filters( 'backdrop/post/hierarchy', $hierarchy );
@@ -64,7 +57,8 @@ function hierarchy() {
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args Post title arguments.
  * @return void
  */
 function display_title( array $args = [] ) {
@@ -77,7 +71,8 @@ function display_title( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args Post title arguments.
  * @return string
  */
 function render_title( array $args = [] ) {
@@ -99,7 +94,6 @@ function render_title( array $args = [] ) {
 		$is_single ? single_post_title( '', false ) : the_title( '', '', false )
 	);
 
-	// If we want the title linked, wrap it here instead of calling render_permalink()
 	if ( $args['link'] ) {
 		$text = sprintf(
 			'<a class="entry__permalink" href="%s">%s</a>',
@@ -115,7 +109,10 @@ function render_title( array $args = [] ) {
 		$text
 	);
 
-	return apply_filters( 'backdrop/post/title', $args['before'] . $html . $args['after'] );
+	return apply_filters(
+		'backdrop/post/title',
+		$args['before'] . $html . $args['after']
+	);
 }
 
 /**
@@ -123,7 +120,8 @@ function render_title( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args Post permalink arguments.
  * @return void
  */
 function display_permalink( array $args = [] ) {
@@ -136,7 +134,8 @@ function display_permalink( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args Post permalink arguments.
  * @return string
  */
 function render_permalink( array $args = [] ) {
@@ -148,10 +147,7 @@ function render_permalink( array $args = [] ) {
 		'after'  => ''
 	] );
 
-	$url = get_permalink();
-
-	// Only treat 'text' as a sprintf format string if it actually has a '%s'.
-	// Otherwise, use it as-is to avoid "Unknown format specifier" fatals.
+	$url       = get_permalink();
 	$link_text = $args['text'];
 
 	if ( false !== strpos( $link_text, '%s' ) ) {
@@ -165,7 +161,10 @@ function render_permalink( array $args = [] ) {
 		$link_text
 	);
 
-	return apply_filters( 'backdrop/post/permalink', $args['before'] . $html . $args['after'] );
+	return apply_filters(
+		'backdrop/post/permalink',
+		$args['before'] . $html . $args['after']
+	);
 }
 
 /**
@@ -173,7 +172,8 @@ function render_permalink( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args Post author arguments.
  * @return void
  */
 function display_author( array $args = [] ) {
@@ -186,10 +186,11 @@ function display_author( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args Post author arguments.
  * @return string
  */
-function render_author( array $args = [] ) { 
+function render_author( array $args = [] ) {
 
 	$args = wp_parse_args( $args, [
 		'text'   => '%s',
@@ -199,15 +200,19 @@ function render_author( array $args = [] ) {
 		'after'  => ''
 	] );
 
-	// Get the post author ID
-	$author_id = get_the_author_meta( 'ID' ) ?: get_queried_object()->post_author ?? null;
+	$author_id = get_the_author_meta( 'ID' );
 
-	// If no author is found, return empty
+	if ( ! $author_id ) {
+		$queried_object = get_queried_object();
+		$author_id       = isset( $queried_object->post_author )
+			? $queried_object->post_author
+			: null;
+	}
+
 	if ( ! $author_id ) {
 		return '';
 	}
 
-	// Get the author display name
 	$author = get_the_author_meta( 'display_name', $author_id );
 
 	if ( $args['link'] ) {
@@ -220,7 +225,11 @@ function render_author( array $args = [] ) {
 		);
 	}
 
-	$html = sprintf( '<span class="%s">%s</span>', esc_attr( $args['class'] ), $author );
+	$html = sprintf(
+		'<span class="%s">%s</span>',
+		esc_attr( $args['class'] ),
+		$author
+	);
 
 	return apply_filters(
 		'backdrop/post/author',
@@ -233,7 +242,8 @@ function render_author( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args Post date arguments.
  * @return void
  */
 function display_date( array $args = [] ) {
@@ -246,7 +256,8 @@ function display_date( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args Post date arguments.
  * @return string
  */
 function render_date( array $args = [] ) {
@@ -277,7 +288,8 @@ function render_date( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args Comments link arguments.
  * @return void
  */
 function display_comments_link( array $args = [] ) {
@@ -290,7 +302,8 @@ function display_comments_link( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args Comments link arguments.
  * @return string
  */
 function render_comments_link( array $args = [] ) {
@@ -306,12 +319,16 @@ function render_comments_link( array $args = [] ) {
 
 	$number = get_comments_number();
 
-	if ( 0 == $number && ! comments_open() && ! pings_open() ) {
+	if ( 0 === $number && ! comments_open() && ! pings_open() ) {
 		return '';
 	}
 
 	$url  = get_comments_link();
-	$text = get_comments_number_text( $args['zero'], $args['one'], $args['more'] );
+	$text = get_comments_number_text(
+		$args['zero'],
+		$args['one'],
+		$args['more']
+	);
 
 	$html = sprintf(
 		'<a class="%s" href="%s">%s</a>',
@@ -331,7 +348,8 @@ function render_comments_link( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args Post terms arguments.
  * @return void
  */
 function display_terms( array $args = [] ) {
@@ -344,7 +362,8 @@ function display_terms( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args Post terms arguments.
  * @return string
  */
 function render_terms( array $args = [] ) {
@@ -361,15 +380,19 @@ function render_terms( array $args = [] ) {
 		'after'    => ''
 	] );
 
-	// Append taxonomy to class name.
 	if ( ! $args['class'] ) {
 		$args['class'] = "entry__terms entry__terms--{$args['taxonomy']}";
 	}
 
-	$terms = get_the_term_list( get_the_ID(), $args['taxonomy'], '', $args['sep'], '' );
+	$terms = get_the_term_list(
+		get_the_ID(),
+		$args['taxonomy'],
+		'',
+		$args['sep'],
+		''
+	);
 
 	if ( $terms ) {
-
 		$html = sprintf(
 			'<span class="%s">%s</span>',
 			esc_attr( $args['class'] ),
@@ -387,7 +410,8 @@ function render_terms( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args Post format arguments.
  * @return void
  */
 function display_format( array $args = [] ) {
@@ -400,7 +424,8 @@ function display_format( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args Post format arguments.
  * @return string
  */
 function render_format( array $args = [] ) {
@@ -430,12 +455,14 @@ function render_format( array $args = [] ) {
 }
 
 /**
- * Splits the post mime type into two distinct parts: type / subtype
- * (e.g., image / png). Returns an array of the parts.
+ * Splits the post MIME type into two distinct parts: type and subtype.
+ *
+ * For example, `image/png` is returned as `image` and `png`.
  *
  * @since  1.0.0
  * @access public
- * @param  \WP_Post|int  $post  A post object or ID.
+ *
+ * @param  \WP_Post|int|null $post Post object or ID.
  * @return array
  */
 function mime_types( $post = null ) {
@@ -444,7 +471,7 @@ function mime_types( $post = null ) {
 	$subtype = '';
 
 	if ( false !== strpos( $type, '/' ) ) {
-		list( $type, $subtype ) = explode( '/', $type );
+		list( $type, $subtype ) = explode( '/', $type, 2 );
 	}
 
 	return [
@@ -454,42 +481,47 @@ function mime_types( $post = null ) {
 }
 
 /**
- * Checks if a post has any content. Useful if you need to check if the user has
- * written any content before performing any actions.
+ * Checks if a post has any content.
  *
  * @since  1.0.0
  * @access public
- * @param  \WP_Post|int  $post  A post object or post ID.
+ *
+ * @param  \WP_Post|int|null $post Post object or ID.
  * @return bool
  */
 function has_content( $post = null ) {
+
 	$post = get_post( $post );
 
-	return ! empty( $post->post_content );
+	return $post && ! empty( $post->post_content );
 }
 
 /**
- * Returns the number of items in all the galleries for the post.
+ * Returns the number of items in all galleries for the post.
+ *
+ * If the post does not contain galleries, attached images are counted instead.
  *
  * @since  1.0.0
  * @access public
- * @param  \WP_Post|int  $post  A post object or ID.
+ *
+ * @param  \WP_Post|int|null $post Post object or ID.
  * @return int
  */
 function gallery_count( $post = null ) {
 
-	$post   = get_post( $post );
+	$post = get_post( $post );
+
+	if ( ! $post ) {
+		return 0;
+	}
+
 	$images = [];
 
-	// `get_post_galleries_images()` passes an array of arrays, so we need
-	// to merge them all together.
 	foreach ( get_post_galleries_images( $post ) as $gallery_images ) {
 		$images = array_merge( $images, $gallery_images );
 	}
 
-	// If there are no images in the array, just grab the attached images.
 	if ( ! $images ) {
-
 		$images = get_posts( [
 			'fields'         => 'ids',
 			'post_parent'    => $post->ID,
@@ -499,6 +531,5 @@ function gallery_count( $post = null ) {
 		] );
 	}
 
-	// Return the count of the images.
 	return count( $images );
 }
