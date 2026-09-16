@@ -2,10 +2,9 @@
 /**
  * Collection class.
  *
- * This file houses the `Collection` class, which is a class used for storing
- * collections of data.  Generally speaking, it was built for storing an
- * array of key/value pairs.  Values can be any type of value.  Keys should
- * be named rather than numeric if you need easy access.
+ * This file houses the Collection class, which is used for storing collections
+ * of data as key/value pairs. Values may contain any type of data. Named keys
+ * are recommended when items need to be accessed individually.
  *
  * @package   Backdrop
  * @author    Benjamin Lu <benlumia007@gmail.com>
@@ -19,7 +18,7 @@ namespace Backdrop\Tools;
 use ArrayObject;
 
 /**
- * Registry class.
+ * Collection class.
  *
  * @since  1.0.0
  * @access public
@@ -27,12 +26,13 @@ use ArrayObject;
 class Collection extends ArrayObject {
 
 	/**
-	 * Add an item.
+	 * Adds an item to the collection.
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param  string  $name
-	 * @param  mixed   $value
+	 *
+	 * @param  string $name  Item name.
+	 * @param  mixed  $value Item value.
 	 * @return void
 	 */
 	public function add( $name, $value ) {
@@ -41,11 +41,12 @@ class Collection extends ArrayObject {
 	}
 
 	/**
-	 * Removes an item.
+	 * Removes an item from the collection.
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param  string  $name
+	 *
+	 * @param  string $name Item name.
 	 * @return void
 	 */
 	public function remove( $name ) {
@@ -54,11 +55,12 @@ class Collection extends ArrayObject {
 	}
 
 	/**
-	 * Checks if an item exists.
+	 * Checks whether an item exists in the collection.
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param  string  $name
+	 *
+	 * @param  string $name Item name.
 	 * @return bool
 	 */
 	public function has( $name ) {
@@ -67,11 +69,12 @@ class Collection extends ArrayObject {
 	}
 
 	/**
-	 * Returns an item.
+	 * Returns an item from the collection.
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param  string  $name
+	 *
+	 * @param  string $name Item name.
 	 * @return mixed
 	 */
 	public function get( $name ) {
@@ -80,10 +83,11 @@ class Collection extends ArrayObject {
 	}
 
 	/**
-	 * Returns the collection of items.
+	 * Returns all items in the collection.
 	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
 	 * @return array
 	 */
 	public function all() {
@@ -92,13 +96,13 @@ class Collection extends ArrayObject {
 	}
 
 	/**
-	 * Magic method when trying to set a property. Assume the property is
-	 * part of the collection and add it.
+	 * Adds an item to the collection using property syntax.
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param  string  $name
-	 * @param  mixed   $value
+	 *
+	 * @param  string $name  Item name.
+	 * @param  mixed  $value Item value.
 	 * @return void
 	 */
 	public function __set( $name, $value ) {
@@ -107,11 +111,12 @@ class Collection extends ArrayObject {
 	}
 
 	/**
-	 * Magic method when trying to unset a property.
+	 * Removes an item from the collection using property syntax.
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param  string  $name
+	 *
+	 * @param  string $name Item name.
 	 * @return void
 	 */
 	public function __unset( $name ) {
@@ -120,11 +125,12 @@ class Collection extends ArrayObject {
 	}
 
 	/**
-	 * Magic method when trying to check if a property has.
+	 * Checks whether an item exists using property syntax.
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param  string  $name
+	 *
+	 * @param  string $name Item name.
 	 * @return bool
 	 */
 	public function __isset( $name ) {
@@ -133,15 +139,16 @@ class Collection extends ArrayObject {
 	}
 
 	/**
-	 * Magic method when trying to get a property.
+	 * Returns an item from the collection using property syntax.
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param  string  $name
+	 *
+	 * @param  string $name Item name.
 	 * @return mixed
 	 */
 	public function __get( $name ) {
 
-		return $this->offSetGet( $name );
+		return $this->offsetGet( $name );
 	}
 }
