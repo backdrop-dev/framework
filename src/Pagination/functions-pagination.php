@@ -14,13 +14,14 @@
 namespace Backdrop\Pagination;
 
 /**
- * Outputs the pagination output.
+ * Outputs the pagination.
  *
  * @since  1.0.0
  * @access public
- * @param  string $context
- * @param  array  $args
- * @return object
+ *
+ * @param  string $context Pagination context.
+ * @param  array  $args    Pagination arguments.
+ * @return void
  */
 function display( $context = 'posts', array $args = [] ) {
 
@@ -28,13 +29,14 @@ function display( $context = 'posts', array $args = [] ) {
 }
 
 /**
- * Returns the pagination output.
+ * Returns the pagination.
  *
  * @since  1.0.0
  * @access public
- * @param  string $context
- * @param  array  $args
- * @return object
+ *
+ * @param  string $context Pagination context.
+ * @param  array  $args    Pagination arguments.
+ * @return string
  */
 function render( $context = 'posts', array $args = [] ) {
 
