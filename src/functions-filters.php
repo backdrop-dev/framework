@@ -491,7 +491,7 @@ function body_class_filter( $classes, $class ) {
 		$classes[] = 'paged';
 		$classes[] = 'paged-' . intval( get_query_var( 'paged' ) );
 
-	// Singular post paged views using <!- nextpage ->.
+	// Singular post paged views using <!--nextpage-->.
 	} elseif ( is_singular() && 1 < get_query_var( 'page' ) ) {
 		$classes[] = 'paged';
 		$classes[] = 'paged-' . intval( get_query_var( 'page' ) );
@@ -613,13 +613,13 @@ function post_class_filter( $classes, $class, $post_id ) {
 		$classes[] = 'has-excerpt';
 	}
 
-	// Has <!-more-> link.
-	if ( ! is_singular() && false !== strpos( $post->post_content, '<!-more' ) ) {
+	// Has <!--more--> link.
+	if ( ! is_singular() && false !== strpos( $post->post_content, '<!--more' ) ) {
 		$classes[] = 'has-more-link';
 	}
 
-	// Has <!-nextpage-> links.
-	if ( false !== strpos( $post->post_content, '<!-nextpage' ) ) {
+	// Has <!--nextpage--> links.
+	if ( false !== strpos( $post->post_content, '<!--nextpage' ) ) {
 		$classes[] = 'has-pages';
 	}
 
