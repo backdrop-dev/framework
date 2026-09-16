@@ -18,7 +18,8 @@ namespace Backdrop\Sidebar;
  *
  * @since  1.0.0
  * @access public
- * @param  string  $sidebar_id
+ *
+ * @param  string $sidebar_id Sidebar ID.
  * @return void
  */
 function display_name( $sidebar_id ) {
@@ -27,18 +28,21 @@ function display_name( $sidebar_id ) {
 }
 
 /**
- * Function for grabbing a dynamic sidebar name.
+ * Returns a dynamic sidebar name.
  *
  * @since  1.0.0
  * @access public
- * @global array   $wp_registered_sidebars
- * @param  string  $sidebar_id
+ *
+ * @global array $wp_registered_sidebars Registered sidebars.
+ *
+ * @param  string $sidebar_id Sidebar ID.
  * @return string
  */
 function render_name( $sidebar_id ) {
+
 	global $wp_registered_sidebars;
 
 	return isset( $wp_registered_sidebars[ $sidebar_id ] )
-	       ? $wp_registered_sidebars[ $sidebar_id ]['name']
-	       : '';
+		? $wp_registered_sidebars[ $sidebar_id ]['name']
+		: '';
 }
