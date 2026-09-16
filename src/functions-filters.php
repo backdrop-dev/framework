@@ -551,19 +551,20 @@ function post_class_filter( $classes, $class, $post_id ) {
 		return $classes;
 	}
 
-	$classes = [];
-	$post    = get_post( $post_id );
+	$classes   = [];
+	$post      = get_post( $post_id );
+	$post_type = get_post_type( $post_id );
 
 	// Entry class.
 	$classes[] = 'entry';
 
 	// Post field classes.
-	$classes[] = sprintf( 'entry-type-%s', get_post_type() );
+	$classes[] = sprintf( 'entry-type-%s', $post_type );
 
 	// Add post formt class.
-	if ( post_type_supports( get_post_type(), 'post-formats' ) ) {
+	if ( post_type_supports( $post_type, 'post-formats' ) ) {
 
-		$format = \get_post_format();
+		$format = \get_post_format( $post_id );
 
 		$classes[] = sprintf(
 			'entry-format-%s',
@@ -577,7 +578,7 @@ function post_class_filter( $classes, $class, $post_id ) {
 
 	foreach ( (array) $taxonomies as $taxonomy ) {
 
-		if ( is_object_in_taxonomy( get_post_type(), $taxonomy ) ) {
+		if ( is_object_in_taxonomy( $post_type, $taxonomy ) ) {
 
 			$terms = get_the_terms( $post_id, $taxonomy );
 
@@ -609,7 +610,7 @@ function post_class_filter( $classes, $class, $post_id ) {
 	}
 
 	// Has excerpt.
-	if ( post_type_supports( get_post_type(), 'excerpt' ) && has_excerpt() ) {
+	if ( post_type_supports( $post_type, 'excerpt' ) && has_excerpt( $post_id ) ) {
 		$classes[] = 'has-excerpt';
 	}
 
