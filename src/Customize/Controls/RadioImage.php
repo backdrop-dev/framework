@@ -5,85 +5,97 @@
  * The radio image customize control allows developers to create a list of image
  * radio inputs.
  *
- * @package   Backdrop Customize
+ * @package   Backdrop
  * @author    Benjamin Lu <benlumia007@gmail.com>
  * @copyright 2019 Benjamin Lu
  * @license   https://www.gnu.org/licenses/gpl-2.0.html
- * @link      https://github.com/backdrop-dev/customize
+ * @link      https://github.com/backdrop-dev/framework
  */
 
 namespace Backdrop\Customize\Controls;
 
-
 /**
  * Radio image customize control.
+ *
+ * @since  1.0.0
+ * @access public
  */
 class RadioImage extends Control {
 
-    /**
-     * The type of customize control being rendered.
-     *
-     * @var string
-     */
-    public $type = 'backdrop-radio-image';
+	/**
+	 * The type of customize control being rendered.
+	 *
+	 * @since  1.0.0
+	 * @access public
+	 *
+	 * @var string
+	 */
+	public $type = 'backdrop-radio-image';
 
-    /**
-     * Add custom parameters to pass to the JS via JSON.
-     *
-     * @return void
-     */
-    public function to_json() {
-        parent::to_json();
+	/**
+	 * Add custom parameters to pass to the JS via JSON.
+	 *
+	 * @since  1.0.0
+	 * @access public
+	 *
+	 * @return void
+	 */
+	public function to_json() {
 
-        // We need to make sure we have the correct image URL.
-        array_walk( $this->choices, static function ( &$args, $key ) {
+		parent::to_json();
 
-            // Replaces `%s` or `%1$s` with the template directory
-            // URI and `%2$s` with the stylesheet directory URI.
-            $args['url'] = esc_url(
-                sprintf(
-                    $args['url'],
-                    get_template_directory_uri(),
-                    get_stylesheet_directory_uri()
-                )
-            );
-        } );
+		// We need to make sure we have the correct image URL.
+		array_walk( $this->choices, static function ( &$args ) {
 
-        $this->json['choices'] = $this->choices;
-        $this->json['link']    = $this->get_link();
-        $this->json['value']   = $this->value();
-        $this->json['id']      = $this->id;
-    }
+			// Replaces `%s` or `%1$s` with the template directory
+			// URI and `%2$s` with the stylesheet directory URI.
+			$args['url'] = esc_url(
+				sprintf(
+					$args['url'],
+					get_template_directory_uri(),
+					get_stylesheet_directory_uri()
+				)
+			);
+		} );
 
-    /**
-     * Underscore JS template to handle the control's output.
-     *
-     * @return void
-     */
-    protected function content_template() {
-        ?>
+		$this->json['choices'] = $this->choices;
+		$this->json['link']    = $this->get_link();
+		$this->json['value']   = $this->value();
+		$this->json['id']      = $this->id;
+	}
 
-        <# if ( ! data.choices ) {
-            return;
-        } #>
+	/**
+	 * Underscore JS template to handle the control's output.
+	 *
+	 * @since  1.0.0
+	 * @access protected
+	 *
+	 * @return void
+	 */
+	protected function content_template() {
+		?>
 
-        <# if ( data.label ) { #>
-            <span class="customize-control-title">{{ data.label }}</span>
-        <# } #>
+		<# if ( ! data.choices ) {
+			return;
+		} #>
 
-        <# if ( data.description ) { #>
-            <span class="description customize-control-description">{{{ data.description }}}</span>
-        <# } #>
+		<# if ( data.label ) { #>
+			<span class="customize-control-title">{{ data.label }}</span>
+		<# } #>
 
-        <# _.each( data.choices, function( args, choice ) { #>
-            <label class="radio-image">
-                <input type="radio" class="radio-image__radio" value="{{ choice }}" name="_customize-{{ data.type }}-{{ data.id }}" {{{ data.link }}} <# if ( choice === data.value ) { #> checked="checked" <# } #> />
+		<# if ( data.description ) { #>
+			<span class="description customize-control-description">{{{ data.description }}}</span>
+		<# } #>
 
-                <span class="radio-image__label screen-reader-text">{{ args.label }}</span>
+		<# _.each( data.choices, function( args, choice ) { #>
+			<label class="radio-image">
+				<input type="radio" class="radio-image__radio" value="{{ choice }}" name="_customize-{{ data.type }}-{{ data.id }}" {{{ data.link }}} <# if ( choice === data.value ) { #> checked="checked" <# } #> />
 
-                <img class="radio-image__image" src="{{ args.url }}" alt="{{ args.label }}" />
-            </label>
-        <# } ) #>
-        <?php
-    }
+				<span class="radio-image__label screen-reader-text">{{ args.label }}</span>
+
+				<img class="radio-image__image" src="{{ args.url }}" alt="{{ args.label }}" />
+			</label>
+		<# } ) #>
+		<?php
+	}
 }
