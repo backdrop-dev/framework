@@ -17,11 +17,13 @@ use Backdrop\Contracts\Template\Hierarchy;
 use Backdrop\Proxies\App;
 
 /**
- * Returns the global hierarchy. This is a wrapper around the values stored via
- * the template hierarchy object.
+ * Returns the global template hierarchy.
+ *
+ * This is a wrapper around the values stored by the template hierarchy object.
  *
  * @since  1.0.0
  * @access public
+ *
  * @return array
  */
 function hierarchy() {
@@ -33,40 +35,47 @@ function hierarchy() {
 }
 
 /**
- * A better `locate_template()` function than what core WP provides. Note that
- * this function merely locates templates and does no loading. Use the core
- * `load_template()` function for actually loading the template.
+ * Locates a template file.
+ *
+ * This function locates templates without loading them. Use the core
+ * `load_template()` function to load a located template.
  *
  * @since  1.0.0
  * @access public
- * @param  array|string  $templates
+ *
+ * @param  array|string $templates Template name or array of template names.
  * @return string
  */
 function locate( $templates ) {
-	$located = '';
 
 	foreach ( (array) $templates as $template ) {
+
+		if ( ! $template ) {
+			continue;
+		}
+
+		$template = ltrim( $template, '/' );
 
 		foreach ( locations() as $location ) {
 
 			$file = trailingslashit( $location ) . $template;
 
-			if ( file_exists( $file ) ) {
-				$located = $file;
-				break 2;
+			if ( is_file( $file ) ) {
+				return $file;
 			}
 		}
 	}
 
-	return $located;
+	return '';
 }
 
 /**
- * Returns the relative path to where templates are held in the theme.
+ * Returns the relative path where templates are stored in the theme.
  *
  * @since  1.0.0
  * @access public
- * @param  string  $file
+ *
+ * @param  string $file Optional file path to append.
  * @return string
  */
 function path( $file = '' ) {
@@ -78,37 +87,45 @@ function path( $file = '' ) {
 }
 
 /**
- * Returns an array of locations to look for templates.
+ * Returns the locations to search for template files.
  *
- * Note that this won't work with the core WP template hierarchy due to an
- * issue that hasn't been addressed since 2010.
+ * The active theme directory is searched first. When a child theme is active,
+ * the parent theme directory is searched second.
+ *
+ * Note that this does not work with the core WordPress template hierarchy due
+ * to an issue that has not been addressed since 2010.
  *
  * @link   https://core.trac.wordpress.org/ticket/13239
  * @since  1.0.0
  * @access public
+ *
  * @return array
  */
 function locations() {
 
 	$path = ltrim( path(), '/' );
 
-	// Add active theme path.
-	$locations = [ get_stylesheet_directory() . "/{$path}" ];
+	$locations = [
+		trailingslashit( get_stylesheet_directory() ) . $path
+	];
 
-	// If child theme, add parent theme path second.
 	if ( is_child_theme() ) {
-		$locations[] = get_template_directory() . "/{$path}";
+		$locations[] = trailingslashit( get_template_directory() ) . $path;
 	}
 
-	return (array) apply_filters( 'backdrop/template/locations', $locations );
+	return (array) apply_filters(
+		'backdrop/template/locations',
+		$locations
+	);
 }
 
 /**
- * Filters an array of templates and prefixes them with the view path.
+ * Prefixes an array of templates with the configured template path.
  *
  * @since  1.0.0
  * @access public
- * @param  array  $templates
+ *
+ * @param  array $templates Template names.
  * @return array
  */
 function filter_templates( $templates ) {
@@ -116,14 +133,19 @@ function filter_templates( $templates ) {
 	$path = path();
 
 	if ( $path ) {
-		array_walk( $templates, function( &$template, $key ) use ( $path ) {
+		array_walk(
+			$templates,
+			function( &$template ) use ( $path ) {
 
-			$template = ltrim( str_replace( $path, '', $template ), '/' );
+				$template = ltrim(
+					str_replace( $path, '', $template ),
+					'/'
+				);
 
-			$template = "{$path}/{$template}";
-		} );
+				$template = trailingslashit( $path ) . $template;
+			}
+		);
 	}
 
 	return $templates;
 }
- 
