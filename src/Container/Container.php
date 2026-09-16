@@ -141,7 +141,11 @@ class Container implements ContainerContract, ArrayAccess {
 	public function remove( string $abstract ): void {
 
 		if ( $this->has( $abstract ) ) {
-			unset( $this->bindings[ $abstract ], $this->instances[ $abstract ] );
+			unset(
+				$this->bindings[ $abstract ],
+				$this->instances[ $abstract ],
+				$this->extensions[ $abstract ]
+			);
 		}
 	}
 
