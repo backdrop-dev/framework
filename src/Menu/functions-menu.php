@@ -18,27 +18,31 @@ namespace Backdrop\Menu;
  *
  * @since  1.0.0
  * @access public
- * @param  string  $location
+ *
+ * @param  string $location Theme location.
  * @return void
  */
- function display_name( $location ) {
+function display_name( $location ) {
 
-	 echo esc_html( render_name( $location ) );
- }
+	echo esc_html( render_name( $location ) );
+}
 
 /**
- * Function for grabbing a WP nav menu name based on theme location.
+ * Returns the nav menu name by theme location.
  *
  * @since  1.0.0
  * @access public
- * @param  string  $location
+ *
+ * @param  string $location Theme location.
  * @return string
  */
 function render_name( $location ) {
 
 	$locations = get_nav_menu_locations();
 
-	$menu = isset( $locations[ $location ] ) ? wp_get_nav_menu_object( $locations[ $location ] ) : '';
+	$menu = isset( $locations[ $location ] )
+		? wp_get_nav_menu_object( $locations[ $location ] )
+		: '';
 
 	return $menu ? $menu->name : '';
 }
@@ -48,7 +52,8 @@ function render_name( $location ) {
  *
  * @since  1.0.0
  * @access public
- * @param  string  $location
+ *
+ * @param  string $location Theme location.
  * @return void
  */
 function display_location( $location ) {
@@ -57,11 +62,12 @@ function display_location( $location ) {
 }
 
 /**
- * Function for grabbing a WP nav menu theme location name.
+ * Returns the nav menu theme location name.
  *
  * @since  1.0.0
  * @access public
- * @param  string  $location
+ *
+ * @param  string $location Theme location.
  * @return string
  */
 function render_location( $location ) {
