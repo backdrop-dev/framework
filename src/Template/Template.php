@@ -2,9 +2,9 @@
 /**
  * Object template class.
  *
- * This class allows for templates for any object type, which includes `post`,
- * `term`, and `user`.  When viewing a particular single post, term archive, or
- * user/author archive page, the template can be used.
+ * This class allows templates for any object type, including posts, terms,
+ * and users. When viewing a single post, term archive, or user/author archive,
+ * the template can be used.
  *
  * @package   Backdrop
  * @author    Benjamin Lu <benlumia007@gmail.com>
@@ -18,7 +18,7 @@ namespace Backdrop\Template;
 use Backdrop\Contracts\Template\Template as TemplateContract;
 
 /**
- * Creates a new object template.
+ * Object template class.
  *
  * @since  1.0.0
  * @access public
@@ -26,49 +26,54 @@ use Backdrop\Contracts\Template\Template as TemplateContract;
 class Template implements TemplateContract {
 
 	/**
-	 * Type of template. By default, we'll assume this is a post template,
-	 * but theme authors can extend this to term or user templates, for
-	 * example.
+	 * Template type.
+	 *
+	 * By default, templates are post templates. This can be changed to support
+	 * other object types, such as terms or users.
 	 *
 	 * @since  1.0.0
 	 * @access protected
-	 * @var    string
+	 *
+	 * @var string
 	 */
 	protected $type = 'post';
 
 	/**
-	 * Array of subtypes template works with.
+	 * Subtypes supported by the template.
 	 *
 	 * @since  1.0.0
 	 * @access protected
-	 * @var    array
+	 *
+	 * @var array
 	 */
 	protected $subtype = [];
 
 	/**
-	 * Filename of the template.
+	 * Template filename.
 	 *
 	 * @since  1.0.0
 	 * @access protected
-	 * @var    string
+	 *
+	 * @var string
 	 */
 	protected $filename = '';
 
 	/**
-	 * Internationalized text label.
+	 * Internationalized template label.
 	 *
 	 * @since  1.0.0
 	 * @access protected
-	 * @var    string
+	 *
+	 * @var string
 	 */
 	protected $label = '';
 
 	/**
-	 * Magic method to use in case someone tries to output the object as a
-	 * string. We'll just return the name.
+	 * Returns the template filename when the object is converted to a string.
 	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
 	 * @return string
 	 */
 	public function __toString() {
@@ -77,21 +82,25 @@ class Template implements TemplateContract {
 	}
 
 	/**
-	 * Register a new template object.
+	 * Creates a new template object.
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param  string  $filename
-	 * @param  array   $args
+	 *
+	 * @param  string $filename Template filename.
+	 * @param  array  $args     Template arguments.
 	 * @return void
 	 */
 	public function __construct( $filename, array $args = [] ) {
 
 		foreach ( array_keys( get_object_vars( $this ) ) as $key ) {
-
 			if ( isset( $args[ $key ] ) ) {
 				$this->$key = $args[ $key ];
 			}
+		}
+
+		if ( isset( $args['subtype'] ) ) {
+			$this->subtype = (array) $args['subtype'];
 		}
 
 		// Allow `post_types` as an alias for `subtype`.
@@ -103,10 +112,11 @@ class Template implements TemplateContract {
 	}
 
 	/**
-	 * Returns the filename relative to the templates location.
+	 * Returns the filename relative to the template location.
 	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
 	 * @return string
 	 */
 	public function filename() {
@@ -115,10 +125,11 @@ class Template implements TemplateContract {
 	}
 
 	/**
-	 * Returns the internationalized text label for the template.
+	 * Returns the internationalized template label.
 	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
 	 * @return string
 	 */
 	public function label() {
@@ -127,10 +138,12 @@ class Template implements TemplateContract {
 	}
 
 	/**
-	 * Conditional function to check what type of template this is.
+	 * Checks whether the template is of the given type.
 	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
+	 * @param  string $type Template type.
 	 * @return bool
 	 */
 	public function isType( $type ) {
@@ -139,26 +152,35 @@ class Template implements TemplateContract {
 	}
 
 	/**
-	 * Conditional function to check if the template has a specific subtype.
+	 * Checks whether the template supports a specific subtype.
+	 *
+	 * An empty subtype collection means that the template supports all
+	 * subtypes for its template type.
 	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
+	 * @param  string $subtype Template subtype.
 	 * @return bool
 	 */
 	public function hasSubtype( $subtype ) {
 
-		return ! $this->subtype || in_array( $subtype, (array) $this->subtype );
+		return ! $this->subtype
+			|| in_array( $subtype, $this->subtype, true );
 	}
 
 	/**
-	 * Conditional function to check if the template is for a post type.
+	 * Checks whether the template supports a specific post type.
 	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
+	 * @param  string $type Post type.
 	 * @return bool
 	 */
 	public function forPostType( $type ) {
 
-		return $this->isType( 'post' ) && $this->hasSubtype( $type );
+		return $this->isType( 'post' )
+			&& $this->hasSubtype( $type );
 	}
 }
