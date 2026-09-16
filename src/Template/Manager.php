@@ -2,8 +2,8 @@
 /**
  * Template manager.
  *
- * This class is used to boot the templates manager and handle its action and
- * filter hooks.
+ * Handles template registration and the action and filter hooks used by the
+ * template system.
  *
  * @package   Backdrop
  * @author    Benjamin Lu <benlumia007@gmail.com>
@@ -29,16 +29,18 @@ class Manager implements Bootable {
 	 *
 	 * @since  1.0.0
 	 * @access protected
-	 * @var    Templates
+	 *
+	 * @var Templates
 	 */
 	protected $templates;
 
 	/**
-	 * Sets the initial templates collection.
+	 * Creates the template manager.
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param  Templates  $templates
+	 *
+	 * @param  Templates $templates Templates collection.
 	 * @return void
 	 */
 	public function __construct( Templates $templates ) {
@@ -47,59 +49,66 @@ class Manager implements Bootable {
 	}
 
 	/**
-	 * Sets up the templates manager actions and filters.
+	 * Sets up the template manager actions and filters.
 	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
 	 * @return void
 	 */
 	public function boot(): void {
 
-		// Add registration callback.
 		add_action( 'init', [ $this, 'register' ], 95 );
 
-		// Filter theme post templates to add registered templates.
-		add_filter( 'theme_templates', [ $this, 'postTemplates' ], 5, 4 );
+		add_filter(
+			'theme_templates',
+			[ $this, 'postTemplates' ],
+			5,
+			4
+		);
 	}
 
 	/**
-	 * Executes the action hook for themes to register their templates.
-	 * Themes should always register on this hook.
+	 * Fires the template registration action.
 	 *
-	 * Note that this method is `public` because of WP's hook callback
-	 * system. See the implemented contract for publicly-available methods.
+	 * Themes should register their templates on this hook.
+	 *
+	 * This method is public because it is used as a WordPress hook callback.
 	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
 	 * @return void
 	 */
-	public function register() {
+	public function register(): void {
 
-		do_action( 'backdrop/templates/register', $this->templates );
+		do_action(
+			'backdrop/templates/register',
+			$this->templates
+		);
 	}
 
 	/**
-	 * Filter used on `theme_templates` to add custom templates to the template
-	 * drop-down.
+	 * Adds registered templates to the theme template list.
 	 *
-	 * Note that this method is `public` because of WP's hook callback
-	 * system. See the implemented contract for publicly-available methods.
+	 * This method is public because it is used as a WordPress hook callback.
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param  array   $templates
-	 * @param  object  $theme
-	 * @param  object  $post
-	 * @param  string  $post_type
+	 *
+	 * @param  array  $templates Existing theme templates.
+	 * @param  object $theme     Theme object.
+	 * @param  object $post      Post object.
+	 * @param  string $post_type Post type.
 	 * @return array
 	 */
 	public function postTemplates( $templates, $theme, $post, $post_type ) {
 
 		foreach ( $this->templates->all() as $template ) {
-
 			if ( $template->forPostType( $post_type ) ) {
-
-				$templates[ $template->filename() ] = esc_html( $template->label() );
+				$templates[ $template->filename() ] = esc_html(
+					$template->label()
+				);
 			}
 		}
 
