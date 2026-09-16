@@ -18,6 +18,7 @@ namespace Backdrop\Comment;
  *
  * @since  1.0.0
  * @access public
+ *
  * @return array
  */
 function hierarchy() {
@@ -27,8 +28,7 @@ function hierarchy() {
 
 	$hier[] = $type;
 
-	if ( in_array( $type, [ 'pingback', 'trackback'] ) ) {
-
+	if ( in_array( $type, [ 'pingback', 'trackback' ] ) ) {
 		$hier[] = 'ping';
 	}
 
@@ -40,7 +40,8 @@ function hierarchy() {
  *
  * @since  1.0.0
  * @access public
- * @param  array   $args
+ *
+ * @param  array $args Author arguments.
  * @return void
  */
 function display_author( array $args = [] ) {
@@ -53,7 +54,8 @@ function display_author( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array   $args
+ *
+ * @param  array $args Author arguments.
  * @return string
  */
 function render_author( array $args = [] ) {
@@ -75,11 +77,12 @@ function render_author( array $args = [] ) {
 }
 
 /**
- * Displays the comment author link HTML.
+ * Outputs the comment author link HTML.
  *
  * @since  1.0.0
  * @access public
- * @param  array   $args
+ *
+ * @param  array $args Author link arguments.
  * @return void
  */
 function display_author_link( array $args = [] ) {
@@ -92,7 +95,8 @@ function display_author_link( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array   $args
+ *
+ * @param  array $args Author link arguments.
  * @return string
  */
 function render_author_link( array $args = [] ) {
@@ -126,7 +130,8 @@ function render_author_link( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array   $args
+ *
+ * @param  array $args Permalink arguments.
  * @return void
  */
 function display_permalink( array $args = [] ) {
@@ -139,7 +144,8 @@ function display_permalink( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array   $args
+ *
+ * @param  array $args Permalink arguments.
  * @return string
  */
 function render_permalink( array $args = [] ) {
@@ -168,7 +174,8 @@ function render_permalink( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array   $args
+ *
+ * @param  array $args Date arguments.
  * @return void
  */
 function display_date( array $args = [] ) {
@@ -181,7 +188,8 @@ function display_date( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array   $args
+ *
+ * @param  array $args Date arguments.
  * @return string
  */
 function render_date( array $args = [] ) {
@@ -193,8 +201,6 @@ function render_date( array $args = [] ) {
 		'before' => '',
 		'after'  => ''
 	] );
-
-	$url = get_comment_link();
 
 	$html = sprintf(
 		'<time class="%s" datetime="%s">%s</time>',
@@ -211,7 +217,8 @@ function render_date( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array   $args
+ *
+ * @param  array $args Time arguments.
  * @return void
  */
 function display_time( array $args = [] ) {
@@ -224,7 +231,8 @@ function display_time( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array   $args
+ *
+ * @param  array $args Time arguments.
  * @return string
  */
 function render_time( array $args = [] ) {
@@ -236,8 +244,6 @@ function render_time( array $args = [] ) {
 		'before' => '',
 		'after'  => ''
 	] );
-
-	$url = get_comment_link();
 
 	$html = sprintf(
 		'<time class="%s" datetime="%s">%s</time>',
@@ -254,7 +260,8 @@ function render_time( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array   $args
+ *
+ * @param  array $args Edit link arguments.
  * @return void
  */
 function display_edit_link( array $args = [] ) {
@@ -267,7 +274,8 @@ function display_edit_link( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array   $args
+ *
+ * @param  array $args Edit link arguments.
  * @return string
  */
 function render_edit_link( array $args = [] ) {
@@ -283,7 +291,6 @@ function render_edit_link( array $args = [] ) {
 	$url  = get_edit_comment_link();
 
 	if ( $url ) {
-
 		$html = sprintf(
 			'<a class="%s" href="%s">%s</a>',
 			esc_attr( $args['class'] ),
@@ -302,7 +309,8 @@ function render_edit_link( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array   $args
+ *
+ * @param  array $args Reply link arguments.
  * @return void
  */
 function display_reply_link( array $args = [] ) {
@@ -311,19 +319,20 @@ function display_reply_link( array $args = [] ) {
 }
 
 /**
- * Returns the comment reply link HTML.  Note that WP's `comment_reply_link()`
- * doesn't work outside of `wp_list_comments()` without passing in the proper
- * arguments (it isn't meant to).  This function is just a wrapper for
- * `get_comment_reply_link()`, which adds in the arguments automatically.
+ * Returns the comment reply link HTML.
+ *
+ * WordPress' `comment_reply_link()` doesn't work outside of
+ * `wp_list_comments()` without passing the proper arguments. This function
+ * wraps `get_comment_reply_link()` and provides those arguments automatically.
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args Reply link arguments.
  * @return string
  */
 function render_reply_link( array $args = [] ) {
 
-	// Array of comment types that are not allowed to have replies.
 	$disallowed = [
 		'pingback',
 		'trackback'
@@ -349,7 +358,6 @@ function render_reply_link( array $args = [] ) {
 	$html = get_comment_reply_link( $args );
 
 	if ( $html ) {
-
 		$html = preg_replace(
 			"/class=(['\"]).+?(['\"])/i",
 			'class=$1' . esc_attr( $args['class'] ) . ' comment-reply-link$2',
@@ -368,7 +376,8 @@ function render_reply_link( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array   $args
+ *
+ * @param  array $args Parent link arguments.
  * @return void
  */
 function display_parent_link( array $args = [] ) {
@@ -381,14 +390,15 @@ function display_parent_link( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array   $args
+ *
+ * @param  array $args Parent link arguments.
  * @return string
  */
 function render_parent_link( $args = [] ) {
 
 	$args = wp_parse_args( $args, [
-		'text'   => '%s', // Defaults to parent comment author.
-		'depth'  => 2,    // At what level should the link show.
+		'text'   => '%s',
+		'depth'  => 2,
 		'class'  => 'comment-parent-link',
 		'before' => '',
 		'after'  => ''
@@ -397,13 +407,11 @@ function render_parent_link( $args = [] ) {
 	$html = '';
 
 	// Only display the link if the current comment is greater than or equal
-	// to the depth requested.
+	// to the requested depth.
 	if ( $args['depth'] <= $GLOBALS['comment_depth'] ) {
-
 		$parent = get_comment()->comment_parent;
 
 		if ( 0 < $parent ) {
-
 			$url  = get_comment_link( $parent );
 			$text = sprintf( $args['text'], get_comment_author( $parent ) );
 
@@ -422,14 +430,16 @@ function render_parent_link( $args = [] ) {
 }
 
 /**
- * Conditional function to check if a comment is approved.
+ * Checks whether a comment is approved.
  *
  * @since  1.0.0
  * @access public
- * @param  \WP_Comment|int  Comment object or ID.
+ *
+ * @param  \WP_Comment|int|null $comment Comment object or ID.
  * @return bool
  */
 function is_approved( $comment = null ) {
+
 	$comment = get_comment( $comment );
 
 	return 'approved' === wp_get_comment_status( $comment->ID );
