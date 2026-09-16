@@ -14,31 +14,40 @@
 namespace Backdrop\Theme;
 
 /**
- * This is a wrapper function for core WP's `get_theme_mod()` function.  Core
- * doesn't provide a filter hook for the default value (useful for child themes).
- * The purpose of this function is to provide that additional filter hook.  To
- * filter the final theme mod, use the core `theme_mod_{$name}` filter hook.
+ * Returns a theme modification value.
+ *
+ * This is a wrapper around WordPress' `get_theme_mod()` function that provides
+ * an additional filter for the default value. This is useful for child themes
+ * that need to override defaults.
+ *
+ * To filter the final theme modification value, use the core
+ * `theme_mod_{$name}` filter hook.
  *
  * @since  1.0.0
  * @access public
- * @param  string  $name
- * @param  mixed   $default
+ *
+ * @param  string $name    Theme modification name.
+ * @param  mixed  $default Default value.
  * @return mixed
  */
 function mod( $name, $default = false ) {
 
 	return get_theme_mod(
 		$name,
-		apply_filters( "backdrop/theme/mod/{$name}/default", $default )
+		apply_filters(
+			"backdrop/theme/mod/{$name}/default",
+			$default
+		)
 	);
 }
 
 /**
- * Outputs the [parent] theme link HTML.
+ * Outputs the parent theme link HTML.
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args Theme link arguments.
  * @return void
  */
 function display_link( array $args = [] ) {
@@ -47,11 +56,12 @@ function display_link( array $args = [] ) {
 }
 
 /**
- * Returns the [parent] theme link HTML.
+ * Returns the parent theme link HTML.
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args Theme link arguments.
  * @return string
  */
 function render_link( array $args = [] ) {
@@ -90,7 +100,8 @@ function render_link( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args Child theme link arguments.
  * @return void
  */
 function display_child_link( array $args = [] ) {
@@ -101,9 +112,12 @@ function display_child_link( array $args = [] ) {
 /**
  * Returns the child theme link HTML.
  *
+ * Returns an empty string when a child theme is not active.
+ *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args Child theme link arguments.
  * @return string
  */
 function render_child_link( array $args = [] ) {
