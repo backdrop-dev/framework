@@ -15,7 +15,6 @@
 
 namespace Backdrop;
 
-use WP_User;
 use Backdrop\Util\Title;
 use function Backdrop\Template\locate as locate_template;
 
