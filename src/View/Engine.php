@@ -1,10 +1,10 @@
 <?php
 /**
- * Engine class.
+ * View engine class.
  *
- * A wrapper around the `View` class with methods for quickly working with views
- * without having to manually instantiate a view object.  It's also useful
- * because it passes an `$engine` variable to all views.
+ * Provides a wrapper around the View contract for quickly creating, displaying,
+ * and rendering views without manually resolving view objects. The engine is
+ * also passed to each view so that views can render other views directly.
  *
  * @package   Backdrop
  * @author    Benjamin Lu <benlumia007@gmail.com>
@@ -20,7 +20,7 @@ use Backdrop\Proxies\App;
 use Backdrop\Tools\Collection;
 
 /**
- * Engine class.
+ * View engine class.
  *
  * @since  1.0.0
  * @access public
@@ -28,13 +28,14 @@ use Backdrop\Tools\Collection;
 class Engine {
 
 	/**
-	 * Returns a View object.
+	 * Creates and returns a view object.
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param  string            $name
-	 * @param  array|string      $slugs
-	 * @param  array|Collection  $data
+	 *
+	 * @param  string           $name  View name.
+	 * @param  array|string     $slugs Optional view slugs.
+	 * @param  array|Collection $data  Data passed to the view.
 	 * @return View
 	 */
 	public function view( $name, $slugs = [], $data = [] ) {
@@ -43,21 +44,25 @@ class Engine {
 			$data = new Collection( (array) $data );
 		}
 
-		// Pass the engine itself along so that it can be used directly
-		// in views.
+		// Pass the engine to the view so that it can be used to render
+		// additional views.
 		$data->add( 'engine', $this );
 
-		return App::resolve( View::class, compact( 'name', 'slugs', 'data' ) );
+		return App::resolve(
+			View::class,
+			compact( 'name', 'slugs', 'data' )
+		);
 	}
 
 	/**
-	 * Outputs a view template.
+	 * Outputs a view.
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param  string            $name
-	 * @param  array|string      $slugs
-	 * @param  array|Collection  $data
+	 *
+	 * @param  string           $name  View name.
+	 * @param  array|string     $slugs Optional view slugs.
+	 * @param  array|Collection $data  Data passed to the view.
 	 * @return void
 	 */
 	public function display( $name, $slugs = [], $data = [] ) {
@@ -66,13 +71,14 @@ class Engine {
 	}
 
 	/**
-	 * Returns a view template as a string.
+	 * Renders and returns a view as a string.
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param  string            $name
-	 * @param  array|string      $slugs
-	 * @param  array|Collection  $data
+	 *
+	 * @param  string           $name  View name.
+	 * @param  array|string     $slugs Optional view slugs.
+	 * @param  array|Collection $data  Data passed to the view.
 	 * @return string
 	 */
 	public function render( $name, $slugs = [], $data = [] ) {
