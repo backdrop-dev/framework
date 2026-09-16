@@ -2,10 +2,7 @@
 /**
  * Pagination interface.
  *
- * Defines the interface that pagination classes must use.
- *
- * Compatible with PHP 8.0+ (uses return type declarations).
- * - `self` and interface return types supported since PHP 7.0
+ * Defines the contract that pagination classes must implement.
  *
  * @package   Backdrop
  * @author    Benjamin Lu <benlumia007@gmail.com>
@@ -16,8 +13,8 @@
 
 namespace Backdrop\Contracts\Pagination;
 
-use Backdrop\Contracts\Renderable;
 use Backdrop\Contracts\Displayable;
+use Backdrop\Contracts\Renderable;
 
 /**
  * Pagination interface.
@@ -30,11 +27,9 @@ interface Pagination extends Renderable, Displayable {
 	/**
 	 * Builds the pagination instance.
 	 *
-	 * Compatible with PHP 8.0+ (typed return value).
-	 * - Interface return types supported since PHP 7.0
-	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
 	 * @return Pagination
 	 */
 	public function make(): Pagination;
