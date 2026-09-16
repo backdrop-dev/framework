@@ -140,6 +140,8 @@ class Container implements ContainerContract, ArrayAccess {
 	 */
 	public function remove( string $abstract ): void {
 
+		$abstract = $this->getAbstract( $abstract );
+
 		if ( $this->has( $abstract ) ) {
 			unset(
 				$this->bindings[ $abstract ],
