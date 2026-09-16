@@ -581,12 +581,15 @@ function post_class_filter( $classes, $class, $post_id ) {
 
 			$terms = get_the_terms( $post_id, $taxonomy );
 
-			foreach ( (array) $terms as $term ) {
+			if ( $terms && ! is_wp_error( $terms ) ) {
 
-				$name = 'post_tag' === $taxonomy ? 'tag' : $taxonomy;
-				$slug = sanitize_html_class( $term->slug, $term->term_id );
+				foreach ( $terms as $term ) {
 
-				$classes[] = sprintf( 'entry-%s-%s', $name, $slug );
+					$name = 'post_tag' === $taxonomy ? 'tag' : $taxonomy;
+					$slug = sanitize_html_class( $term->slug, $term->term_id );
+
+					$classes[] = sprintf( 'entry-%s-%s', $name, $slug );
+				}
 			}
 		}
 	}
