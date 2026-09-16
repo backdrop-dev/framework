@@ -560,7 +560,7 @@ function post_class_filter( $classes, $class, $post_id ) {
 	// Post field classes.
 	$classes[] = sprintf( 'entry-type-%s', $post_type );
 
-	// Add post formt class.
+	// Add post format class.
 	if ( post_type_supports( $post_type, 'post-formats' ) ) {
 
 		$format = \get_post_format( $post_id );
