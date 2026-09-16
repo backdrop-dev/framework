@@ -3,13 +3,13 @@
  * Customize service provider.
  *
  * This is the service provider for the customization API integration. It binds
- * an instance of the frameworks `Customize` class to the container.
+ * an instance of the framework's `Component` class to the container.
  *
- * @package   Backdrop Customize
+ * @package   Backdrop
  * @author    Benjamin Lu <benlumia007@gmail.com>
  * @copyright 2019 Benjamin Lu
  * @license   https://www.gnu.org/licenses/gpl-2.0.html
- * @link      https://github.com/backdrop-dev/customize
+ * @link      https://github.com/backdrop-dev/framework
  */
 
 namespace Backdrop\Customize;
@@ -17,27 +17,36 @@ namespace Backdrop\Customize;
 use Backdrop\Core\ServiceProvider;
 
 /**
- * Customize provider.
+ * Customize service provider.
+ *
+ * @since  1.0.0
+ * @access public
  */
 class Provider extends ServiceProvider {
 
-    /**
-     * Registration callback that adds a single instance of the customize
-     * object to the container.
-     *
-     * @return void
-     */
-    public function register(): void {
-        $this->app->singleton( Component::class );
-    }
+	/**
+	 * Register the customize component with the container.
+	 *
+	 * @since  1.0.0
+	 * @access public
+	 *
+	 * @return void
+	 */
+	public function register(): void {
 
-    /**
-     * Boots the customize component by firing its hooks in the `boot()` method.
-     *
-     * @return void
-     */
-    public function boot(): void {
-        $this->app->resolve( Component::class )->boot();
-    }
+		$this->app->singleton( Component::class );
+	}
 
+	/**
+	 * Boot the customize component.
+	 *
+	 * @since  1.0.0
+	 * @access public
+	 *
+	 * @return void
+	 */
+	public function boot(): void {
+
+		$this->app->resolve( Component::class )->boot();
+	}
 }
