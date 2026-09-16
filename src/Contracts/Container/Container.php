@@ -3,7 +3,7 @@
  * Container contract.
  *
  * Container classes should be used for storing, retrieving, and resolving
- * classes/objects passed into them.
+ * classes, objects, and values passed into them.
  *
  * @package   Backdrop
  * @author    Benjamin Lu <benlumia007@gmail.com>
@@ -25,16 +25,18 @@ use Closure;
 interface Container {
 
 	/**
-	 * Add a binding. The abstract should be a key, abstract class name, or
-	 * interface name. The concrete should be the concrete implementation of
-	 * the abstract.
+	 * Add a binding.
+	 *
+	 * The abstract should be a key, abstract class name, or interface name.
+	 * The concrete should be the concrete implementation of the abstract. If
+	 * no concrete is given, the abstract is used as the concrete.
 	 *
 	 * @since  1.0.0
 	 * @access public
 	 *
 	 * @param  string $abstract The key, interface, or abstract class name.
 	 * @param  mixed  $concrete The concrete implementation.
-	 * @param  bool   $shared   Whether the binding is shared (singleton).
+	 * @param  bool   $shared   Whether the binding is shared.
 	 * @return void
 	 */
 	public function bind( string $abstract, $concrete = null, bool $shared = false ): void;
@@ -47,7 +49,7 @@ interface Container {
 	 *
 	 * @param  string $abstract The key, interface, or abstract class name.
 	 * @param  mixed  $concrete The concrete implementation.
-	 * @param  bool   $shared   Whether the binding is shared (singleton).
+	 * @param  bool   $shared   Whether the binding is shared.
 	 * @return void
 	 */
 	public function add( string $abstract, $concrete = null, bool $shared = false ): void;
@@ -78,12 +80,8 @@ interface Container {
 	/**
 	 * Alias for `resolve()`.
 	 *
-	 * Follows the PSR-11 standard.
-	 *
 	 * @since  1.0.0
 	 * @access public
-	 *
-	 * @link https://www.php-fig.org/psr/psr-11/
 	 *
 	 * @param  string $abstract The key, interface, or abstract class name.
 	 * @return mixed
@@ -91,14 +89,10 @@ interface Container {
 	public function get( string $abstract );
 
 	/**
-	 * Check if a binding exists.
-	 *
-	 * Follows the PSR-11 standard.
+	 * Check if a binding or instance exists.
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 *
-	 * @link https://www.php-fig.org/psr/psr-11/
 	 *
 	 * @param  string $abstract The key, interface, or abstract class name.
 	 * @return bool
@@ -118,19 +112,22 @@ interface Container {
 	public function singleton( string $abstract, ?object $concrete = null ): void;
 
 	/**
-	 * Add an existing instance.
+	 * Add an existing instance or value.
 	 *
 	 * @since  1.0.0
 	 * @access public
 	 *
 	 * @param  string $abstract The key, interface, or abstract class name.
-	 * @param  mixed  $instance The existing instance to register.
+	 * @param  mixed  $instance The existing instance or value to register.
 	 * @return mixed
 	 */
 	public function instance( string $abstract, $instance );
 
 	/**
 	 * Extend a binding.
+	 *
+	 * The extension closure receives the resolved value and container and
+	 * should return the extended or decorated value.
 	 *
 	 * @since  1.0.0
 	 * @access public
