@@ -2,8 +2,7 @@
 /**
  * Object templates service provider.
  *
- * This is the service provider for the object templates system, which binds an
- * empty collection to the container that can later be used to register templates.
+ * Registers and boots the object templates manager.
  *
  * @package   Backdrop
  * @author    Benjamin Lu <benlumia007@gmail.com>
@@ -17,7 +16,7 @@ namespace Backdrop\Template;
 use Backdrop\Core\ServiceProvider;
 
 /**
- * Object templates provider class.
+ * Object templates service provider.
  *
  * @since  1.0.0
  * @access public
@@ -25,24 +24,31 @@ use Backdrop\Core\ServiceProvider;
 class TemplatesServiceProvider extends ServiceProvider {
 
 	/**
-	 * Registers the templates collection and manager.
+	 * Registers the templates manager with the container.
 	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
 	 * @return void
 	 */
 	public function register(): void {
 
-		$this->app->singleton( Manager::class );
+		$this->app->singleton(
+			Manager::class
+		);
 
-		$this->app->alias( Manager::class, 'template/manager' );
+		$this->app->alias(
+			Manager::class,
+			'template/manager'
+		);
 	}
 
 	/**
-	 * Boots the manager by firing its hooks in the `boot()` method.
+	 * Boots the templates manager.
 	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
 	 * @return void
 	 */
 	public function boot(): void {
