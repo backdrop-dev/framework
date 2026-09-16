@@ -2,8 +2,8 @@
 /**
  * Template hierarchy service provider.
  *
- * This is the service provider for the template hierarchy. It's used to register
- * the template hierarchy with the container and boot it when needed.
+ * Registers the template hierarchy with the application container and boots
+ * the hierarchy when the application is booted.
  *
  * @package   Backdrop
  * @author    Benjamin Lu <benlumia007@gmail.com>
@@ -18,7 +18,7 @@ use Backdrop\Contracts\Template\Hierarchy as TemplateHierarchy;
 use Backdrop\Core\ServiceProvider;
 
 /**
- * Template hierarchy provider class.
+ * Template hierarchy service provider.
  *
  * @since  1.0.0
  * @access public
@@ -26,25 +26,32 @@ use Backdrop\Core\ServiceProvider;
 class HierarchyServiceProvider extends ServiceProvider {
 
 	/**
-	 * Registration callback that adds a single instance of the template
-	 * hierarchy to the container.
+	 * Registers the template hierarchy with the container.
 	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
 	 * @return void
 	 */
 	public function register(): void {
 
-		$this->app->singleton( TemplateHierarchy::class, Hierarchy::class );
+		$this->app->singleton(
+			TemplateHierarchy::class,
+			Hierarchy::class
+		);
 
-		$this->app->alias( TemplateHierarchy::class, 'template/hierarchy' );
+		$this->app->alias(
+			TemplateHierarchy::class,
+			'template/hierarchy'
+		);
 	}
 
 	/**
-	 * Boots the hierarchy by firing its hooks in the `boot()` method.
+	 * Boots the template hierarchy.
 	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
 	 * @return void
 	 */
 	public function boot(): void {
