@@ -2,20 +2,20 @@
 /**
  * View contract.
  *
- * View classes represent a template partial, generally speaking. Their purpose
- * should be to find a template file and render or display the output.
+ * Defines the interface for view objects that locate, render, and display
+ * template files.
  *
  * @package   Backdrop
  * @author    Benjamin Lu <benlumia007@gmail.com>
  * @copyright 2019 Benjamin Lu
- * @link      https://github.com/backdrop-dev/framework
  * @license   https://www.gnu.org/licenses/gpl-2.0.html
+ * @link      https://github.com/backdrop-dev/framework
  */
 
 namespace Backdrop\Contracts\View;
 
-use Backdrop\Contracts\Renderable;
 use Backdrop\Contracts\Displayable;
+use Backdrop\Contracts\Renderable;
 
 /**
  * View interface.
@@ -26,10 +26,11 @@ use Backdrop\Contracts\Displayable;
 interface View extends Renderable, Displayable {
 
 	/**
-	 * Returns the array of slugs.
+	 * Returns the view slugs.
 	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
 	 * @return array
 	 */
 	public function slugs();
@@ -39,6 +40,7 @@ interface View extends Renderable, Displayable {
 	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
 	 * @return string
 	 */
 	public function template();
