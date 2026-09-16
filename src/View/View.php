@@ -2,15 +2,13 @@
 /**
  * View class.
  *
- * This file maintains the `View` class.  It's used for setting up and rendering
- * theme template files.  Views are a bit like a suped-up version of the core
- * WordPress `get_template_part()` function.  However, it allows you to build a
- * hierarchy of potential templates as well as pass in any arbitrary data to your
- * templates for use.
+ * This file maintains the View class, which is used for locating and rendering
+ * theme template files. Views provide functionality similar to WordPress'
+ * `get_template_part()` while supporting template hierarchies and arbitrary
+ * data passed directly to templates.
  *
- * Every effort has been made to make this compliant with WordPress.org theme
- * directory guidelines by providing compatible action hooks with WordPress core
- * `get_template_part()` and other `get_*()` functions for templates.
+ * Compatibility hooks are provided for WordPress core template functions such
+ * as `get_template_part()`, `get_header()`, `get_footer()`, and `get_sidebar()`.
  *
  * @package   Backdrop
  * @author    Benjamin Lu <benlumia007@gmail.com>
@@ -34,52 +32,61 @@ use function Backdrop\Template\locate as locate_template;
 class View implements ViewContract {
 
 	/**
-	 * Name of the view. This is primarily used as the folder name. However,
-	 * it can also be the filename as the final fallback if no folder exists.
+	 * View name.
+	 *
+	 * This is primarily used as the view directory name, but it can also be
+	 * used as the final fallback filename.
 	 *
 	 * @since  1.0.0
 	 * @access protected
-	 * @var    string
+	 *
+	 * @var string
 	 */
 	protected $name = '';
 
 	/**
-	 * Array of slugs to look for. This creates the hierarchy based on the
-	 * `$name` property (e.g., `{$name}/{$slug}.php`). Slugs are used in
-	 * the order that they are set.
+	 * View slugs.
+	 *
+	 * These are used to build the template hierarchy based on the view name,
+	 * such as `{$name}/{$slug}.php`. Slugs are checked in the order in which
+	 * they are stored.
 	 *
 	 * @since  1.0.0
 	 * @access protected
-	 * @var    string
+	 *
+	 * @var array
 	 */
 	protected $slugs = [];
 
 	/**
-	 * An array of data that is passed into the view template.
+	 * Data passed to the view template.
 	 *
 	 * @since  1.0.0
 	 * @access protected
-	 * @var    array
+	 *
+	 * @var Collection|null
 	 */
-	protected $data = [];
+	protected $data = null;
 
 	/**
-	 * The template filename.
+	 * Located template filename.
 	 *
 	 * @since  1.0.0
 	 * @access protected
-	 * @var    string
+	 *
+	 * @var string|null
 	 */
 	protected $template = null;
 
 	/**
-	 * Sets up the view properties.
+	 * Creates a new view.
 	 *
 	 * @since  1.0.0
-	 * @access public 
-	 * @param  array   $slugs
-	 * @param  object  $data
-	 * @return object
+	 * @access public
+	 *
+	 * @param string          $name  View name.
+	 * @param array|string    $slugs Optional view slugs.
+	 * @param Collection|null $data  Data passed to the view.
 	 */
 	public function __construct( $name, $slugs = [], Collection $data = null ) {
 
@@ -87,17 +94,27 @@ class View implements ViewContract {
 		$this->slugs = (array) $slugs;
 		$this->data  = $data;
 
-		// Apply filters after all the properties have been assigned.
-		// This way, the full object is available to filters.
-		$this->slugs = apply_filters( "backdrop/view/{$this->name}/slugs", $this->slugs, $this );
-		$this->data  = apply_filters( "backdrop/view/{$this->name}/data",  $this->data,  $this );
+		// Apply filters after all properties have been assigned so that the
+		// complete view object is available to callbacks.
+		$this->slugs = apply_filters(
+			"backdrop/view/{$this->name}/slugs",
+			$this->slugs,
+			$this
+		);
+
+		$this->data = apply_filters(
+			"backdrop/view/{$this->name}/data",
+			$this->data,
+			$this
+		);
 	}
 
 	/**
-	 * When attempting to use the object as a string, return the template output.
+	 * Returns the rendered view when the object is used as a string.
 	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
 	 * @return string
 	 */
 	public function __toString() {
@@ -106,10 +123,11 @@ class View implements ViewContract {
 	}
 
 	/**
-	 * Returns the array of slugs.
+	 * Returns the view slugs.
 	 *
 	 * @since  5.1.0
 	 * @access public
+	 *
 	 * @return array
 	 */
 	public function slugs() {
@@ -118,39 +136,43 @@ class View implements ViewContract {
 	}
 
 	/**
-	 * Uses the array of template slugs to build a hierarchy of potential
-	 * templates that can be used.
+	 * Builds the template hierarchy.
 	 *
 	 * @since  1.0.0
 	 * @access protected
+	 *
 	 * @return array
 	 */
 	protected function hierarchy() {
 
-		// Uses the slugs to build a hierarchy.
-		foreach ( $this->slugs as $slug ) {
+		$templates = [];
 
+		// Build the template hierarchy from the configured slugs.
+		foreach ( $this->slugs as $slug ) {
 			$templates[] = "{$this->name}/{$slug}.php";
 		}
 
-		// Add in a `default.php` template.
-		if ( ! in_array( 'default', $this->slugs ) ) {
-
+		// Add the default template unless it is already represented by a slug.
+		if ( ! in_array( 'default', $this->slugs, true ) ) {
 			$templates[] = "{$this->name}/default.php";
 		}
 
-		// Fallback to `{$name}.php` as a last resort.
+		// Fall back to `{$name}.php` as a last resort.
 		$templates[] = "{$this->name}.php";
 
-		// Allow developers to overwrite the hierarchy.
-		return apply_filters( "backdrop/view/{$this->name}/hierarchy", $templates, $this->slugs );
+		return apply_filters(
+			"backdrop/view/{$this->name}/hierarchy",
+			$templates,
+			$this->slugs
+		);
 	}
 
 	/**
-	 * Locates the template.
+	 * Locates the view template.
 	 *
 	 * @since  1.0.0
 	 * @access protected
+	 *
 	 * @return string
 	 */
 	protected function locate() {
@@ -161,8 +183,11 @@ class View implements ViewContract {
 	/**
 	 * Returns the located template.
 	 *
+	 * The template location is cached after the first lookup.
+	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
 	 * @return string
 	 */
 	public function template() {
@@ -175,86 +200,99 @@ class View implements ViewContract {
 	}
 
 	/**
-	 * Sets up data to be passed to the template and renders it.
+	 * Outputs the view template.
 	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
 	 * @return void
 	 */
 	public function display(): void {
 
-		// Compatibility with core WP's template parts.
+		// Fire compatibility hooks for WordPress template functions.
 		$this->templatePartCompat();
 
 		if ( $this->template() ) {
 
-			// Maybe remove core WP's `prepend_attachment`.
+			// Maybe remove WordPress' attachment content filters.
 			$this->maybeShiftAttachment();
 
-			// Extract the data into individual variables. Each of
-			// these variables will be available in the template.
+			// Extract the collection so each item is available as an
+			// individual variable within the template.
 			if ( $this->data instanceof Collection ) {
 				extract( $this->data->all() );
 			}
 
-			// Make `$data` and `$view` variables available to templates.
+			// Make the complete data collection and view object available.
 			$data = $this->data;
 			$view = $this;
 
-			// Load the template.
 			include( $this->template() );
 		}
 	}
 
 	/**
-	 * Returns the template output as a string.
+	 * Renders and returns the view as a string.
 	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
 	 * @return string
 	 */
 	public function render(): string {
 
 		ob_start();
+
 		$this->display();
+
 		return ob_get_clean();
 	}
 
 	/**
-	 * Fires the core WP action hooks for template parts.
+	 * Fires WordPress-compatible template part action hooks.
 	 *
-	 * Note that WP refers to `$name` and `$slug` differently than we do.
-	 * They're the opposite of what we use in our function.
+	 * WordPress uses the terms `$slug` and `$name` differently from this view
+	 * system. The first view slug is therefore used as the WordPress template
+	 * part name when firing compatibility hooks.
 	 *
 	 * @since  1.0.0
 	 * @access protected
+	 *
 	 * @return void
 	 */
 	protected function templatePartCompat() {
 
-		// The slug is a string in WP and we have an array. So, we're
-		// just going to use the first item of the array in this case.
-		$slug = $this->slugs ? reset( $this->slugs ) : null;
+		$slug = $this->slugs
+			? reset( $this->slugs )
+			: null;
 
-		// Compat with `get_header|footer|sidebar()`.
-		if ( in_array( $this->name, [ 'header', 'footer', 'sidebar' ] ) ) {
+		// Compatibility with `get_header()`, `get_footer()`, and
+		// `get_sidebar()`.
+		if ( in_array( $this->name, [ 'header', 'footer', 'sidebar' ], true ) ) {
 
-			do_action( "get_{$this->name}", $slug );
+			do_action(
+				"get_{$this->name}",
+				$slug
+			);
 
-		// Compat with `get_template_part()`.
+		// Compatibility with `get_template_part()`.
 		} else {
 
-			do_action( "get_template_part_{$this->name}", $this->name, $slug );
+			do_action(
+				"get_template_part_{$this->name}",
+				$this->name,
+				$slug
+			);
 		}
 	}
 
 	/**
-	 * Removes core WP's `prepend_attachment` filter whenever a theme is
-	 * building custom attachment templates. We'll assume that the theme
-	 * author will handle the appropriate output in the template itself.
+	 * Removes WordPress attachment content filters when a theme provides
+	 * custom attachment output.
 	 *
 	 * @since  1.0.0
 	 * @access protected
+	 *
 	 * @return void
 	 */
 	protected function maybeShiftAttachment() {
@@ -263,14 +301,28 @@ class View implements ViewContract {
 			return;
 		}
 
-		if ( in_array( $this->name, [ 'entry', 'post', 'entry/archive', 'entry/single' ] ) ) {
+		if ( in_array(
+			$this->name,
+			[ 'entry', 'post', 'entry/archive', 'entry/single' ],
+			true
+		) ) {
 
-			remove_filter( 'the_content', 'prepend_attachment' );
+			remove_filter(
+				'the_content',
+				'prepend_attachment'
+			);
 
 		} elseif ( 'embed' === $this->name ) {
 
-			remove_filter( 'the_content',       'prepend_attachment'          );
-			remove_filter( 'the_excerpt_embed', 'wp_embed_excerpt_attachment' );
+			remove_filter(
+				'the_content',
+				'prepend_attachment'
+			);
+
+			remove_filter(
+				'the_excerpt_embed',
+				'wp_embed_excerpt_attachment'
+			);
 		}
 	}
 }
