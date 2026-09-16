@@ -18,7 +18,8 @@ namespace Backdrop\Site;
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args Site title arguments.
  * @return void
  */
 function display_title( array $args = [] ) {
@@ -31,7 +32,8 @@ function display_title( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args Site title arguments.
  * @return string
  */
 function render_title( array $args = [] ) {
@@ -46,7 +48,6 @@ function render_title( array $args = [] ) {
 	$title = get_bloginfo( 'name', 'display' );
 
 	if ( $title ) {
-
 		$link = render_home_link( [
 			'text'  => $title,
 			'class' => $args['link_class']
@@ -68,7 +69,8 @@ function render_title( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args Site description arguments.
  * @return void
  */
 function display_description( array $args = [] ) {
@@ -81,21 +83,21 @@ function display_description( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args Site description arguments.
  * @return string
  */
 function render_description( array $args = [] ) {
 
 	$args = wp_parse_args( $args, [
 		'class' => 'site-header__description',
-		'tag'   => 'div',
+		'tag'   => 'div'
 	] );
 
 	$html = '';
 	$desc = get_bloginfo( 'description', 'display' );
 
 	if ( $desc ) {
-
 		$html = sprintf(
 			'<%1$s class="%2$s">%3$s</%1$s>',
 			tag_escape( $args['tag'] ),
@@ -112,7 +114,8 @@ function render_description( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args Site link arguments.
  * @return void
  */
 function display_site_link( array $args = [] ): void {
@@ -121,40 +124,44 @@ function display_site_link( array $args = [] ): void {
 }
 
 /**
- * Return the site link HTML.
+ * Returns the site link HTML.
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args Site link arguments.
  * @return string
  */
 function render_site_link( array $args = [] ): string {
 
-	$args = wp_parse_args(
-		$args,
-		[
-			'text'   => '%s',
-			'class'  => 'site-link',
-			'before' => '',
-			'after'  => '',
-		]
-	);
+	$args = wp_parse_args( $args, [
+		'text'   => '%s',
+		'class'  => 'site-link',
+		'before' => '',
+		'after'  => ''
+	] );
+
 	$html = sprintf(
 		'<a class="%1$s" href="%2$s">%3$s</a>',
 		esc_attr( $args['class'] ),
 		esc_url( home_url( '/' ) ),
-		sprintf( $args['text'], get_bloginfo( 'name' ) )
+		sprintf( $args['text'], get_bloginfo( 'name', 'display' ) )
 	);
-	return apply_filters( 'backdrop/render/site/link', $html );
+
+	return apply_filters(
+		'backdrop/render/site/link',
+		$args['before'] . $html . $args['after']
+	);
 }
 
 /**
- * Return the site link HTML.
+ * Outputs the theme link HTML.
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
- * @return string
+ *
+ * @param  array $args Theme link arguments.
+ * @return void
  */
 function display_theme_link( array $args = [] ): void {
 
@@ -162,15 +169,16 @@ function display_theme_link( array $args = [] ): void {
 }
 
 /**
- * Returns the Theme Link.
+ * Returns the theme link HTML.
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
- * @return void
+ *
+ * @param  array $args Theme link arguments.
+ * @return string
  */
 function render_theme_link( array $args = [] ): string {
-    
+
 	$args = wp_parse_args( $args, [
 		'class'  => 'theme-link',
 		'before' => '',
@@ -194,15 +202,19 @@ function render_theme_link( array $args = [] ): string {
 		wp_kses( $theme->display( 'Name' ), $allowed )
 	);
 
-	return apply_filters( 'backdrop/render/theme/link', $args['before'] . $html . $args['after'] );
+	return apply_filters(
+		'backdrop/render/theme/link',
+		$args['before'] . $html . $args['after']
+	);
 }
 
 /**
- * Outputs the site link HTML.
+ * Outputs the home link HTML.
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args Home link arguments.
  * @return void
  */
 function display_home_link( array $args = [] ) {
@@ -211,11 +223,12 @@ function display_home_link( array $args = [] ) {
 }
 
 /**
- * Returns the site link HTML.
+ * Returns the home link HTML.
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args Home link arguments.
  * @return string
  */
 function render_home_link( array $args = [] ) {
@@ -230,7 +243,7 @@ function render_home_link( array $args = [] ) {
 	$html = sprintf(
 		'<a class="%s" href="%s" rel="home">%s</a>',
 		esc_attr( $args['class'] ),
-		esc_url( home_url() ),
+		esc_url( home_url( '/' ) ),
 		sprintf( $args['text'], get_bloginfo( 'name', 'display' ) )
 	);
 
@@ -245,12 +258,13 @@ function render_home_link( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args WordPress link arguments.
  * @return void
  */
 function display_wp_link( array $args = [] ) {
 
-	echo render_wp_link();
+	echo render_wp_link( $args );
 }
 
 /**
@@ -258,7 +272,8 @@ function display_wp_link( array $args = [] ) {
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args WordPress link arguments.
  * @return string
  */
 function render_wp_link( array $args = [] ) {
@@ -284,11 +299,12 @@ function render_wp_link( array $args = [] ) {
 }
 
 /**
- * Output the ClassicPress Link HTML.
+ * Outputs the ClassicPress link HTML.
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
+ *
+ * @param  array $args ClassicPress link arguments.
  * @return void
  */
 function display_cp_link( array $args = [] ): void {
@@ -297,12 +313,13 @@ function display_cp_link( array $args = [] ): void {
 }
 
 /**
- * Returns the WordPress Link HTML.
+ * Returns the ClassicPress link HTML.
  *
  * @since  1.0.0
  * @access public
- * @param  array  $args
- * @return void
+ *
+ * @param  array $args ClassicPress link arguments.
+ * @return string
  */
 function render_cp_link( array $args = [] ): string {
 
@@ -310,7 +327,7 @@ function render_cp_link( array $args = [] ): string {
 		'text'   => '%s',
 		'class'  => 'cp-link',
 		'before' => '',
-		'after'  => '',
+		'after'  => ''
 	] );
 
 	$html = sprintf(
@@ -319,5 +336,9 @@ function render_cp_link( array $args = [] ): string {
 		esc_url( __( 'https://www.classicpress.net', 'backdrop' ) ),
 		sprintf( $args['text'], esc_html__( 'ClassicPress', 'backdrop' ) )
 	);
-	return apply_filters( 'backdrop/render/cp/link', $html );
+
+	return apply_filters(
+		'backdrop/render/cp/link',
+		$args['before'] . $html . $args['after']
+	);
 }
