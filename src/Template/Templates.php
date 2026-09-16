@@ -1,10 +1,9 @@
 <?php
 /**
- * Templates manager.
+ * Templates collection.
  *
- * This class is just a wrapper around the `Collection` class for adding a
- * specific type of data.  Essentially, we make sure that anything added to the
- * collection is in fact a `Template`.
+ * This class extends the base collection and ensures that values added to the
+ * collection are stored as Template objects.
  *
  * @package   Backdrop
  * @author    Benjamin Lu <benlumia007@gmail.com>
@@ -26,16 +25,20 @@ use Backdrop\Tools\Collection;
 class Templates extends Collection {
 
 	/**
-	 * Add a new template.
+	 * Adds a new template to the collection.
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param  string  $name
-	 * @param  mixed   $value
+	 *
+	 * @param  string $name  Template filename.
+	 * @param  array  $value Template arguments.
 	 * @return void
 	 */
-	 public function add( $name, $value ) {
+	public function add( $name, $value ) {
 
-		parent::add( $name, new Template( $name, $value ) );
+		parent::add(
+			$name,
+			new Template( $name, $value )
+		);
 	}
 }
