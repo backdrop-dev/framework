@@ -2,8 +2,8 @@
 /**
  * Language class.
  *
- * This file holds the `Lang` class, which deals with loading textdomains and
- * locale-specific function files.
+ * This file holds the `Language` class, which deals with loading textdomains
+ * and locale-specific function files.
  *
  * @package   Backdrop
  * @author    Benjamin Lu <benlumia007@gmail.com>
@@ -25,72 +25,84 @@ use Backdrop\Contracts\Lang\Language as LanguageContract;
 class Language implements LanguageContract {
 
 	/**
-	 * The parent theme's textdomain. Gets set to the value of the `Text
-	 * Domain` header in `style.css`.
+	 * The parent theme's textdomain.
+	 *
+	 * Gets set to the value of the `Text Domain` header in `style.css`.
 	 *
 	 * @since  1.0.0
 	 * @access protected
-	 * @var    string
+	 *
+	 * @var string
 	 */
 	protected $parent_textdomain = '';
 
 	/**
-	 * The child theme's textdomain. Gets set to the value of the `Text
-	 * Domain` header in `style.css`.
+	 * The child theme's textdomain.
+	 *
+	 * Gets set to the value of the `Text Domain` header in `style.css`.
 	 *
 	 * @since  1.0.0
 	 * @access protected
-	 * @var    string
+	 *
+	 * @var string
 	 */
 	protected $child_textdomain = '';
 
 	/**
-	 * Absolute path to the parent theme's language folder. Theme authors
-	 * should set the relative path via the `Domain Path` header in `style.css`.
+	 * Absolute path to the parent theme's language directory.
+	 *
+	 * Theme authors should set the relative path via the `Domain Path` header
+	 * in `style.css`.
 	 *
 	 * @since  1.0.0
 	 * @access protected
-	 * @var    string
+	 *
+	 * @var string
 	 */
 	protected $parent_path = '';
 
 	/**
-	 * Absolute path to the child theme's language folder. Theme authors
-	 * should set the relative path via the `Domain Path` header in `style.css`.
+	 * Absolute path to the child theme's language directory.
+	 *
+	 * Theme authors should set the relative path via the `Domain Path` header
+	 * in `style.css`.
 	 *
 	 * @since  1.0.0
 	 * @access protected
-	 * @var    string|null
+	 *
+	 * @var string
 	 */
 	protected $child_path = '';
 
 	/**
-	 * Stores the language-related theme info into class properties.
+	 * Stores the language-related theme information.
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @return void
 	 */
 	public function __construct() {
 
 		$theme = wp_get_theme( get_template() );
 
 		$this->parent_textdomain = $theme->get( 'TextDomain' );
-		$this->parent_path       = trim( $theme->get( 'DomainPath' ), '/' );
+		$this->parent_path       = trailingslashit( get_template_directory() )
+			. trim( $theme->get( 'DomainPath' ), '/' );
 
 		if ( is_child_theme() ) {
 			$child = wp_get_theme();
 
 			$this->child_textdomain = $child->get( 'TextDomain' );
-			$this->child_path       = trim( $child->get( 'DomainPath' ), '/' );
+			$this->child_path       = trailingslashit( get_stylesheet_directory() )
+				. trim( $child->get( 'DomainPath' ), '/' );
 		}
 	}
 
 	/**
-	 * Adds the class' actions and filters.
+	 * Adds the class actions and filters.
 	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
 	 * @return void
 	 */
 	public function boot(): void {
@@ -98,22 +110,22 @@ class Language implements LanguageContract {
 		// Load the locale functions files.
 		add_action( 'after_setup_theme', [ $this, 'loadLocaleFunctions' ], ~PHP_INT_MAX );
 
-		// Load framework textdomain.
+		// Load the framework textdomain.
 		add_action( 'after_setup_theme', [ $this, 'loadTextdomain' ], 95 );
 
-		// Overrides the load textdomain function for the 'backdrop' domain.
+		// Override textdomain loading for the framework domain.
 		add_filter( 'override_load_textdomain', [ $this, 'overrideLoadTextdomain' ], 5, 3 );
 
-		// Filter the textdomain mofile to allow child themes to load the parent theme translation.
+		// Allow child themes to load parent theme translations.
 		add_filter( 'load_textdomain_mofile', [ $this, 'loadTextdomainMofile' ], 10, 2 );
 	}
 
 	/**
-	 * Gets the parent theme textdomain. This allows the framework to
-	 * recognize the proper textdomain of the parent theme.
+	 * Gets the parent theme textdomain.
 	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
 	 * @return string
 	 */
 	public function parentTextdomain(): string {
@@ -122,11 +134,11 @@ class Language implements LanguageContract {
 	}
 
 	/**
-	 * Gets the child theme textdomain. This allows the framework to
-	 * recognize the proper textdomain of the child theme.
+	 * Gets the child theme textdomain.
 	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
 	 * @return string
 	 */
 	public function childTextdomain(): string {
@@ -135,12 +147,14 @@ class Language implements LanguageContract {
 	}
 
 	/**
-	 * Returns the full directory path for the parent theme's domain path set
-	 * in `style.css`. No trailing slash.
+	 * Returns the parent theme language directory path.
+	 *
+	 * No trailing slash is included unless a file is appended.
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param  string  $file
+	 *
+	 * @param  string $file Optional file path.
 	 * @return string
 	 */
 	public function parentPath( $file = '' ): string {
@@ -151,12 +165,14 @@ class Language implements LanguageContract {
 	}
 
 	/**
-	 * Returns the full directory path for the child theme's domain path set
-	 * in `style.css`. No trailing slash.
+	 * Returns the child theme language directory path.
+	 *
+	 * No trailing slash is included unless a file is appended.
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param  string  $file
+	 *
+	 * @param  string $file Optional file path.
 	 * @return string
 	 */
 	public function childPath( $file = '' ): string {
@@ -167,83 +183,77 @@ class Language implements LanguageContract {
 	}
 
 	/**
-	 * Loads a `/{$langpath}/{$locale}.php` file for specific locales.
-	 * `$locale` should be an all lowercase and hyphenated (as opposed to
-	 * an underscore) file name.  So, an `en_US` locale would be `en-us.php`.
-	 * Also note that the child theme locale file will load **before** the
-	 * parent theme locale file.  This is standard practice in core WP for
-	 * allowing pluggable functions if a theme author so desires.
+	 * Loads locale-specific function files.
+	 *
+	 * Locale filenames should be lowercase and hyphenated. For example,
+	 * `en_US` becomes `en-us.php`. Child theme locale files are loaded before
+	 * parent theme locale files.
 	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
 	 * @return void
 	 */
-	public function loadLocaleFunctions() {
+	public function loadLocaleFunctions(): void {
 
-		// Get the site's locale.
 		$locale = is_admin() ? get_user_locale() : get_locale();
 		$locale = strtolower( str_replace( '_', '-', $locale ) );
 
-		// Define locale functions files.
-		$child_func = $this->childPath(  "{$locale}.php" );
+		$child_func = $this->childPath( "{$locale}.php" );
 		$theme_func = $this->parentPath( "{$locale}.php" );
 
-		// If file exists in child theme.
 		if ( is_child_theme() && file_exists( $child_func ) ) {
-			require_once( $child_func );
+			require_once $child_func;
 		}
 
-		// If file exists in parent theme.
 		if ( file_exists( $theme_func ) ) {
-			require_once( $theme_func );
+			require_once $theme_func;
 		}
 	}
 
 	/**
-	 * Loads the framework textdomain. Note that we're just dropping in an
-	 * empty string for the MO file path. This gets overwritten by the
-	 * `overrideLoadTextdomain()` filter.
+	 * Loads the framework textdomain.
+	 *
+	 * An empty MO file path is intentionally passed because loading is
+	 * overridden by `overrideLoadTextdomain()`.
 	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
 	 * @return void
 	 */
-	public function loadTextdomain() {
+	public function loadTextdomain(): void {
 
 		load_textdomain( 'backdrop', '' );
 	}
 
 	/**
-	 * Overrides the load textdomain functionality when `backdrop` is
-	 * the domain in use. The purpose of this is to allow theme translations
-	 * to handle the framework's strings.  What this function does is sets
-	 * the `backdrop` domain's translations to the theme's. That way,
-	 * we're not loading multiple of the same MO files.
+	 * Overrides textdomain loading for the framework domain.
+	 *
+	 * Framework strings use the parent theme's translations so that the same
+	 * translation catalog does not need to be loaded multiple times.
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @global array   $l10n
-	 * @param  bool    $override
-	 * @param  string  $domain
-	 * @param  string  $mofile
+	 *
+	 * @global array $l10n
+	 *
+	 * @param  bool   $override Whether to override textdomain loading.
+	 * @param  string $domain   Textdomain being loaded.
+	 * @param  string $mofile   Path to the MO file.
 	 * @return bool
 	 */
 	public function overrideLoadTextdomain( $override, $domain, $mofile ) {
+
 		global $l10n;
 
-		// Check if the domain is one of our framework domains.
 		if ( 'backdrop' === $domain ) {
-
-			// Get the theme's textdomain.
 			$theme_textdomain = $this->parentTextdomain();
 
-			// If the theme's textdomain is loaded, use its translations instead.
 			if ( $theme_textdomain && isset( $l10n[ $theme_textdomain ] ) ) {
-
 				$l10n[ $domain ] = $l10n[ $theme_textdomain ];
 			}
 
-			// Always override.  We only want the theme to handle translations.
 			$override = true;
 		}
 
@@ -251,37 +261,32 @@ class Language implements LanguageContract {
 	}
 
 	/**
-	 * Filters the `load_textdomain_mofile` filter hook so that we can
-	 * prepend the theme textdomain to the mofile filename. This also allows
-	 * child themes to house a copy of the parent theme translations so that
-	 * it doesn't get overwritten when a parent theme is updated.
+	 * Filters the textdomain MO file path.
+	 *
+	 * This allows a child theme to contain parent theme translations without
+	 * those files being overwritten when the parent theme is updated.
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param  string $mofile File name of the .mo file.
-	 * @param  string $domain The textdomain currently being filtered.
+	 *
+	 * @param  string $mofile Path to the MO file.
+	 * @param  string $domain Textdomain currently being filtered.
 	 * @return string
 	 */
-	 public function loadTextdomainMofile( $mofile, $domain ) {
+	public function loadTextdomainMofile( $mofile, $domain ) {
 
-		// If the `$domain` is for the parent or child theme, search for
-		// a `$domain-$locale.mo` file.
-		if ( $domain == $this->parentTextdomain() || $domain == $this->childTextdomain() ) {
-
-			// Get the locale.
+		if (
+			$domain === $this->parentTextdomain()
+			|| $domain === $this->childTextdomain()
+		) {
 			$locale = is_admin() ? get_user_locale() : get_locale();
 
-			// Define locale functions files.
-			$child_mofile = $this->childPath(  "{$domain}-{$locale}.mo" );
+			$child_mofile = $this->childPath( "{$domain}-{$locale}.mo" );
 			$theme_mofile = $this->parentPath( "{$domain}-{$locale}.mo" );
 
-			// Overwrite the mofile if it exists.
 			if ( is_child_theme() && file_exists( $child_mofile ) ) {
-
 				$mofile = $child_mofile;
-
 			} elseif ( file_exists( $theme_mofile ) ) {
-
 				$mofile = $theme_mofile;
 			}
 		}
