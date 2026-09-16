@@ -252,11 +252,11 @@ class Container implements ContainerContract, ArrayAccess {
 	 * @since  1.0.0
 	 * @access public
 	 *
-	 * @param  string      $abstract The key, interface, or abstract class name.
-	 * @param  object|null $concrete The concrete implementation.
+	 * @param  string $abstract The key, interface, or abstract class name.
+	 * @param  mixed  $concrete The concrete implementation.
 	 * @return void
 	 */
-	public function singleton( string $abstract, ?object $concrete = null ): void {
+	public function singleton( string $abstract, $concrete = null ): void {
 
 		$this->add( $abstract, $concrete, true );
 	}
