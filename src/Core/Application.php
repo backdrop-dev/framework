@@ -80,6 +80,15 @@ class Application extends Container implements Bootable {
 
 		$this->registerDefaultBindings();
 		$this->registerDefaultProxies();
+
+		// Make the application available to `Backdrop\app()` as soon as it's
+		// created, so it can be used before booting (for example, in a
+		// service provider's `register()` method). If an application
+		// already exists (e.g., a parent theme's), it stays the one that
+		// the helpers resolve from.
+		if ( ! Proxy::hasContainer() ) {
+			Proxy::setContainer( $this );
+		}
 	}
 
 	/**
@@ -271,8 +280,9 @@ class Application extends Container implements Bootable {
 	 */
 	protected function registerProxies(): void {
 
-		// Only set the container on the first call.
-		if ( ! $this->registered_proxies ) {
+		// Set the container if no application has set one yet. A second
+		// application must not replace the first one.
+		if ( ! Proxy::hasContainer() ) {
 			Proxy::setContainer( $this );
 		}
 

@@ -32,21 +32,24 @@ if ( file_exists( plugin_dir_path( __FILE__ ) . '/vendor/autoload.php' ) ) {
 }
 </pre>
 
-## Registering and Booting Backdrop.
-Please note that the Backdrop isn't launched until an instance of its `Backdrop\Core\Application` class is created and its `boot()`, check the Backdrop\booted() function before attempting to create a new app. If one exists, then it should use the existing instance via the `Backdrop\app()` helper function.
-<pre>
-// Create a new application
-$slug = Backdrop\booted ? Backdrop\app() : new Backdrop\Core\Application();
+## Registering and Booting Backdrop
+Backdrop isn't launched until an instance of its `Backdrop\Core\Application` class is created and its `boot()` method is called. Before creating a new application, check the `Backdrop\booted()` function. If an application has already been booted (for example, by a parent theme), use the existing instance via the `Backdrop\app()` helper function.
 
-// Add service provider
-$slug->provider( YourProject\Provider::class );
+```php
+// Create a new application, or reuse the existing one.
+$app = Backdrop\booted() ? Backdrop\app() : new Backdrop\Core\Application();
 
-// Create and action hook for child themes or plugins
-do_action( "$slug/child/theme", $slug );
+// Add service providers.
+$app->provider( YourProject\Provider::class );
 
-// Boot the application
-$slug->boot();
-</pre>
+// Create an action hook for child themes or plugins.
+do_action( 'your-project/bootstrap', $app );
+
+// Boot the application.
+$app->boot();
+```
+
+As soon as an application has been created, it can be accessed through the `Backdrop\app()` helper, including inside a service provider's `register()` method. After the application has been booted, the `Backdrop\App` static proxy is also available.
 
 ## Copyright and Licenses
 This project is licensed under the GNU GPL, version 2 or later.
