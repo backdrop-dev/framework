@@ -51,6 +51,18 @@ $app->boot();
 
 As soon as an application has been created, it can be accessed through the `Backdrop\app()` helper, including inside a service provider's `register()` method. After the application has been booted, the `Backdrop\App` static proxy is also available.
 
+## Running the Tests
+Backdrop's tests use [PHPUnit 9.6](https://phpunit.de/), which runs on every supported PHP version (7.4 and later).
+
+```bash
+composer install
+phpunit
+```
+
+If PHPUnit isn't installed globally, you can install it with `composer global require phpunit/phpunit:^9.6` or download the [PHPUnit 9.6 PHAR](https://phar.phpunit.de/phpunit-9.6.phar).
+
+Every push to `2.0` and every pull request runs the tests on PHP 7.4, 8.0, 8.1, 8.2, 8.3, 8.4, and 8.5 with GitHub Actions, along with a scan that checks the code is compatible with PHP 7.4 and later.
+
 ## Copyright and Licenses
 This project is licensed under the GNU GPL, version 2 or later.
 
