@@ -29,3 +29,6 @@
 /.gitignore         export-ignore
 /composer.json      export-ignore
 /composer.lock      export-ignore
+/.github            export-ignore
+/tests             export-ignore
+/phpunit.xml.dist   export-ignore

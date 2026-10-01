@@ -59,6 +59,19 @@ $app = Backdrop\app();
 
 After the application has been booted, the `Backdrop\App` static proxy is also available. Calling `boot()` more than once has no effect, and service providers added after booting are registered and booted immediately.
 
+## Running the Tests
+
+Backdrop's tests use [PHPUnit 9.6](https://phpunit.de/), which runs on every supported PHP version (7.4 and later). WordPress functions are replaced with small stubs, so the tests don't need a WordPress install.
+
+```bash
+composer install
+phpunit
+```
+
+If PHPUnit isn't installed globally, you can install it with `composer global require phpunit/phpunit:^9.6` or download the [PHPUnit 9.6 PHAR](https://phar.phpunit.de/phpunit-9.6.phar).
+
+Every push to `develop` and every pull request runs the tests on PHP 7.4, 8.0, 8.1, 8.2, 8.3, 8.4, and 8.5 with GitHub Actions, along with a scan that checks the code is compatible with PHP 7.4 and later.
+
 ## Copyright and License
 
 This project is licensed under the GNU General Public License, version 2 or later.
