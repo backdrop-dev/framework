@@ -8,6 +8,8 @@ Added:
 
 Changed:
 * `Application::VERSION` is now `2.0.0`.
+* `add()`, `singleton()`, `$container['key'] = ...`, and `$container->key = ...` now replace an existing binding (and its shared instance) instead of silently keeping the first one, matching `bind()` and the `develop` branch.
+* Extensions added with `extend()` are kept when the binding is added or replaced later.
 * `composer.json` is included in release archives.
 
 Fixed:

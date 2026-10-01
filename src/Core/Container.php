@@ -108,11 +108,16 @@ class Container implements ArrayAccess {
         }
 
         $this->bindings[$abstract] = compact( 'concrete', 'shared' );
-        $this->extensions[$abstract] = [];
+
+        // Keep any extensions that were added before the binding (or before
+        // it was replaced), so they still apply to the new concrete.
+        if ( ! isset( $this->extensions[$abstract] ) ) {
+            $this->extensions[$abstract] = [];
+        }
     }
 
     /**
-     * Alias for `bind()`.
+     * Alias for `bind()`. Replaces any existing binding for the abstract.
      *
      * @since  1.0.0
      * @access public
@@ -123,9 +128,7 @@ class Container implements ArrayAccess {
      */
     public function add( string $abstract, $concrete = null, bool $shared = false ): void {
 
-        if ( ! $this->bound( $abstract ) ) {
-            $this->bind( $abstract, $concrete, $shared );
-        }
+        $this->bind( $abstract, $concrete, $shared );
     }
 
     /**

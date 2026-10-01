@@ -123,6 +123,86 @@ class ContainerTest extends TestCase {
 		$this->assertSame( 'second', $this->container->resolve( 'value' ) );
 	}
 
+	public function testAddReplacesAnExistingBinding(): void {
+
+		$this->container->add( 'name', 'first' );
+		$this->container->add( 'name', 'second' );
+
+		$this->assertSame( 'second', $this->container->resolve( 'name' ) );
+	}
+
+	public function testSingletonReplacesAnExistingBindingAndItsInstance(): void {
+
+		$this->container->singleton( 'service', function() {
+			return 'first';
+		} );
+
+		$this->assertSame( 'first', $this->container->resolve( 'service' ) );
+
+		$this->container->singleton( 'service', function() {
+			return 'second';
+		} );
+
+		$this->assertSame( 'second', $this->container->resolve( 'service' ) );
+	}
+
+	public function testArrayAndPropertyAssignmentReplaceExistingValues(): void {
+
+		$this->container['key'] = 'first';
+		$this->container['key'] = 'second';
+
+		$this->container->name = 'first';
+		$this->container->name = 'second';
+
+		$this->assertSame( 'second', $this->container['key'] );
+		$this->assertSame( 'second', $this->container->name );
+	}
+
+	public function testInstanceIsReplacedByANewBinding(): void {
+
+		$this->container->instance( 'value', 'instance' );
+		$this->container->add( 'value', 'binding' );
+
+		$this->assertSame( 'binding', $this->container->resolve( 'value' ) );
+	}
+
+	public function testExtensionsAddedBeforeTheBindingAreKept(): void {
+
+		$this->container->extend( 'object', function( $object ) {
+			$object->extended = true;
+			return $object;
+		} );
+
+		$this->container->singleton( 'object', function() {
+			return new stdClass();
+		} );
+
+		$this->assertTrue( $this->container->resolve( 'object' )->extended );
+	}
+
+	public function testExtensionsSurviveReplacingTheBinding(): void {
+
+		$this->container->bind( 'object', function() {
+			return new stdClass();
+		} );
+
+		$this->container->extend( 'object', function( $object ) {
+			$object->extended = true;
+			return $object;
+		} );
+
+		$this->container->bind( 'object', function() {
+			$object        = new stdClass();
+			$object->fresh = true;
+			return $object;
+		} );
+
+		$object = $this->container->resolve( 'object' );
+
+		$this->assertTrue( $object->fresh );
+		$this->assertTrue( $object->extended );
+	}
+
 	public function testAliases(): void {
 
 		$this->container->singleton( Dependency::class );
