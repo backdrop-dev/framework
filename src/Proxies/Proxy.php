@@ -1,18 +1,21 @@
 <?php
 /**
- * Proxy class
+ * Static proxy class.
+ *
+ * The base static proxy class. This allows us to create easy-to-use static
+ * classes around objects registered with the container.
  *
  * @package   Backdrop
  * @author    Benjamin Lu <benlumia007@gmail.com>
- * @copyright 2019-2023. Benjamin Lu
- * @link      https://github.com/benlumia007/backdrop
+ * @copyright 2019 Benjamin Lu
  * @license   https://www.gnu.org/licenses/gpl-2.0.html
+ * @link      https://github.com/backdrop-dev/framework
  */
 
 namespace Backdrop\Proxies;
 
-use Backdrop\Core\Container;
-use ReflectionException;
+use Backdrop\Contracts\Container\Container;
+use RuntimeException;
 
 /**
  * Base static proxy class.
@@ -27,18 +30,21 @@ class Proxy {
 	 *
 	 * @since  1.0.0
 	 * @access protected
-	 * @var    Container
+	 *
+	 * @var Container|null
 	 */
 	protected static $container;
 
 	/**
-	 * Returns the name of the accessor for object registered in the container.
+	 * Returns the name of the accessor for the object registered in the
+	 * container.
 	 *
 	 * @since  1.0.0
 	 * @access protected
+	 *
 	 * @return string
 	 */
-	protected static function accessor(): string {
+	protected static function accessor() {
 
 		return '';
 	}
@@ -48,9 +54,11 @@ class Proxy {
 	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
+	 * @param  Container $container Container instance.
 	 * @return void
 	 */
-	public static function setContainer( $container ) {
+	public static function setContainer( Container $container ) {
 
 		static::$container = $container;
 	}
@@ -60,29 +68,36 @@ class Proxy {
 	 *
 	 * @since  1.0.0
 	 * @access protected
-	 * @throws ReflectionException
-	 * @return object
+	 *
+	 * @return mixed
+	 *
+	 * @throws RuntimeException If the container has not been set.
 	 */
 	protected static function instance() {
+
+		if ( ! static::$container ) {
+			throw new RuntimeException(
+				'The container has not been set on the proxy.'
+			);
+		}
 
 		return static::$container->resolve( static::accessor() );
 	}
 
 	/**
-	 * Calls the requested method from the object registered with the
-	 * container statically.
+	 * Calls the requested method on the object registered with the container.
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @param string $method
-	 * @param array $args
-	 * @throws ReflectionException
+	 *
+	 * @param  string $method Method name.
+	 * @param  array  $args   Method arguments.
 	 * @return mixed
 	 */
-	public static function __callStatic( string $method, array $args ) {
+	public static function __callStatic( $method, $args ) {
 
 		$instance = static::instance();
 
-		return $instance->$method(...$args);
+		return $instance ? $instance->$method( ...$args ) : null;
 	}
 }

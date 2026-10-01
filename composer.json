@@ -17,7 +17,7 @@
           "Backdrop\\": "src/"
 		},
 		"files": [
-			"src/functions-helpers.php"
+			"src/bootstrap-backdrop.php"
 		]
     },
     "require": {

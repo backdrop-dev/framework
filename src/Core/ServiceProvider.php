@@ -7,56 +7,72 @@
  *
  * @package   Backdrop
  * @author    Benjamin Lu <benlumia007@gmail.com>
- * @copyright 2019-2023. Benjamin Lu
- * @link      https://github.com/benlumia007/backdrop
+ * @copyright 2019 Benjamin Lu
  * @license   https://www.gnu.org/licenses/gpl-2.0.html
+ * @link      https://github.com/backdrop-dev/framework
  */
 
 namespace Backdrop\Core;
 
-use Backdrop\Contracts\Bootable;
+use Backdrop\Contracts\Core\Application;
 
-abstract class ServiceProvider implements Bootable {
+/**
+ * Service provider class.
+ *
+ * @since  1.0.0
+ * @access public
+ */
+abstract class ServiceProvider {
 
 	/**
-	 * Application instance. Subclasses should use this property to access
-	 * the application (container) to add, remove, or resolve bindings.
+	 * Application instance.
+	 *
+	 * Subclasses should use this property to access the application container
+	 * to add, remove, or resolve bindings.
 	 *
 	 * @since  1.0.0
 	 * @access protected
-	 * @var    Container
+	 *
+	 * @var Application
 	 */
 	protected $app;
 
 	/**
 	 * Accepts the application and sets it to the `$app` property.
 	 *
-	 * @param Container $app
-	 * @return void
-	 *@since  1.0.0
+	 * @since  1.0.0
 	 * @access public
+	 *
+	 * @param  Application $app Application instance.
+	 * @return void
 	 */
-	public function __construct( Container $app ) {
+	public function __construct( Application $app ) {
 
 		$this->app = $app;
 	}
 
 	/**
-	 * Callback executed when the `Application` class registers providers.
+	 * Callback executed when the application registers providers.
+	 *
+	 * Subclasses may override this method to register bindings, singletons,
+	 * aliases, or other services with the application container.
 	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
 	 * @return void
 	 */
 	public function register(): void {}
 
 	/**
-	 * Callback executed after all the service providers have been registered.
-	 * This is particularly useful for single-instance container objects that
-	 * only need to be loaded once per page and need to be resolved early.
+	 * Callback executed after all service providers have been registered.
+	 *
+	 * Subclasses may override this method to perform initialization that
+	 * depends on services registered by other providers.
 	 *
 	 * @since  1.0.0
 	 * @access public
+	 *
 	 * @return void
 	 */
 	public function boot(): void {}
