@@ -20,6 +20,7 @@ namespace Backdrop\Container;
 use ArrayAccess;
 use Closure;
 use ReflectionClass;
+use ReflectionNamedType;
 use RuntimeException;
 use Backdrop\Contracts\Container\Container as ContainerContract;
 
@@ -109,8 +110,12 @@ class Container implements ContainerContract, ArrayAccess {
 			$concrete = $abstract;
 		}
 
-		$this->bindings[ $abstract ]    = compact( 'concrete', 'shared' );
-		$this->extensions[ $abstract ] = [];
+		$this->bindings[ $abstract ] = compact( 'concrete', 'shared' );
+
+		// Keep any extensions that were added before the binding.
+		if ( ! isset( $this->extensions[ $abstract ] ) ) {
+			$this->extensions[ $abstract ] = [];
+		}
 	}
 
 	/**
@@ -168,7 +173,7 @@ class Container implements ContainerContract, ArrayAccess {
 
 		// If this is being managed as an instance and we already have
 		// the instance, return it now.
-		if ( isset( $this->instances[ $abstract ] ) ) {
+		if ( array_key_exists( $abstract, $this->instances ) ) {
 			return $this->instances[ $abstract ];
 		}
 
@@ -194,13 +199,13 @@ class Container implements ContainerContract, ArrayAccess {
 		}
 
 		// Run through each of the extensions for the object.
-		foreach ( $this->extensions[ $abstract ] as $extension ) {
+		foreach ( $this->extensions[ $abstract ] ?? [] as $extension ) {
 			$object = $extension( $object, $this );
 		}
 
 		// If shared, store the final extended object so future resolutions
 		// return the same instance.
-		if ( $this->bindings[ $abstract ]['shared'] && ! isset( $this->instances[ $abstract ] ) ) {
+		if ( $this->bindings[ $abstract ]['shared'] && ! array_key_exists( $abstract, $this->instances ) ) {
 			$this->instances[ $abstract ] = $object;
 		}
 
@@ -251,7 +256,7 @@ class Container implements ContainerContract, ArrayAccess {
 
 		$abstract = $this->getAbstract( $abstract );
 
-		return isset( $this->bindings[ $abstract ] ) || isset( $this->instances[ $abstract ] );
+		return isset( $this->bindings[ $abstract ] ) || array_key_exists( $abstract, $this->instances );
 	}
 
 	/**
@@ -335,14 +340,15 @@ class Container implements ContainerContract, ArrayAccess {
 	 */
 	protected function getConcrete( $abstract ) {
 
-		$concrete = false;
 		$abstract = $this->getAbstract( $abstract );
 
-		if ( $this->has( $abstract ) ) {
-			$concrete = $this->bindings[ $abstract ]['concrete'];
+		// Use `array_key_exists()` so that falsy values such as `0`, `''`,
+		// `false`, and `[]` can be stored and resolved.
+		if ( isset( $this->bindings[ $abstract ] ) && array_key_exists( 'concrete', $this->bindings[ $abstract ] ) ) {
+			return $this->bindings[ $abstract ]['concrete'];
 		}
 
-		return $concrete ?: $abstract;
+		return $abstract;
 	}
 
 	/**
@@ -357,8 +363,17 @@ class Container implements ContainerContract, ArrayAccess {
 	 */
 	protected function isBuildable( $concrete ) {
 
-		return $concrete instanceof Closure
-		       || ( is_string( $concrete ) && class_exists( $concrete ) );
+		if ( $concrete instanceof Closure ) {
+			return true;
+		}
+
+		if ( ! is_string( $concrete ) || ! class_exists( $concrete ) ) {
+			return false;
+		}
+
+		// Abstract classes and classes with non-public constructors
+		// cannot be instantiated.
+		return ( new ReflectionClass( $concrete ) )->isInstantiable();
 	}
 
 	/**
@@ -432,6 +447,12 @@ class Container implements ContainerContract, ArrayAccess {
 			$types = $this->getReflectionTypes( $dependency );
 
 			foreach ( $types as $type ) {
+
+				// Only named types can be resolved. Intersection types
+				// (PHP 8.1+) cannot be resolved through the container.
+				if ( ! $type instanceof ReflectionNamedType ) {
+					continue;
+				}
 
 				// Built-in types cannot be resolved through the container.
 				if ( $type->isBuiltin() ) {
@@ -529,7 +550,7 @@ class Container implements ContainerContract, ArrayAccess {
 		$names = [];
 
 		foreach ( $types as $type ) {
-			$names[] = $type->getName();
+			$names[] = $type instanceof ReflectionNamedType ? $type->getName() : (string) $type;
 		}
 
 		return implode( '|', $names );
@@ -545,6 +566,7 @@ class Container implements ContainerContract, ArrayAccess {
 	 * @param  mixed $value Property value.
 	 * @return void
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetSet( $name, $value ) {
 
 		$this->add( $name, $value );
@@ -559,6 +581,7 @@ class Container implements ContainerContract, ArrayAccess {
 	 * @param  mixed $name Property name.
 	 * @return void
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetUnset( $name ) {
 
 		$this->remove( $name );
@@ -573,6 +596,7 @@ class Container implements ContainerContract, ArrayAccess {
 	 * @param  mixed $name Property name.
 	 * @return bool
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetExists( $name ) {
 
 		return $this->has( $name );
@@ -587,6 +611,7 @@ class Container implements ContainerContract, ArrayAccess {
 	 * @param  mixed $name Property name.
 	 * @return mixed
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetGet( $name ) {
 
 		return $this->get( $name );

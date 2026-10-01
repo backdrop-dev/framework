@@ -128,6 +128,16 @@ class Attr implements Attributes {
 
 			$esc_value = '';
 
+			// Skip `null` values and flatten arrays (e.g., a list of
+			// classes) into a space-separated string.
+			if ( null === $value ) {
+				continue;
+			}
+
+			if ( is_array( $value ) ) {
+				$value = join( ' ', array_filter( array_map( 'strval', $value ), 'strlen' ) );
+			}
+
 			// If the value is a link `href`, use `esc_url()`.
 			if ( $value !== false && 'href' === $name ) {
 				$esc_value = esc_url( $value );
@@ -174,7 +184,7 @@ class Attr implements Attributes {
 
 		$attr = $this->all();
 
-		return isset( $attr[ $name ] ) ? $attr[ $name ] : '';
+		return isset( $attr[ $name ] ) && is_scalar( $attr[ $name ] ) ? (string) $attr[ $name ] : '';
 	}
 
 	/**
@@ -210,7 +220,10 @@ class Attr implements Attributes {
 		}
 
 		// Compatibility with core WP attributes.
-		if ( method_exists( $this, $this->name ) ) {
+		// Only the dedicated compatibility methods may be called here.
+		// Calling any method that matches the name (e.g., `render` or
+		// `all`) would cause infinite recursion or type errors.
+		if ( in_array( $this->name, [ 'html', 'body', 'post', 'entry', 'comment' ], true ) ) {
 			$method   = $this->name;
 			$defaults = $this->$method( $defaults );
 		}

@@ -213,7 +213,7 @@ function render_author( array $args = [] ) {
 		return '';
 	}
 
-	$author = get_the_author_meta( 'display_name', $author_id );
+	$author = esc_html( get_the_author_meta( 'display_name', $author_id ) );
 
 	if ( $args['link'] ) {
 		$url = get_author_posts_url( $author_id );
@@ -319,7 +319,8 @@ function render_comments_link( array $args = [] ) {
 
 	$number = get_comments_number();
 
-	if ( 0 === $number && ! comments_open() && ! pings_open() ) {
+	// `get_comments_number()` returns a numeric string, so cast it.
+	if ( 0 === absint( $number ) && ! comments_open() && ! pings_open() ) {
 		return '';
 	}
 

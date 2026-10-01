@@ -66,6 +66,26 @@ class Application extends Container implements ApplicationContract, Bootable {
 	protected $proxies = [];
 
 	/**
+	 * Whether the application has been booted.
+	 *
+	 * @since  1.0.0
+	 * @access protected
+	 *
+	 * @var bool
+	 */
+	protected $booted = false;
+
+	/**
+	 * Array of booted service provider objects.
+	 *
+	 * @since  1.0.0
+	 * @access protected
+	 *
+	 * @var array
+	 */
+	protected $booted_providers = [];
+
+	/**
 	 * Registers the default bindings, providers, and proxies for the
 	 * framework.
 	 *
@@ -79,6 +99,14 @@ class Application extends Container implements ApplicationContract, Bootable {
 		$this->registerDefaultBindings();
 		$this->registerDefaultProviders();
 		$this->registerDefaultProxies();
+
+		// Make the application available to `Backdrop\app()` and the other
+		// helper functions as soon as it is created. If another application
+		// already exists, it remains the one that the helpers resolve from.
+		if ( ! Proxy::hasContainer() ) {
+			Proxy::setContainer( $this );
+		}
+
 		$this->bootstrapFilters();
 	}
 
@@ -92,9 +120,33 @@ class Application extends Container implements ApplicationContract, Bootable {
 	 */
 	public function boot(): void {
 
+		// Only boot the application once.
+		if ( $this->booted ) {
+			return;
+		}
+
 		$this->registerProviders();
 		$this->bootProviders();
 		$this->registerProxies();
+
+		$this->booted = true;
+
+		if ( ! defined( 'BACKDROP_BOOTED' ) ) {
+			define( 'BACKDROP_BOOTED', true );
+		}
+	}
+
+	/**
+	 * Determines whether the application has been booted.
+	 *
+	 * @since  1.0.0
+	 * @access public
+	 *
+	 * @return bool
+	 */
+	public function isBooted(): bool {
+
+		return $this->booted;
 	}
 
 	/**
@@ -148,7 +200,7 @@ class Application extends Container implements ApplicationContract, Bootable {
 	 */
 	protected function registerDefaultProxies() {
 
-		$this->proxy( App::class, '\Backdrop\App' );
+		$this->proxy( App::class, 'Backdrop\App' );
 	}
 
 	/**
@@ -180,6 +232,13 @@ class Application extends Container implements ApplicationContract, Bootable {
 		}
 
 		$this->providers[] = $provider;
+
+		// Providers added after the application has booted would never
+		// be registered or booted, so handle them immediately.
+		if ( $this->booted ) {
+			$this->registerProvider( $provider );
+			$this->bootProvider( $provider );
+		}
 	}
 
 	/**
@@ -223,9 +282,16 @@ class Application extends Container implements ApplicationContract, Bootable {
 	 */
 	protected function bootProvider( $provider ) {
 
+		// Bail if this provider has already been booted.
+		if ( in_array( $provider, $this->booted_providers, true ) ) {
+			return;
+		}
+
 		if ( method_exists( $provider, 'boot' ) ) {
 			$provider->boot();
 		}
+
+		$this->booted_providers[] = $provider;
 	}
 
 	/**
@@ -297,10 +363,20 @@ class Application extends Container implements ApplicationContract, Bootable {
 	 */
 	protected function registerProxies() {
 
-		Proxy::setContainer( $this );
+		if ( ! Proxy::hasContainer() ) {
+			Proxy::setContainer( $this );
+		}
 
 		foreach ( $this->proxies as $class => $alias ) {
-			class_alias( $class, $alias );
+
+			// Aliases are global, so skip any that already exist (for
+			// example, when a parent and child theme both create an
+			// application).
+			$alias = ltrim( $alias, '\\' );
+
+			if ( ! class_exists( $alias, false ) ) {
+				class_alias( $class, $alias );
+			}
 		}
 	}
 }

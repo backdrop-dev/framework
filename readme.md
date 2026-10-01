@@ -1,8 +1,10 @@
-# Backdrop: Themes & Plugins Framework
+# Backdrop: Themes Framework
 
-Backdrop is a framework for developing themes and plugins for ClassicPress and WordPress.
+Backdrop is a framework for developing themes for ClassicPress and WordPress.
 
-Backdrop provides the core application layer, including a service container and service provider system. It can be used on its own or alongside other Backdrop packages.
+Backdrop provides the core application layer, including a service container and service provider system, along with theme features such as a template hierarchy, views, HTML attributes, pagination, and Customizer helpers.
+
+Backdrop is designed for themes. When the application is created, it adds filters that change the template hierarchy, body and post classes, menu item classes, and the document `<head>`, so it should not be used inside plugins. For a core-only package without these theme features, use the `2.0` branch.
 
 ## Requirements
 
@@ -19,7 +21,7 @@ Use Composer to install Backdrop:
 composer require backdrop-dev/framework
 ```
 
-## Themes
+## Loading Backdrop
 
 If Backdrop is bundled directly with your theme, load Composer's autoloader from the parent theme:
 
@@ -29,45 +31,33 @@ if ( file_exists( get_parent_theme_file_path( 'vendor/autoload.php' ) ) ) {
 }
 ```
 
-## Plugins
-
-If Backdrop is bundled directly with your plugin, load Composer's autoloader from the plugin directory:
-
-```php
-if ( file_exists( plugin_dir_path( __FILE__ ) . 'vendor/autoload.php' ) ) {
-	require_once plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
-}
-```
-
 ## Registering and Booting Backdrop
 
 Backdrop isn't fully booted until an instance of the `Backdrop\Core\Application` class is created, the necessary service providers are registered, and the application's `boot()` method is called.
 
-Create the application before registering your project's service providers:
+Create the application before registering your theme's service providers. If an application has already been booted (for example, by a parent theme), reuse it instead of creating a new one:
 
 ```php
-// Create a new application.
-$app = new Backdrop\Core\Application();
+// Create a new application, or reuse the existing one.
+$app = Backdrop\booted() ? Backdrop\app() : new Backdrop\Core\Application();
 
 // Add service providers.
-$app->provider( YourProject\Provider::class );
+$app->provider( YourTheme\Provider::class );
 
-// Create an action hook for child themes or plugins.
-do_action( 'your-project/bootstrap', $app );
+// Create an action hook for child themes.
+do_action( 'your-theme/bootstrap', $app );
 
 // Boot the application.
 $app->boot();
 ```
 
-Once the application has been created, it can be accessed through the `Backdrop\app()` helper. After the application has been booted, the `Backdrop\App` static proxy is also available.
-
-For example:
+As soon as the application has been created, it can be accessed through the `Backdrop\app()` helper:
 
 ```php
 $app = Backdrop\app();
 ```
 
-The application should normally be created and booted once by the theme or plugin that is responsible for initializing Backdrop.
+After the application has been booted, the `Backdrop\App` static proxy is also available. Calling `boot()` more than once has no effect, and service providers added after booting are registered and booted immediately.
 
 ## Copyright and License
 

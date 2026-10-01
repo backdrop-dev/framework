@@ -161,7 +161,9 @@ class Language implements LanguageContract {
 
 		$file = ltrim( $file, '/' );
 
-		return $file ? "{$this->parent_path}/{$file}" : $this->parent_path;
+		$path = untrailingslashit( $this->parent_path );
+
+		return $file ? "{$path}/{$file}" : $path;
 	}
 
 	/**
@@ -179,7 +181,9 @@ class Language implements LanguageContract {
 
 		$file = ltrim( $file, '/' );
 
-		return $file ? "{$this->child_path}/{$file}" : $this->child_path;
+		$path = untrailingslashit( $this->child_path );
+
+		return $file ? "{$path}/{$file}" : $path;
 	}
 
 	/**
