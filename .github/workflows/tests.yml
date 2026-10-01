@@ -1,0 +1,78 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: PHP ${{ matrix.php }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php: [ '7.4', '8.0', '8.1', '8.2', '8.3', '8.4', '8.5' ]
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Set up PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          tools: composer, phpunit:9.6
+          coverage: none
+          ini-values: error_reporting=-1, display_errors=On
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict --no-check-publish
+
+      - name: Install (generates the Composer autoloader)
+        run: composer install --no-interaction --no-progress
+
+      - name: Lint PHP files
+        run: find src tests -name '*.php' -print0 | xargs -0 -n1 php -l > /dev/null
+
+      - name: Run the test suite
+        run: phpunit
+
+  compatibility:
+    name: PHP 7.4+ compatibility scan
+    runs-on: ubuntu-latest
+
+    env:
+      PHPCS_VERSION: '4.0.4'
+      PHPCSUTILS_VERSION: '1.2.3'
+      PHPCOMPATIBILITY_VERSION: '10.0.0-alpha2'
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+
+      - name: Install PHP_CodeSniffer and PHPCompatibility
+        run: |
+          git clone --quiet --depth 1 --branch "$PHPCS_VERSION" https://github.com/PHPCSStandards/PHP_CodeSniffer "$RUNNER_TEMP/phpcs"
+          git clone --quiet --depth 1 --branch "$PHPCSUTILS_VERSION" https://github.com/PHPCSStandards/PHPCSUtils "$RUNNER_TEMP/phpcsutils"
+          git clone --quiet --depth 1 --branch "$PHPCOMPATIBILITY_VERSION" https://github.com/PHPCompatibility/PHPCompatibility "$RUNNER_TEMP/phpcompatibility"
+          php "$RUNNER_TEMP/phpcs/bin/phpcs" --config-set installed_paths "$RUNNER_TEMP/phpcsutils,$RUNNER_TEMP/phpcompatibility"
+
+      - name: Scan for code that doesn't work on PHP 7.4 or later
+        run: php "$RUNNER_TEMP/phpcs/bin/phpcs" -p --standard=PHPCompatibility --runtime-set testVersion 7.4- --extensions=php src tests

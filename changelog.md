@@ -2,6 +2,8 @@
 
 ## Unreleased
 Added:
+* PHPUnit test suite covering the container, application, helpers, attributes, views, templates, pagination, and theme functions.
+* GitHub Actions workflow that runs the tests on PHP 7.4 through 8.5 and scans for PHP 7.4 compatibility.
 * `Backdrop\booted()` helper and `Application::isBooted()` so a child theme can reuse an existing application.
 
 Changed:
