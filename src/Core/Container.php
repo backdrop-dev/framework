@@ -18,6 +18,8 @@ use ArrayAccess;
 use Closure;
 use ReflectionClass;
 use ReflectionException;
+use ReflectionNamedType;
+use RuntimeException;
 
 /**
  * A simple container for objects.
@@ -190,17 +192,19 @@ class Container implements ArrayAccess {
             return $object;
         }
 
-        // If shared instance, make sure to store it in the instances
-        // array so that we're not creating new objects later.
+        // Run through each of the extensions for the object. Extensions
+        // are closures that receive the object and the container and
+        // return the (possibly decorated) object.
+        foreach ( $this->extensions[$abstract] ?? [] as $extension ) {
+
+            $object = $extension( $object, $this );
+        }
+
+        // If shared instance, store the final extended object so that we're
+        // not creating new objects later.
         if ( $this->bindings[$abstract]['shared'] && ! isset( $this->instances[$abstract] ) ) {
 
             $this->instances[$abstract] = $object;
-        }
-
-        // Run through each of the extensions for the object.
-        foreach ( $this->extensions[$abstract] as $extension ) {
-
-            $object = new $extension( $object, $this );
         }
 
         // Return the object.
@@ -439,7 +443,16 @@ class Container implements ArrayAccess {
     /**
      * Resolves the dependencies for a method's parameters.
      *
-     * @todo Handle errors when we can't solve a dependency.
+     * Dependencies are resolved in the following order:
+     *
+     * 1. Explicit parameters passed to the container.
+     * 2. The first class or interface type that the container can resolve.
+     * 3. Default parameter values.
+     * 4. Null for nullable parameters.
+     *
+     * If a required dependency can't be resolved, an exception is thrown
+     * instead of silently skipping the parameter, which would shift the
+     * remaining arguments out of position.
      *
      * @since  1.0.0
      * @access protected
@@ -447,6 +460,7 @@ class Container implements ArrayAccess {
      * @param array $parameters
      * @return array
      * @throws ReflectionException
+     * @throws RuntimeException If a required dependency can't be resolved.
      */
     protected function resolveDependencies( array $dependencies, array $parameters ): array {
 
@@ -455,29 +469,32 @@ class Container implements ArrayAccess {
         foreach ( $dependencies as $dependency ) {
 
             // If a dependency is set via the parameters passed in, use it.
-            if ( isset( $parameters[$dependency->getName() ] ) ) {
+            if ( array_key_exists( $dependency->getName(), $parameters ) ) {
 
-				$args[] = $parameters[$dependency->getName()];
+				$args[] = $parameters[ $dependency->getName() ];
                 continue;
             }
 
-            // If the parameter is a class, resolve it.
-            $types = $this->getReflectionTypes( $dependency );
+            // If the parameter has a class or interface type, use the first
+            // type that the container can resolve.
+            foreach ( $this->getReflectionTypes( $dependency ) as $type ) {
 
-            if ( $types ) {
-                $resolved_type = false;
-
-                foreach ( $types as $type ) {
-
-                    if ( class_exists( $type->getName() ) ) {
-
-                        $args[] = $this->resolve( $type->getName() );
-                        $resolved_type = true;
-                    }
+                // Only named, non-built-in types can be resolved. This skips
+                // types like `string` and PHP 8.1+ intersection types.
+                if ( ! $type instanceof ReflectionNamedType || $type->isBuiltin() ) {
+                    continue;
                 }
 
-                if ( $resolved_type ) {
-                    continue;
+                $type_name = $type->getName();
+
+                if ( class_exists( $type_name ) || interface_exists( $type_name ) ) {
+
+                    $resolved = $this->resolve( $type_name );
+
+                    if ( false !== $resolved ) {
+                        $args[] = $resolved;
+                        continue 2;
+                    }
                 }
             }
 
@@ -485,10 +502,50 @@ class Container implements ArrayAccess {
             if ( $dependency->isDefaultValueAvailable() ) {
 
 				$args[] = $dependency->getDefaultValue();
+                continue;
             }
+
+            // Else, use null if the parameter allows it.
+            if ( $dependency->allowsNull() ) {
+
+                $args[] = null;
+                continue;
+            }
+
+            throw new RuntimeException(
+                sprintf(
+                    'Unable to resolve dependency [%s] for parameter [$%s] of [%s].',
+                    $this->getDependencyTypeName( $dependency ),
+                    $dependency->getName(),
+                    $dependency->getDeclaringClass() ? $dependency->getDeclaringClass()->getName() : 'unknown'
+                )
+            );
         }
 
         return $args;
+    }
+
+    /**
+     * Returns a readable type name for a dependency, used in error messages.
+     *
+     * @since  2.0.0
+     * @access protected
+     * @param  object $dependency Reflection parameter.
+     * @return string
+     */
+    protected function getDependencyTypeName( object $dependency ): string {
+
+        $types = $this->getReflectionTypes( $dependency );
+
+        if ( ! $types ) {
+            return 'untyped';
+        }
+
+        // Casting a type to a string is deprecated on PHP 7.4, so use the
+        // name of named types. Other types (PHP 8.1+) can be cast safely.
+        return implode( '|', array_map( function( $type ) {
+            return $type instanceof ReflectionNamedType ? $type->getName() : (string) $type;
+        }, $types ) );
     }
 
     /**

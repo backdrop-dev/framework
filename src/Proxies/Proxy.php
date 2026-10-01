@@ -13,6 +13,7 @@ namespace Backdrop\Proxies;
 
 use Backdrop\Core\Container;
 use ReflectionException;
+use RuntimeException;
 
 /**
  * Base static proxy class.
@@ -56,14 +57,33 @@ class Proxy {
 	}
 
 	/**
+	 * Determines whether a container has been set.
+	 *
+	 * @since  2.0.0
+	 * @access public
+	 * @return bool
+	 */
+	public static function hasContainer(): bool {
+
+		return null !== static::$container;
+	}
+
+	/**
 	 * Returns the instance from the container.
 	 *
 	 * @since  1.0.0
 	 * @access protected
 	 * @throws ReflectionException
+	 * @throws RuntimeException If no application has been created.
 	 * @return object
 	 */
 	protected static function instance() {
+
+		if ( null === static::$container ) {
+			throw new RuntimeException(
+				'No Backdrop application has been created. Create one with `new Backdrop\Core\Application()` before using `Backdrop\app()` or a proxy.'
+			);
+		}
 
 		return static::$container->resolve( static::accessor() );
 	}
