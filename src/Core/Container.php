@@ -138,8 +138,16 @@ class Container implements ArrayAccess {
      */
     public function remove( string $abstract ): void {
 
-        if ($this->bound( $abstract ) ) {
-            unset( $this->bindings[$abstract], $this->instances[$abstract] );
+        // Allow removing a binding by one of its aliases. The alias itself
+        // is kept, so it still works if the abstract is bound again.
+        $abstract = $this->getAlias( $abstract );
+
+        if ( $this->bound( $abstract ) ) {
+            unset(
+                $this->bindings[$abstract],
+                $this->instances[$abstract],
+                $this->extensions[$abstract]
+            );
         }
     }
 
@@ -164,7 +172,8 @@ class Container implements ArrayAccess {
          * instance so the developer can keep using the same objects instance
          * every time.
          */
-        if ( isset( $this->instances[$abstract] ) ) {
+        // Use `array_key_exists()` so that `null` instances are returned.
+        if ( array_key_exists( $abstract, $this->instances ) ) {
 
             return $this->instances[$abstract];
         }
@@ -202,7 +211,7 @@ class Container implements ArrayAccess {
 
         // If shared instance, store the final extended object so that we're
         // not creating new objects later.
-        if ( $this->bindings[$abstract]['shared'] && ! isset( $this->instances[$abstract] ) ) {
+        if ( $this->bindings[$abstract]['shared'] && ! array_key_exists( $abstract, $this->instances ) ) {
 
             $this->instances[$abstract] = $object;
         }
@@ -237,7 +246,7 @@ class Container implements ArrayAccess {
      */
     public function bound( string $abstract ): bool {
 
-		return isset( $this->bindings[$abstract] ) || isset( $this->instances[$abstract] );
+		return isset( $this->bindings[$abstract] ) || array_key_exists( $abstract, $this->instances );
     }
 
     /**
@@ -386,15 +395,16 @@ class Container implements ArrayAccess {
      */
     protected function getConcrete( string $abstract ) {
 
-        $concrete = false;
         $abstract = $this->getAlias( $abstract );
 
-        if ( $this->bound( $abstract ) ) {
+        // Return the bound concrete as-is, so that falsy values such as
+        // `0`, `''`, `false`, and `[]` can be stored and resolved.
+        if ( isset( $this->bindings[$abstract] ) ) {
 
-			$concrete = $this->bindings[$abstract]['concrete'];
+			return $this->bindings[$abstract]['concrete'];
         }
 
-        return $concrete ?: $abstract;
+        return $abstract;
     }
 
     /**
@@ -408,7 +418,17 @@ class Container implements ArrayAccess {
      */
     protected function isBuildable( $concrete ): bool {
 
-        return $concrete instanceof Closure || ( is_string( $concrete ) && class_exists( $concrete ) );
+        if ( $concrete instanceof Closure ) {
+            return true;
+        }
+
+        if ( ! is_string( $concrete ) || ! class_exists( $concrete ) ) {
+            return false;
+        }
+
+        // Abstract classes and classes with non-public constructors can't
+        // be instantiated.
+        return ( new ReflectionClass( $concrete ) )->isInstantiable();
     }
 
     /**

@@ -30,7 +30,7 @@ class Application extends Container implements Bootable {
 	 * @access public
 	 * @var    string
 	 */
-	const VERSION = '1.0.0';
+	const VERSION = '2.0.0';
 
 	/**
 	 * Array of service provider objects.
@@ -58,6 +58,15 @@ class Application extends Container implements Bootable {
 	 * @var    array
 	 */
 	protected array $booted_providers = [];
+
+	/**
+	 * Whether the application has been booted.
+	 *
+	 * @since  2.0.0
+	 * @access protected
+	 * @var    bool
+	 */
+	protected bool $booted = false;
 
 	/**
 	 * Array of registered proxies.
@@ -103,9 +112,23 @@ class Application extends Container implements Bootable {
 		$this->bootProviders();
 		$this->registerProxies();
 
+		$this->booted = true;
+
 		if ( ! defined( 'BACKDROP_BOOTED' ) ) {
 			define( 'BACKDROP_BOOTED', true );
 		}
+	}
+
+	/**
+	 * Determines whether the application has been booted.
+	 *
+	 * @since  2.0.0
+	 * @access public
+	 * @return bool
+	 */
+	public function isBooted(): bool {
+
+		return $this->booted;
 	}
 
 	/**
@@ -157,6 +180,12 @@ class Application extends Container implements Bootable {
 
 		// Store the provider.
 		$this->providers[] = $provider;
+
+		// Providers added after the application has booted would never be
+		// booted, so boot them right away.
+		if ( $this->booted ) {
+			$this->bootProvider( $provider );
+		}
 	}
 
 	/**
@@ -198,17 +227,18 @@ class Application extends Container implements Bootable {
 	 */
 	protected function bootProvider( object $provider ): void {
 
-		$class_name = get_class( $provider );
-
-		// Bail if the provider has already been booted.
-		if ( in_array( $class_name, $this->booted_providers ) ) {
+		// Bail if this provider object has already been booted. Objects are
+		// compared rather than class names, so that two instances of the
+		// same provider class are both booted.
+		if ( in_array( $provider, $this->booted_providers, true ) ) {
 			return;
 		}
 
 		if ( method_exists( $provider, 'boot' ) ) {
 			$provider->boot();
-			$this->booted_providers[] = $class_name;
 		}
+
+		$this->booted_providers[] = $provider;
 	}
 
 	/**
