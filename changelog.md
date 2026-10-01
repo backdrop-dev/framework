@@ -28,6 +28,7 @@ Fixed:
 * Radio image control URLs containing encoded characters such as `%20`.
 * `hex_to_rgb()` warnings on invalid colors.
 * `View\Engine` now implements the `Engine` contract.
+* `html_entity_decode()` and `trim()` calls now pass explicit flags and characters so behavior is identical on PHP 7.4 through 8.x.
 
 ## 1.0.0 - June 11, 2023
 Added:

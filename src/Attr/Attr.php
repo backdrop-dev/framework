@@ -149,7 +149,7 @@ class Attr implements Attributes {
 			$html .= false !== $value ? sprintf( ' %s="%s"', esc_html( $name ), $esc_value ) : esc_html( " {$name}" );
 		}
 
-		return trim( $html );
+		return trim( $html, " \n\r\t\v\x00" );
 	}
 
 	/**

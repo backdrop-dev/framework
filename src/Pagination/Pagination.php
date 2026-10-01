@@ -226,7 +226,7 @@ class Pagination implements PaginationContract {
 
 		global $wp_query, $wp_rewrite;
 
-		$pagenum_link    = html_entity_decode( get_pagenum_link() );
+		$pagenum_link    = html_entity_decode( get_pagenum_link(), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
 		$this->url_parts = explode( '?', $pagenum_link );
 
 		$total   = isset( $wp_query->max_num_pages ) ? $wp_query->max_num_pages : 1;
@@ -264,7 +264,7 @@ class Pagination implements PaginationContract {
 
 		global $page, $numpages, $more, $wp_rewrite;
 
-		$this->url_parts = explode( '?', html_entity_decode( get_permalink() ) );
+		$this->url_parts = explode( '?', html_entity_decode( get_permalink(), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 ) );
 
 		$base = trailingslashit( $this->url_parts[0] ) . '%_%';
 
@@ -297,7 +297,7 @@ class Pagination implements PaginationContract {
 
 		$base = add_query_arg( 'cpage', '%#%' );
 
-		$this->url_parts = explode( '?', html_entity_decode( get_pagenum_link() ) );
+		$this->url_parts = explode( '?', html_entity_decode( get_pagenum_link(), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 ) );
 
 		if ( $wp_rewrite->using_permalinks() ) {
 			$base = user_trailingslashit(
@@ -444,7 +444,7 @@ class Pagination implements PaginationContract {
 			tag_escape( $this->args['item_tag'] ),
 			esc_attr( sprintf( $this->args['item_class'], $item['type'] ) ),
 			$is_link ? 'a' : 'span',
-			trim( $esc_attr ),
+			trim( $esc_attr, " \n\r\t\v\x00" ),
 			$item['content']
 		);
 	}

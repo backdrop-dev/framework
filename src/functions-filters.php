@@ -218,7 +218,7 @@ function excerpt_more( $text ) {
 		$text = sprintf(
 			' <a href="%s" class="entry__more-link">%s</a>',
 			esc_url( get_permalink() ),
-			trim( $text )
+			trim( $text, " \n\r\t\v\x00" )
 		);
 	}
 
