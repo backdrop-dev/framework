@@ -1,6 +1,6 @@
 {
     "name": "backdrop-dev/framework",
-    "description": "Backdrop Framework: A framework for developing ClassicPress and WordPress themes and plugins.",
+    "description": "Backdrop Framework: A framework for developing ClassicPress and WordPress themes.",
     "keywords": [ "classicpress", "wordpress" ],
     "homepage": "https://benjlu.com/project/backdrop-dev",
     "license": "GPL-2.0-or-later",
