@@ -4,11 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ea1ab18b45ff6e615d47d0280bfbbba7",
+    "content-hash": "8de69d28232f27a7c369bc27726c461e",
     "packages": [
         {
             "name": "backdrop-dev/contracts",
-            "version": "1.0",
+            "version": "dev-develop",
             "source": {
                 "type": "git",
                 "url": "https://github.com/backdrop-dev/contracts.git",
@@ -23,6 +23,7 @@
             "require": {
                 "php": ">=7.1"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -49,7 +50,7 @@
             ],
             "support": {
                 "issues": "https://github.com/benlumia007/backdrop-contracts/issues",
-                "source": "https://github.com/backdrop-dev/contracts/tree/1.0"
+                "source": "https://github.com/backdrop-dev/contracts/tree/develop"
             },
             "time": "2024-07-16T18:06:26+00:00"
         }
@@ -57,12 +58,14 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "backdrop-dev/contracts": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.1"
+        "php": ">=7.4"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }
