@@ -145,8 +145,8 @@ class Pagination implements PaginationContract {
 			'mid_size'           => 1,
 			'prev_next'          => true,
 
-			'prev_text'          => '',
-			'next_text'          => '',
+			'prev_text'          => esc_html__( 'Previous', 'backdrop' ),
+			'next_text'          => esc_html__( 'Next', 'backdrop' ),
 			'screen_reader_text' => '',
 			'title_text'         => '',
 			'before_page_number' => '',

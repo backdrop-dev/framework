@@ -42,7 +42,8 @@ function hierarchy() {
 
 	$hier[] = is_rtl() ? 'rtl' : 'ltr';
 
-	return apply_filters( 'backdrop/lang/hierarchy', $hier );
+	// The region and language can match (e.g., `fr_FR`), so remove duplicates.
+	return apply_filters( 'backdrop/lang/hierarchy', array_values( array_unique( $hier ) ) );
 }
 
 /**

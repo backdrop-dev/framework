@@ -173,6 +173,11 @@ function archive_description_filter( $desc ) {
 		$new_desc = get_the_post_type_description();
 	}
 
+	// `get_term_field()` can return a `WP_Error`, which can't be output.
+	if ( is_wp_error( $new_desc ) ) {
+		$new_desc = '';
+	}
+
 	return $new_desc ?: $desc;
 }
 
@@ -284,7 +289,15 @@ function comments_template( $template ) {
 	$templates = [];
 
 	// Allow for custom templates entered into comments_template( $file ).
-	$template = str_replace( trailingslashit( get_stylesheet_directory() ), '', $template );
+	// The path may be in the child (stylesheet) or parent (template) theme.
+	$template = str_replace(
+		[
+			trailingslashit( get_stylesheet_directory() ),
+			trailingslashit( get_template_directory() )
+		],
+		'',
+		$template
+	);
 
 	if ( 'comments.php' !== $template ) {
 		$templates[] = $template;
@@ -371,9 +384,8 @@ function body_class_filter( $classes, $class ) {
 	} elseif ( is_singular() ) {
 
 		// Get the queried post object.
-		$post      = get_queried_object();
 		$post_id   = get_queried_object_id();
-		$post_type = $post->post_type;
+		$post_type = get_post_type( $post_id ) ?: 'post';
 
 		$classes[] = 'single';
 		$classes[] = "single-{$post_type}";
@@ -423,13 +435,16 @@ function body_class_filter( $classes, $class ) {
 			// Get the queried term object.
 			$term     = get_queried_object();
 			$term_id  = get_queried_object_id();
-			$taxonomy = $term->taxonomy;
 
-			$slug = 'post_format' === $taxonomy ? str_replace( 'post-format-', '', $term->slug ) : $term->slug;
+			if ( $term && isset( $term->taxonomy, $term->slug ) ) {
+				$taxonomy = $term->taxonomy;
 
-			$classes[] = 'taxonomy';
-			$classes[] = "taxonomy-{$taxonomy}";
-			$classes[] = "taxonomy-{$taxonomy}-" . sanitize_html_class( $slug, $term_id );
+				$slug = 'post_format' === $taxonomy ? str_replace( 'post-format-', '', $term->slug ) : $term->slug;
+
+				$classes[] = 'taxonomy';
+				$classes[] = "taxonomy-{$taxonomy}";
+				$classes[] = "taxonomy-{$taxonomy}-" . sanitize_html_class( $slug, $term_id );
+			}
 		}
 
 		// User/author archives.
@@ -550,9 +565,15 @@ function post_class_filter( $classes, $class, $post_id ) {
 		return $classes;
 	}
 
+	$post = get_post( $post_id );
+
+	// Bail if there's no post to work with.
+	if ( ! $post ) {
+		return $classes;
+	}
+
 	$classes   = [];
-	$post      = get_post( $post_id );
-	$post_type = get_post_type( $post_id );
+	$post_type = get_post_type( $post );
 
 	// Entry class.
 	$classes[] = 'entry';
