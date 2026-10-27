@@ -59,6 +59,23 @@ $app = Backdrop\app();
 
 After the application has been booted, the `Backdrop\App` static proxy is also available. Calling `boot()` more than once has no effect, and service providers added after booting are registered and booted immediately.
 
+## Translations
+
+Backdrop's own strings (such as "(Untitled)" or archive titles) use the `backdrop` textdomain, but Backdrop doesn't ship separate translation files. Instead, these strings are translated with your parent theme's translations, using the theme's `Text Domain` header. To translate them, make sure your theme's translation template (`.pot`) includes Backdrop's strings. Translation tools often skip them by default, because they live in the `vendor` folder and use the `backdrop` textdomain, so check your tool's options for including that folder and other textdomains. Then load your theme's translations as usual:
+
+```php
+add_action( 'after_setup_theme', function() {
+	load_theme_textdomain( 'your-theme', get_template_directory() . '/languages' );
+} );
+```
+
+This works with WordPress's just-in-time translation loading (WordPress 6.7 and later), with `switch_to_locale()`, and with ClassicPress.
+
+Backdrop also uses your theme's language directory, set by the `Domain Path` header in `style.css` (`/languages` if it isn't set):
+
+- **Locale functions:** a `{locale}.php` file, lowercase and hyphenated (for example, `languages/fr-fr.php` for `fr_FR`), is loaded on `after_setup_theme`. A child theme's file is loaded before the parent theme's.
+- **Child theme translations:** a child theme can provide the parent theme's translations in its own language directory as `{parent-text-domain}-{locale}.mo` (for example, `your-theme-fr_FR.mo`), so they aren't lost when the parent theme updates. This file replaces the parent theme's translations for that locale, so it needs to contain every string, including Backdrop's.
+
 ## Running the Tests
 
 Backdrop's tests use [PHPUnit 9.6](https://phpunit.de/), which runs on every supported PHP version (7.4 and later). WordPress functions are replaced with small stubs, so the tests don't need a WordPress install.
@@ -70,7 +87,17 @@ phpunit
 
 If PHPUnit isn't installed globally, you can install it with `composer global require phpunit/phpunit:^9.6` or download the [PHPUnit 9.6 PHAR](https://phar.phpunit.de/phpunit-9.6.phar).
 
-Every push to `develop` and every pull request runs the tests on PHP 7.4, 8.0, 8.1, 8.2, 8.3, 8.4, and 8.5 with GitHub Actions, along with a scan that checks the code is compatible with PHP 7.4 and later.
+Integration tests check features that depend on WordPress itself, such as translations, against a real WordPress install that uses SQLite (so no database server is needed). They require PHP's `pdo_sqlite` extension:
+
+```bash
+composer install
+tests/integration/setup.sh /tmp/wordpress
+php tests/integration/run.php /tmp/wordpress
+```
+
+Set `WP_VERSION` (for example, `WP_VERSION=6.6`) to test a specific WordPress version. The default is the latest release.
+
+Every push to `develop` and every pull request runs the tests on PHP 7.4, 8.0, 8.1, 8.2, 8.3, 8.4, and 8.5 with GitHub Actions, along with a scan that checks the code is compatible with PHP 7.4 and later, and the integration tests on the latest WordPress release and WordPress 6.6.
 
 ## Copyright and License
 

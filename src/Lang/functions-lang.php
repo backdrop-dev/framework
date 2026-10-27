@@ -20,17 +20,28 @@ namespace Backdrop\Lang;
  * the site's locale. Note that the locale is all lowercase and hyphenated (for
  * example, `en_US` becomes `en-us`).
  *
+ * Locale variants such as `de_DE_formal` also include their base locale, so
+ * the hierarchy for `de_DE_formal` is `de-de-formal`, `de-de`, `de`, `ltr`.
+ *
  * @since  1.0.0
  * @access public
  * @return array
  */
 function hierarchy() {
 
-	$locale = strtolower( str_replace( '_', '-', is_admin() ? get_user_locale() : get_locale() ) );
-	$lang   = strtolower( language() );
-	$region = strtolower( region() );
+	$current = is_admin() ? get_user_locale() : get_locale();
+	$locale  = strtolower( str_replace( '_', '-', $current ) );
+	$lang    = strtolower( language( $current ) );
+	$region  = strtolower( region( $current ) );
 
 	$hier = [ $locale ];
+
+	// Locale variants (e.g., `de_DE_formal`) fall back to their base locale.
+	$parts = explode( '_', $current );
+
+	if ( 2 < count( $parts ) ) {
+		$hier[] = strtolower( "{$parts[0]}-{$parts[1]}" );
+	}
 
 	if ( $region !== $locale ) {
 		$hier[] = $region;
@@ -61,7 +72,10 @@ function language( $locale = '' ) {
 		$locale = is_admin() ? get_user_locale() : get_locale();
 	}
 
-	return sanitize_key( preg_replace( '/(.*?)_.*?$/i', '$1', $locale ) );
+	// The language is the first part of the locale (e.g., `de` in `de_DE_formal`).
+	$parts = explode( '_', $locale );
+
+	return sanitize_key( $parts[0] );
 }
 
 /**
@@ -80,5 +94,9 @@ function region( $locale = '' ) {
 		$locale = is_admin() ? get_user_locale() : get_locale();
 	}
 
-	return sanitize_key( preg_replace( '/.*?_(.*?)$/i', '$1', $locale ) );
+	// The region is the second part of the locale (e.g., `DE` in `de_DE_formal`).
+	// Locales without a region (e.g., `ja`) return the language.
+	$parts = explode( '_', $locale );
+
+	return sanitize_key( isset( $parts[1] ) ? $parts[1] : $parts[0] );
 }

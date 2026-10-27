@@ -5,8 +5,12 @@ Added:
 * PHPUnit test suite covering the container, application, helpers, attributes, views, templates, pagination, and theme functions.
 * GitHub Actions workflow that runs the tests on PHP 7.4 through 8.5 and scans for PHP 7.4 compatibility.
 * `Backdrop\booted()` helper and `Application::isBooted()` so a child theme can reuse an existing application.
+* Integration tests that run against a real WordPress install (with SQLite), in CI on the latest WordPress release and WordPress 6.6.
+* Locale variants such as `de_DE_formal` include their base locale (`de-de`) in `Backdrop\Lang\hierarchy()`.
 
 Changed:
+* Framework strings (the `backdrop` textdomain) are translated with the parent theme's translations through the `gettext_backdrop` filters. `Language::loadTextdomain()` and `Language::overrideLoadTextdomain()` are no longer hooked and are deprecated.
+* A theme without a `Domain Path` header now uses `/languages` for its locale functions file and child theme translations, like WordPress, instead of the theme's root folder.
 * Backdrop is documented as a themes-only framework. The core-only package lives on the `2.0` branch.
 * `Backdrop\app()` works as soon as the application is created, not only after `boot()`.
 * `boot()` only runs once, providers are only booted once, and existing `Backdrop\App` aliases are not redeclared.
@@ -14,6 +18,8 @@ Changed:
 * Pagination previous and next links have default "Previous" and "Next" text.
 
 Fixed:
+* Framework strings were never translated on WordPress 6.7 and later, which loads theme translations just in time. On older versions, they also weren't translated when a theme loaded its translations on `init` or after `switch_to_locale()`.
+* `Backdrop\Lang\region()` returned values like `de_formal` for locale variants such as `de_DE_formal`. It now returns the region (`de`).
 * The container now stores and resolves falsy values (`0`, `''`, `false`, `[]`, `null`).
 * The container no longer tries to build abstract classes or fails on intersection types.
 * Extensions added before a binding are kept.
