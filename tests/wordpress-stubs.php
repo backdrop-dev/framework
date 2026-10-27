@@ -45,6 +45,9 @@ function wp_test_reset( array $state = [] ) {
 		'comments_num'  => '0',
 		'comments_open' => false,
 		'pings_open'    => false,
+		'theme_headers'  => [],
+		'translations'   => [],
+		'loaded_domains' => [],
 	], $state );
 
 	$GLOBALS['wp_query'] = (object) [ 'max_num_pages' => 1 ];
@@ -93,7 +96,13 @@ class WP_Rewrite {
 class WP_Theme_Stub {
 
 	public function get( $header ) {
-		return 'TextDomain' === $header ? 'backdrop-test' : '';
+
+		$headers = wp_test( 'theme_headers', [] ) + [
+			'TextDomain' => 'backdrop-test',
+			'DomainPath' => '',
+		];
+
+		return isset( $headers[ $header ] ) ? $headers[ $header ] : '';
 	}
 
 	public function display( $header ) {
@@ -239,6 +248,39 @@ function esc_html__( $text, $domain = 'default' ) {
 
 function esc_html_x( $text, $context, $domain = 'default' ) {
 	return esc_html( $text );
+}
+
+/**
+ * Translation lookups read from `$GLOBALS['wp_test']['translations']`, keyed
+ * by textdomain. Context entries use `"{$context}\004{$text}"` keys, and
+ * plural entries map the singular text to `[ singular, plural ]`.
+ */
+function translate( $text, $domain = 'default' ) {
+	$translations = wp_test( 'translations', [] );
+	return isset( $translations[ $domain ][ $text ] ) ? $translations[ $domain ][ $text ] : $text;
+}
+
+function translate_with_gettext_context( $text, $context, $domain = 'default' ) {
+	$translations = wp_test( 'translations', [] );
+	$key          = "{$context}\004{$text}";
+	return isset( $translations[ $domain ][ $key ] ) ? $translations[ $domain ][ $key ] : $text;
+}
+
+function _n( $single, $plural, $number, $domain = 'default' ) {
+	$translations = wp_test( 'translations', [] );
+	$forms        = isset( $translations[ $domain ][ $single ] ) ? $translations[ $domain ][ $single ] : [ $single, $plural ];
+	return 1 === (int) $number ? $forms[0] : $forms[1];
+}
+
+function _nx( $single, $plural, $number, $context, $domain = 'default' ) {
+	$translations = wp_test( 'translations', [] );
+	$key          = "{$context}\004{$single}";
+	$forms        = isset( $translations[ $domain ][ $key ] ) ? $translations[ $domain ][ $key ] : [ $single, $plural ];
+	return 1 === (int) $number ? $forms[0] : $forms[1];
+}
+
+function is_textdomain_loaded( $domain ) {
+	return in_array( $domain, wp_test( 'loaded_domains', [] ), true );
 }
 
 /**

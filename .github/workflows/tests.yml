@@ -76,3 +76,44 @@ jobs:
 
       - name: Scan for code that doesn't work on PHP 7.4 or later
         run: php "$RUNNER_TEMP/phpcs/bin/phpcs" -p --standard=PHPCompatibility --runtime-set testVersion 7.4- --extensions=php src tests
+
+  wordpress:
+    name: WordPress ${{ matrix.wordpress }} (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # The newest WordPress release, on the oldest and newest PHP.
+          - wordpress: latest
+            php: '7.4'
+          - wordpress: latest
+            php: '8.5'
+          # WordPress 6.6 loads theme translations immediately; 6.7+ loads
+          # them just in time. Framework translations must work with both.
+          - wordpress: '6.6'
+            php: '8.3'
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Set up PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: pdo_sqlite, sqlite3
+          tools: composer
+          coverage: none
+
+      - name: Install (generates the Composer autoloader)
+        run: composer install --no-interaction --no-progress
+
+      - name: Set up WordPress ${{ matrix.wordpress }} with SQLite
+        env:
+          WP_VERSION: ${{ matrix.wordpress }}
+        run: tests/integration/setup.sh "$RUNNER_TEMP/wordpress"
+
+      - name: Run the WordPress integration tests
+        run: php tests/integration/run.php "$RUNNER_TEMP/wordpress"
