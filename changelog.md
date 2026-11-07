@@ -1,7 +1,7 @@
 # Changelog
 
-## 1.0.0 - Unreleased
-The first official release of Backdrop, the themes framework. Replace "Unreleased" with the release date when tagging `v1.0.0`.
+## 1.0.0 - November 7, 2026
+The first official release of Backdrop, the themes framework.
 
 Added:
 * PHPUnit test suite covering the container, application, helpers, attributes, views, templates, pagination, and theme functions.
