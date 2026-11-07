@@ -78,13 +78,21 @@ jobs:
         run: php "$RUNNER_TEMP/phpcs/bin/phpcs" -p --standard=PHPCompatibility --runtime-set testVersion 7.4- --extensions=php src tests
 
   wordpress:
-    name: WordPress ${{ matrix.wordpress }} (PHP ${{ matrix.php }})
+    name: ${{ matrix.platform == 'classicpress' && 'ClassicPress' || 'WordPress' }} ${{ matrix.wordpress }} (PHP ${{ matrix.php }})
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
         include:
+          # The newest ClassicPress release (the priority platform), on PHP
+          # 7.4 (Backdrop's minimum) and PHP 8.3.
+          - platform: classicpress
+            wordpress: latest
+            php: '7.4'
+          - platform: classicpress
+            wordpress: latest
+            php: '8.3'
           # The newest WordPress release, on the oldest and newest PHP.
           - wordpress: latest
             php: '7.4'
@@ -110,10 +118,11 @@ jobs:
       - name: Install (generates the Composer autoloader)
         run: composer install --no-interaction --no-progress
 
-      - name: Set up WordPress ${{ matrix.wordpress }} with SQLite
+      - name: Set up ${{ matrix.platform || 'wordpress' }} ${{ matrix.wordpress }} with SQLite
         env:
+          WP_PLATFORM: ${{ matrix.platform || 'wordpress' }}
           WP_VERSION: ${{ matrix.wordpress }}
         run: tests/integration/setup.sh "$RUNNER_TEMP/wordpress"
 
-      - name: Run the WordPress integration tests
+      - name: Run the integration tests
         run: php tests/integration/run.php "$RUNNER_TEMP/wordpress"

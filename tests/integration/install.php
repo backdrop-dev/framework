@@ -25,4 +25,28 @@ if ( is_wp_error( $result ) ) {
 	exit( 1 );
 }
 
-echo 'WordPress ' . get_bloginfo( 'version' ) . " installed.\n";
+// Content for the theme output checks: a post in a month archive, and a menu
+// with one item without custom classes and one with a custom class.
+wp_insert_post( [
+	'post_title'  => 'March post',
+	'post_status' => 'publish',
+	'post_date'   => '2026-03-15 10:00:00',
+] );
+
+$menu = wp_create_nav_menu( 'Backdrop Test Menu' );
+
+wp_update_nav_menu_item( $menu, 0, [
+	'menu-item-object-id' => 2,
+	'menu-item-object'    => 'page',
+	'menu-item-type'      => 'post_type',
+	'menu-item-status'    => 'publish',
+] );
+
+wp_update_nav_menu_item( $menu, 0, [
+	'menu-item-title'   => 'Custom',
+	'menu-item-url'     => 'https://example.org/',
+	'menu-item-classes' => 'my-class',
+	'menu-item-status'  => 'publish',
+] );
+
+echo ( function_exists( 'classicpress_version' ) ? 'ClassicPress ' . classicpress_version() : 'WordPress ' . get_bloginfo( 'version' ) ) . " installed.\n";

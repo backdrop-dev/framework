@@ -290,9 +290,7 @@ class Attr implements Attributes {
 	 */
 	protected function body( $attr ) {
 
-		$class = isset( $attr['class'] ) && 'body' !== $attr['class'] ? $attr['class'] : '';
-
-		$attr['class'] = join( ' ', get_body_class( $class ) );
+		$attr['class'] = join( ' ', get_body_class( $this->extraClass( $attr ) ) );
 		$attr['dir']   = is_rtl() ? 'rtl' : 'ltr';
 
 		return $attr;
@@ -308,13 +306,39 @@ class Attr implements Attributes {
 	 */
 	protected function post( $attr ) {
 
-		$post  = isset( $this->data['post'] ) ? get_post( $this->data['post'] ) : get_post();
-		$class = isset( $attr['class'] ) ? $attr['class'] : '';
+		$post = isset( $this->data['post'] ) ? get_post( $this->data['post'] ) : get_post();
 
 		$attr['id']    = ! empty( $post ) ? sprintf( 'post-%d', $post->ID ) : 'post-0';
-		$attr['class'] = join( ' ', get_post_class( $class, $post ) );
+		$attr['class'] = join( ' ', get_post_class( $this->extraClass( $attr ), $post ) );
 
 		return $attr;
+	}
+
+	/**
+	 * Returns the extra classes to pass to WordPress's class functions
+	 * (`get_body_class()`, `get_post_class()`, and `get_comment_class()`).
+	 *
+	 * When no class was input, the default class starts with the attribute
+	 * name (e.g., `post`). WordPress would add it as an extra class, so it's
+	 * removed. A context modifier (e.g., `post--archive`) and any classes
+	 * input by the theme are kept.
+	 *
+	 * @since  1.0.0
+	 * @access protected
+	 *
+	 * @param  array $attr Attributes.
+	 * @return string
+	 */
+	protected function extraClass( array $attr ): string {
+
+		$class   = isset( $attr['class'] ) ? (string) $attr['class'] : '';
+		$default = $this->context ? "{$this->name} {$this->name}--{$this->context}" : $this->name;
+
+		if ( $class === $default ) {
+			return $this->context ? "{$this->name}--{$this->context}" : '';
+		}
+
+		return $class;
 	}
 
 	/**
@@ -340,10 +364,8 @@ class Attr implements Attributes {
 	 */
 	protected function comment( $attr ) {
 
-		$class = isset( $attr['class'] ) ? $attr['class'] : '';
-
 		$attr['id']    = 'comment-' . get_comment_ID();
-		$attr['class'] = join( ' ', get_comment_class( $class ) );
+		$attr['class'] = join( ' ', get_comment_class( $this->extraClass( $attr ) ) );
 
 		return $attr;
 	}

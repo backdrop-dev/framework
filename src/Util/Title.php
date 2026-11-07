@@ -199,7 +199,9 @@ class Title {
 	 */
 	public static function month() {
 
-		return single_month_title( ' ', false );
+		// `single_month_title()` adds the separator before the month too
+		// (" March 2026"), so trim it.
+		return trim( (string) single_month_title( ' ', false ) );
 	}
 
 	/**

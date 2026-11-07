@@ -1,11 +1,13 @@
 # Changelog
 
-## Unreleased
+## 1.0.0 - Unreleased
+The first official release of Backdrop, the themes framework. Replace "Unreleased" with the release date when tagging `v1.0.0`.
+
 Added:
 * PHPUnit test suite covering the container, application, helpers, attributes, views, templates, pagination, and theme functions.
 * GitHub Actions workflow that runs the tests on PHP 7.4 through 8.5 and scans for PHP 7.4 compatibility.
 * `Backdrop\booted()` helper and `Application::isBooted()` so a child theme can reuse an existing application.
-* Integration tests that run against a real WordPress install (with SQLite), in CI on the latest WordPress release and WordPress 6.6.
+* Integration tests that run against a real ClassicPress or WordPress install (with SQLite), in CI on the latest ClassicPress release, the latest WordPress release, and WordPress 6.6.
 * Locale variants such as `de_DE_formal` include their base locale (`de-de`) in `Backdrop\Lang\hierarchy()`.
 
 Changed:
@@ -16,8 +18,14 @@ Changed:
 * `boot()` only runs once, providers are only booted once, and existing `Backdrop\App` aliases are not redeclared.
 * Service providers added after `boot()` are registered and booted immediately.
 * Pagination previous and next links have default "Previous" and "Next" text.
+* `composer.json` is included in release archives, and it no longer sets `minimum-stability`.
 
 Fixed:
+* `attr( 'post' )`, `attr( 'entry' )`, and `attr( 'comment' )` added the attribute name (e.g., `post`) as an extra class. Context modifiers (e.g., `post--archive`) and classes passed in are kept. `attr( 'body' )` with a context had the same problem.
+* Month archive titles started with a space (" March 2026"), including in the document title.
+* Menu items without custom classes had a trailing space in their class attribute.
+* The generator meta tag had a trailing space when the theme has no `Version` header.
+* The Customizer component used the `Backdrop\App` alias, which only exists after booting. It now uses `Backdrop\Proxies\App`.
 * Framework strings were never translated on WordPress 6.7 and later, which loads theme translations just in time. On older versions, they also weren't translated when a theme loaded its translations on `init` or after `switch_to_locale()`.
 * `Backdrop\Lang\region()` returned values like `de_formal` for locale variants such as `de_DE_formal`. It now returns the region (`de`).
 * The container now stores and resolves falsy values (`0`, `''`, `false`, `[]`, `null`).
@@ -37,7 +45,3 @@ Fixed:
 * `hex_to_rgb()` warnings on invalid colors.
 * `View\Engine` now implements the `Engine` contract.
 * `html_entity_decode()` and `trim()` calls now pass explicit flags and characters so behavior is identical on PHP 7.4 through 8.x.
-
-## 1.0.0 - June 11, 2023
-Added:
-* Our very first official release!

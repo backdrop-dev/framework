@@ -86,6 +86,37 @@ class AttrTest extends TestCase {
 		];
 	}
 
+	/**
+	 * The default class (the attribute name) must not be passed to
+	 * WordPress's class functions as an extra class. The stand-in class
+	 * functions return `wp` plus the extra classes they receive.
+	 *
+	 * @dataProvider wordPressClassAttributes
+	 *
+	 * @param string $name     Attribute name.
+	 * @param string $context  Context.
+	 * @param array  $input    Input attributes.
+	 * @param string $expected Expected rendered attributes.
+	 */
+	public function testWordPressClassesDoNotIncludeTheName( $name, $context, array $input, $expected ): void {
+
+		$this->assertSame( $expected, ( new Attr( $name, $context, $input ) )->render() );
+	}
+
+	public function wordPressClassAttributes(): array {
+
+		return [
+			'post'                 => [ 'post', '', [], 'class="wp" id="post-1"' ],
+			'entry'                => [ 'entry', '', [], 'class="wp" id="post-1"' ],
+			'comment'              => [ 'comment', '', [], 'class="wp" id="comment-1"' ],
+			'body'                 => [ 'body', '', [], 'class="wp" dir="ltr"' ],
+			'post with context'    => [ 'post', 'archive', [], 'class="wp post--archive" id="post-1"' ],
+			'body with context'    => [ 'body', 'home', [], 'class="wp body--home" dir="ltr"' ],
+			'post with input'      => [ 'post', '', [ 'class' => 'custom post' ], 'class="wp custom post" id="post-1"' ],
+			'comment with input'   => [ 'comment', '', [ 'class' => 'custom' ], 'class="wp custom" id="comment-1"' ],
+		];
+	}
+
 	public function testGetReturnsAStringValue(): void {
 
 		$attr = new Attr( 'box', '', [ 'id' => 'main', 'data-list' => [ 'a' ] ] );

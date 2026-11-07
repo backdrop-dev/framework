@@ -71,6 +71,20 @@ $scenarios = [
 		'env'    => [ 'BACKDROP_LOCALE' => 'en_US' ],
 		'expect' => [ 'page' => $english, 'locale_files' => [] ],
 	],
+	'Theme output: titles, attributes, menu classes, and meta tags' => [
+		'env'    => [ 'BACKDROP_LOCALE' => 'en_US', 'BACKDROP_THEME_OUTPUT' => '1' ],
+		'expect' => [
+			'output' => [
+				'month_title'         => 'March 2026',
+				'document_title'      => 'March 2026 &#8211; Backdrop Test',
+				'post_attr'           => 'class="entry entry-type-post entry-format-standard" id="post-1"',
+				'entry_attr'          => 'class="entry entry-type-post entry-format-standard" id="post-1"',
+				'comment_class_count' => 1,
+				'menu_item_classes'   => [ 'menu__item', 'menu__item my-class' ],
+				'generator'           => '<meta name="generator" content="Backdrop Test" />',
+			],
+		],
+	],
 ];
 
 $autoload = dirname( __DIR__, 2 ) . '/vendor/autoload.php';
@@ -110,7 +124,7 @@ foreach ( $scenarios as $name => $scenario ) {
 		continue;
 	}
 
-	$version = $result['wordpress'];
+	$version = $result['platform'];
 	$errors  = [];
 
 	foreach ( $scenario['expect'] as $section => $expected ) {
@@ -130,7 +144,13 @@ foreach ( $scenarios as $name => $scenario ) {
 
 		foreach ( $expected as $key => $value ) {
 			if ( ( $actual[ $key ] ?? null ) !== $value ) {
-				$errors[] = sprintf( '%s %s: expected "%s", got "%s"', $section, $key, $value, $actual[ $key ] ?? '(missing)' );
+				$errors[] = sprintf(
+					'%s %s: expected %s, got %s',
+					$section,
+					$key,
+					json_encode( $value, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ),
+					array_key_exists( $key, $actual ) ? json_encode( $actual[ $key ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) : '(missing)'
+				);
 			}
 		}
 	}
@@ -147,6 +167,6 @@ foreach ( $scenarios as $name => $scenario ) {
 	}
 }
 
-printf( "\nWordPress %s, PHP %s: %d of %d scenarios passed.\n", $version, PHP_VERSION, count( $scenarios ) - $failures, count( $scenarios ) );
+printf( "\n%s, PHP %s: %d of %d scenarios passed.\n", $version, PHP_VERSION, count( $scenarios ) - $failures, count( $scenarios ) );
 
 exit( $failures ? 1 : 0 );

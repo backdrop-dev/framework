@@ -79,10 +79,10 @@ function meta_viewport() {
 function meta_generator() {
 	$theme = wp_get_theme( \get_template() );
 
+	// Trim so themes without a `Version` header don't get a trailing space.
 	$generator = sprintf(
-		'<meta name="generator" content="%s %s" />' . "\n",
-		esc_attr( $theme->get( 'Name' ) ),
-		esc_attr( $theme->get( 'Version' ) )
+		'<meta name="generator" content="%s" />' . "\n",
+		esc_attr( trim( $theme->get( 'Name' ) . ' ' . $theme->get( 'Version' ) ) )
 	);
 
 	echo apply_filters( 'backdrop/head/meta/generator', $generator );
@@ -266,8 +266,10 @@ function nav_menu_css_class( $classes, $item ) {
     // Add custom user-added classes if we have any.
     $custom = get_post_meta( $item->ID, '_menu_item_classes', true );
 
+    // WordPress stores `['']` when no custom classes were added, so remove
+    // empty values to avoid stray spaces in the class attribute.
     if ( $custom ) {
-        $_classes = array_merge( $_classes, (array) $custom );
+        $_classes = array_merge( $_classes, array_filter( array_map( 'trim', (array) $custom ) ) );
     }
 
     return $_classes;
