@@ -95,9 +95,9 @@ tests/integration/setup.sh /tmp/wordpress
 php tests/integration/run.php /tmp/wordpress
 ```
 
-Set `WP_VERSION` (for example, `WP_VERSION=6.6`) to test a specific WordPress version. The default is the latest release.
+Set `WP_PLATFORM=classicpress` to test ClassicPress instead of WordPress, and `WP_VERSION` (for example, `WP_VERSION=6.6`) to test a specific version. The default is the latest release.
 
-Every push to `develop` and every pull request runs the tests on PHP 7.4, 8.0, 8.1, 8.2, 8.3, 8.4, and 8.5 with GitHub Actions, along with a scan that checks the code is compatible with PHP 7.4 and later, and the integration tests on the latest WordPress release and WordPress 6.6.
+Every push to `develop` and every pull request runs the tests on PHP 7.4, 8.0, 8.1, 8.2, 8.3, 8.4, and 8.5 with GitHub Actions, along with a scan that checks the code is compatible with PHP 7.4 and later, and the integration tests on the latest ClassicPress release, the latest WordPress release, and WordPress 6.6.
 
 ## Copyright and License
 

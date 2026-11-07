@@ -124,7 +124,7 @@ foreach ( $scenarios as $name => $scenario ) {
 		continue;
 	}
 
-	$version = $result['wordpress'];
+	$version = $result['platform'];
 	$errors  = [];
 
 	foreach ( $scenario['expect'] as $section => $expected ) {
@@ -167,6 +167,6 @@ foreach ( $scenarios as $name => $scenario ) {
 	}
 }
 
-printf( "\nWordPress %s, PHP %s: %d of %d scenarios passed.\n", $version, PHP_VERSION, count( $scenarios ) - $failures, count( $scenarios ) );
+printf( "\n%s, PHP %s: %d of %d scenarios passed.\n", $version, PHP_VERSION, count( $scenarios ) - $failures, count( $scenarios ) );
 
 exit( $failures ? 1 : 0 );

@@ -49,4 +49,4 @@ wp_update_nav_menu_item( $menu, 0, [
 	'menu-item-status'  => 'publish',
 ] );
 
-echo 'WordPress ' . get_bloginfo( 'version' ) . " installed.\n";
+echo ( function_exists( 'classicpress_version' ) ? 'ClassicPress ' . classicpress_version() : 'WordPress ' . get_bloginfo( 'version' ) ) . " installed.\n";

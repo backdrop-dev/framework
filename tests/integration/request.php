@@ -96,6 +96,8 @@ if ( getenv( 'BACKDROP_THEME_OUTPUT' ) ) {
 
 $result['locale_files'] = $GLOBALS['backdrop_test_locale_files'];
 $result['problems']     = $GLOBALS['backdrop_test_problems'];
-$result['wordpress']    = get_bloginfo( 'version' );
+$result['platform']     = function_exists( 'classicpress_version' )
+	? 'ClassicPress ' . classicpress_version()
+	: 'WordPress ' . get_bloginfo( 'version' );
 
 echo "\n@@BACKDROP_RESULT@@" . json_encode( $result );
