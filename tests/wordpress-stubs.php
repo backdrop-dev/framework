@@ -488,6 +488,45 @@ function get_comments_number_text( $zero = false, $one = false, $more = false ) 
 }
 
 /**
+ * Class functions return `wp` plus the extra classes they're given, so tests
+ * can check exactly which extra classes the framework passes to WordPress.
+ */
+function wp_test_extra_classes( $class ) {
+	$extra = is_array( $class ) ? $class : preg_split( '#\s+#', (string) $class, -1, PREG_SPLIT_NO_EMPTY );
+	return array_merge( [ 'wp' ], $extra );
+}
+
+function get_body_class( $class = '' ) {
+	return wp_test_extra_classes( $class );
+}
+
+function get_post_class( $class = '', $post = null ) {
+	return wp_test_extra_classes( $class );
+}
+
+function get_comment_class( $class = '', $comment = null, $post = null ) {
+	return wp_test_extra_classes( $class );
+}
+
+function get_post( $post = null ) {
+	return (object) [ 'ID' => wp_test( 'post_id', 1 ) ];
+}
+
+function get_comment_ID() {
+	return wp_test( 'comment_id', 1 );
+}
+
+function get_post_meta( $post_id, $key = '', $single = false ) {
+	$meta = wp_test( 'post_meta', [] );
+	return isset( $meta[ $post_id ][ $key ] ) ? $meta[ $post_id ][ $key ] : '';
+}
+
+function single_month_title( $prefix = '', $display = true ) {
+	// WordPress returns `{$prefix}{$month}{$prefix}{$year}`, or false.
+	return wp_test( 'single_month_title', false );
+}
+
+/**
  * Comments.
  */
 function get_comment( $comment = null ) {

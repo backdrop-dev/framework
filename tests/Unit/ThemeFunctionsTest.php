@@ -142,4 +142,73 @@ class ThemeFunctionsTest extends TestCase {
 
 		$this->assertSame( '<a href="#">More</a>', \Backdrop\excerpt_more( '<a href="#">More</a>' ) );
 	}
+
+	/**
+	 * @dataProvider monthTitles
+	 *
+	 * @param mixed  $title    What `single_month_title()` returns.
+	 * @param string $expected Expected title.
+	 */
+	public function testMonthTitleHasNoLeadingSpace( $title, $expected ): void {
+
+		wp_test_reset( [ 'single_month_title' => $title ] );
+
+		$this->assertSame( $expected, \Backdrop\Util\Title::month() );
+	}
+
+	public function monthTitles(): array {
+
+		return [
+			'month archive'     => [ ' March 2026', 'March 2026' ],
+			'not a month query' => [ false, '' ],
+		];
+	}
+
+	/**
+	 * @dataProvider generatorThemes
+	 *
+	 * @param array  $headers  Theme headers.
+	 * @param string $expected Expected meta tag.
+	 */
+	public function testGeneratorMetaTag( array $headers, $expected ): void {
+
+		wp_test_reset( [ 'theme_headers' => $headers ] );
+
+		$this->expectOutputString( $expected . "\n" );
+
+		\Backdrop\meta_generator();
+	}
+
+	public function generatorThemes(): array {
+
+		return [
+			'with version'    => [ [ 'Name' => 'My Theme', 'Version' => '1.2.0' ], '<meta name="generator" content="My Theme 1.2.0" />' ],
+			'without version' => [ [ 'Name' => 'My Theme', 'Version' => '' ], '<meta name="generator" content="My Theme" />' ],
+		];
+	}
+
+	/**
+	 * @dataProvider menuItems
+	 *
+	 * @param array $classes  Classes from WordPress.
+	 * @param mixed $custom   The `_menu_item_classes` meta value.
+	 * @param array $expected Expected classes.
+	 */
+	public function testMenuItemClasses( array $classes, $custom, array $expected ): void {
+
+		wp_test_reset( [ 'post_meta' => [ 5 => [ '_menu_item_classes' => $custom ] ] ] );
+
+		$this->assertSame( $expected, array_values( \Backdrop\nav_menu_css_class( $classes, (object) [ 'ID' => 5, 'type' => 'custom', 'object' => 'custom' ] ) ) );
+	}
+
+	public function menuItems(): array {
+
+		return [
+			// WordPress stores `['']` when no custom classes were added.
+			'no custom classes' => [ [ 'menu-item' ], [ '' ], [ 'menu__item' ] ],
+			'custom classes'    => [ [ 'menu-item' ], [ 'one', ' ', 'two' ], [ 'menu__item', 'one', 'two' ] ],
+			'current item'      => [ [ 'menu-item', 'current-menu-item' ], [ '' ], [ 'menu__item', 'menu__item--current' ] ],
+			'parent with child' => [ [ 'current-menu-parent', 'menu-item-has-children' ], '', [ 'menu__item', 'menu__item--parent', 'has-children' ] ],
+		];
+	}
 }
