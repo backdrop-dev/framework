@@ -4,9 +4,9 @@
  *
  * @package   Backdrop
  * @author    Benjamin Lu <benlumia007@gmail.com>
- * @copyright 2019-2023. Benjamin Lu
- * @link      https://github.com/benlumia007/backdrop
+ * @copyright 2019 Benjamin Lu
  * @license   https://www.gnu.org/licenses/gpl-2.0.html
+ * @link      https://github.com/backdrop-dev/framework
  */
 
 namespace Backdrop\Core;
@@ -294,7 +294,10 @@ class Application extends Container implements Bootable {
 	 */
 	protected function registerProxy( string $class, string $alias ): void {
 
-		if ( ! class_exists( $alias ) ) {
+		// Aliases are global, so skip any that already exist (for example,
+		// when a parent and child theme both create an application). Don't
+		// trigger the autoloader, since an alias is never a real class file.
+		if ( ! class_exists( $alias, false ) ) {
 			class_alias( $class, $alias );
 		}
 
@@ -318,8 +321,12 @@ class Application extends Container implements Bootable {
 
 		foreach ( $this->proxies as $class => $alias ) {
 
+			// Class names never start with a backslash, so `\Backdrop\App`
+			// and `Backdrop\App` are the same alias.
+			$alias = ltrim( $alias, '\\' );
+
 			// Register proxy if not already registered.
-			if ( ! in_array( $alias, $this->registered_proxies ) ) {
+			if ( ! in_array( $alias, $this->registered_proxies, true ) ) {
 				$this->registerProxy( $class, $alias );
 			}
 		}
