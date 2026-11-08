@@ -11,6 +11,7 @@ Changed:
 * `add()`, `singleton()`, `$container['key'] = ...`, and `$container->key = ...` now replace an existing binding (and its shared instance) instead of silently keeping the first one, matching `bind()` and the `develop` branch.
 * Extensions added with `extend()` are kept when the binding is added or replaced later.
 * `composer.json` is included in release archives.
+* Requires the stable `backdrop-dev/contracts` 1.0 release instead of its `develop` branch, so `composer.json` no longer sets `minimum-stability`.
 
 Fixed:
 * The container stores and resolves falsy values (`0`, `'0'`, `''`, `false`, `[]`) and `null` instances.
