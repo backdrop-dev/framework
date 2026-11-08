@@ -17,38 +17,48 @@ namespace Backdrop;
 use Backdrop\Proxies\App;
 use Backdrop\Tools\Collection;
 
-/**
- * Determines whether an application has been booted.
- *
- * Use this before creating a new application. If one has already been booted
- * (for example, by a parent theme), use the existing instance via `app()`.
- *
- * @since  1.0.0
- * @access public
- *
- * @return bool
- */
-function booted(): bool {
+// Backdrop 2.0 declares `booted()` and `app()` too. A plugin that uses 2.0 is
+// loaded before a theme that uses 1.0, so only declare these functions if
+// they don't exist yet. Redeclaring a function is a fatal error.
+if ( ! function_exists( __NAMESPACE__ . '\\booted' ) ) {
 
-	return defined( 'BACKDROP_BOOTED' ) && true === BACKDROP_BOOTED;
+	/**
+	 * Determines whether an application has been booted.
+	 *
+	 * Use this before creating a new application. If one has already been
+	 * booted (for example, by a parent theme), use the existing instance via
+	 * `app()`.
+	 *
+	 * @since  1.0.0
+	 * @access public
+	 *
+	 * @return bool
+	 */
+	function booted(): bool {
+
+		return defined( 'BACKDROP_BOOTED' ) && true === BACKDROP_BOOTED;
+	}
 }
 
-/**
- * Returns the application instance or resolves an item from the container.
- *
- * If an abstract is passed, the corresponding value is resolved from the
- * container. Otherwise, the application instance is returned.
- *
- * @since  1.0.0
- * @access public
- *
- * @param  string $abstract The abstract type or binding key.
- * @param  array  $params   Parameters to pass when resolving.
- * @return mixed
- */
-function app( $abstract = '', $params = [] ) {
+if ( ! function_exists( __NAMESPACE__ . '\\app' ) ) {
 
-	return App::resolve( $abstract ?: 'app', $params );
+	/**
+	 * Returns the application instance or resolves an item from the container.
+	 *
+	 * If an abstract is passed, the corresponding value is resolved from the
+	 * container. Otherwise, the application instance is returned.
+	 *
+	 * @since  1.0.0
+	 * @access public
+	 *
+	 * @param  string $abstract The abstract type or binding key.
+	 * @param  array  $params   Parameters to pass when resolving.
+	 * @return mixed
+	 */
+	function app( $abstract = '', $params = [] ) {
+
+		return App::resolve( $abstract ?: 'app', $params );
+	}
 }
 
 /**

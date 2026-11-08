@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.1 - November 7, 2026
+Fixed:
+* A site with a plugin that uses Backdrop 2.0 and a theme that uses Backdrop 1.0 crashed with "Cannot redeclare Backdrop\booted()". `Backdrop\booted()` and `Backdrop\app()` are now only declared if they don't exist yet.
+
 ## 1.0.0 - November 7, 2026
 The first official release of Backdrop, the themes framework.
 
