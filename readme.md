@@ -51,6 +51,30 @@ $app->boot();
 
 As soon as an application has been created, it can be accessed through the `Backdrop\app()` helper, including inside a service provider's `register()` method. After the application has been booted, the `Backdrop\App` static proxy is also available.
 
+## Upgrading from Backdrop 1.0
+Backdrop 2.0 only includes the application, the service container, and the static proxies. The theme features that were part of Backdrop 1.0 are now separate packages, so install the ones your theme uses and add their service providers before booting the application:
+
+| Feature in 1.0 | Package | Service provider |
+|---|---|---|
+| HTML attributes (`Backdrop\Attr`) | `backdrop-dev/attr` | `Backdrop\Attr\Provider` |
+| Template hierarchy (`Backdrop\Template`) | `backdrop-dev/template-hierarchy` | `Backdrop\Template\Hierarchy\Provider` |
+| Views (`Backdrop\View`) | `backdrop-dev/view` | `Backdrop\View\Provider` |
+| Pagination (`Backdrop\Pagination`) | `backdrop-dev/pagination` | `Backdrop\Pagination\Provider` |
+| Translations and locales (`Backdrop\Lang`) | `backdrop-dev/languages` | `Backdrop\Languages\Provider` |
+| Customizer (`Backdrop\Customize`) | `backdrop-dev/customize` | `Backdrop\Customize\Provider` |
+| Collections (`Backdrop\Tools\Collection`) | `backdrop-dev/tools` | None |
+| Template tags for posts, comments, the site, menus, and sidebars | `backdrop-dev/theme` | `Backdrop\Theme\Provider` |
+
+Some names changed along the way:
+
+- The container class is `Backdrop\Core\Container` (it was `Backdrop\Container\Container`).
+- The container's `has()` method is now `bound()`.
+- The view engine is bound as `Backdrop\View\Engine::class` instead of `view/engine`.
+- `Backdrop\Template\hierarchy()` is now `Backdrop\Template\Hierarchy\hierarchy()`, and the `Backdrop\Lang` functions are in `Backdrop\Languages`.
+- The post, comment, site, menu, and sidebar functions moved to `Backdrop\Theme\Entry`, `Backdrop\Theme\Comment`, `Backdrop\Theme\Site`, `Backdrop\Theme\Menu`, and `Backdrop\Theme\Sidebar`. `Backdrop\is_classicpress()` is now `Backdrop\Theme\is_classicpress()`.
+- `Backdrop\Contracts\Bootable`, `Displayable`, and `Renderable` come from the `backdrop-dev/contracts` package. The container and application contracts from 1.0 were removed.
+- Only `Backdrop\booted()` and `Backdrop\app()` are still helper functions in this package. Helpers such as `collect()`, `path()`, `version()`, and `hex_to_rgb()` were removed.
+
 ## Running the Tests
 Backdrop's tests use [PHPUnit 9.6](https://phpunit.de/), which runs on every supported PHP version (7.4 and later).
 
@@ -63,7 +87,7 @@ If PHPUnit isn't installed globally, you can install it with `composer global re
 
 Every push to `2.0` and every pull request runs the tests on PHP 7.4, 8.0, 8.1, 8.2, 8.3, 8.4, and 8.5 with GitHub Actions, along with a scan that checks the code is compatible with PHP 7.4 and later.
 
-## Copyright and Licenses
-This project is licensed under the GNU GPL, version 2 or later.
+## Copyright and License
+This project is licensed under the GNU General Public License, version 2 or later.
 
-2019–2023 © Benjamin Lu
+Copyright © 2019–2026 Benjamin Lu

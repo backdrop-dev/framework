@@ -113,6 +113,37 @@ class ApplicationTest extends TestCase {
 		$this->assertSame( 2, CountingProvider::$booted );
 	}
 
+	public function testProxyAliasWithLeadingBackslash(): void {
+
+		$app = new Application();
+		$app->proxy( \Backdrop\Proxies\App::class, '\Backdrop\Tests\Unit\LeadingSlashAlias' );
+		$app->boot();
+
+		$this->assertTrue( class_exists( 'Backdrop\Tests\Unit\LeadingSlashAlias', false ) );
+	}
+
+	public function testProxyAliasCheckDoesNotUseTheAutoloader(): void {
+
+		$alias    = 'Backdrop\Tests\Unit\NotAutoloadedAlias';
+		$autoload = function ( $class ) use ( $alias ) {
+			if ( $class === $alias ) {
+				$this->fail( 'The autoloader was called for a proxy alias.' );
+			}
+		};
+
+		spl_autoload_register( $autoload );
+
+		try {
+			$app = new Application();
+			$app->proxy( \Backdrop\Proxies\App::class, $alias );
+			$app->boot();
+		} finally {
+			spl_autoload_unregister( $autoload );
+		}
+
+		$this->assertTrue( class_exists( $alias, false ) );
+	}
+
 	public function testVersion(): void {
 
 		$this->assertSame( '2.0.0', Application::VERSION );

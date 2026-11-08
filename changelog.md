@@ -7,6 +7,7 @@ Added:
 * `Application::isBooted()` and `Proxy::hasContainer()`.
 
 Changed:
+* Backdrop only includes the application, the service container, and the static proxies. The theme features from 1.0 are separate packages; see "Upgrading from Backdrop 1.0" in the readme.
 * `Application::VERSION` is now `2.0.0`.
 * `add()`, `singleton()`, `$container['key'] = ...`, and `$container->key = ...` now replace an existing binding (and its shared instance) instead of silently keeping the first one, matching `bind()` and the `develop` branch.
 * Extensions added with `extend()` are kept when the binding is added or replaced later.
@@ -25,7 +26,7 @@ Fixed:
 * A second application (for example, from a child theme) no longer replaces the first one used by `Backdrop\app()`.
 * The readme's boot example called `Backdrop\booted` without parentheses and put the application object in a hook name.
 * Added the missing `backdrop-dev/contracts` dependency. `Application` and `ServiceProvider` implement `Backdrop\Contracts\Bootable`, so creating an application failed with "Interface Backdrop\Contracts\Bootable not found" on a fresh install.
+* Proxy aliases with a leading backslash (e.g., `\Backdrop\App`) weren't recognized as the same alias, and checking whether an alias exists called the autoloader.
 
-## 1.0.0 - June 11, 2023
-Added:
-* Our very first official release!
+## 1.0.0 - November 7, 2026
+The first official release of Backdrop, the themes framework. 1.0 is maintained on the `develop` branch; see its changelog for details.
