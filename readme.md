@@ -4,7 +4,7 @@ Backdrop is a framework for developing themes for ClassicPress and WordPress.
 
 Backdrop provides the core application layer, including a service container and service provider system, along with theme features such as a template hierarchy, views, HTML attributes, pagination, and Customizer helpers.
 
-Backdrop is designed for themes. When the application is created, it adds filters that change the template hierarchy, body and post classes, menu item classes, and the document `<head>`, so it should not be used inside plugins. For a core-only package without these theme features, use the `2.0` branch.
+Backdrop is designed for themes. When the application is created, it adds filters that change the template hierarchy, body and post classes, menu item classes, and the document `<head>`, so it should not be used inside plugins. For a core-only package without these theme features, use Backdrop 2 (`backdrop-dev/framework:^2.0`).
 
 ## Requirements
 
@@ -97,7 +97,7 @@ php tests/integration/run.php /tmp/wordpress
 
 Set `WP_PLATFORM=classicpress` to test ClassicPress instead of WordPress, and `WP_VERSION` (for example, `WP_VERSION=6.6`) to test a specific version. The default is the latest release.
 
-Every push to `develop` and every pull request runs the tests on PHP 7.4, 8.0, 8.1, 8.2, 8.3, 8.4, and 8.5 with GitHub Actions, along with a scan that checks the code is compatible with PHP 7.4 and later, and the integration tests on the latest ClassicPress release, the latest WordPress release, and WordPress 6.6.
+Every push to `1.0` and every pull request runs the tests on PHP 7.4, 8.0, 8.1, 8.2, 8.3, 8.4, and 8.5 with GitHub Actions, along with a scan that checks the code is compatible with PHP 7.4 and later, and the integration tests on the latest ClassicPress release, the latest WordPress release, and WordPress 6.6.
 
 ## Copyright and License
 
