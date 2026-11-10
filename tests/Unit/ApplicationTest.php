@@ -15,14 +15,10 @@
 
 namespace Backdrop\Tests\Unit;
 
-use Backdrop\Contracts\Attr\Attributes;
-use Backdrop\Contracts\Lang\Language;
-use Backdrop\Contracts\Template\Hierarchy;
-use Backdrop\Contracts\View\Engine;
+use Backdrop\Contracts\Bootable;
 use Backdrop\Core\Application;
 use Backdrop\Core\ServiceProvider;
 use Backdrop\Proxies\Proxy;
-use Backdrop\Template\Manager;
 use Backdrop\Tests\TestCase;
 
 class ApplicationTest extends TestCase {
@@ -47,9 +43,17 @@ class ApplicationTest extends TestCase {
 		$this->assertFalse( static::$app->isBooted() );
 	}
 
-	public function testBootMarksTheApplicationAsBooted(): void {
+	public function testProvidersCanUseTheAppHelperWhenRegistering(): void {
 
 		static::$app = static::$app ?: \Backdrop\Tests\app();
+
+		static::$app->provider( UsesAppProvider::class );
+
+		$this->assertSame( static::$app, UsesAppProvider::$seen );
+	}
+
+	public function testBootMarksTheApplicationAsBooted(): void {
+
 		static::$app->boot();
 
 		$this->assertTrue( \Backdrop\booted() );
@@ -58,13 +62,9 @@ class ApplicationTest extends TestCase {
 		$this->assertSame( static::$app, \Backdrop\App::resolve( 'app' ) );
 	}
 
-	public function testBootingTwiceDoesNotRegisterHooksAgain(): void {
+	public function testApplicationIsBootable(): void {
 
-		$count = $this->countCallbacks( 'template_include' );
-
-		static::$app->boot();
-
-		$this->assertSame( $count, $this->countCallbacks( 'template_include' ) );
+		$this->assertInstanceOf( Bootable::class, static::$app );
 	}
 
 	public function testSecondApplicationDoesNotReplaceTheFirst(): void {
@@ -78,10 +78,16 @@ class ApplicationTest extends TestCase {
 		$this->assertSame( static::$app, \Backdrop\app() );
 	}
 
-	public function testProviderAddedAfterBootIsRegisteredAndBooted(): void {
+	public function testReusingTheBootedApplicationAsDocumented(): void {
 
-		CountingProvider::$registered = 0;
-		CountingProvider::$booted     = 0;
+		$app = \Backdrop\booted() ? \Backdrop\app() : new Application();
+
+		$this->assertSame( static::$app, $app );
+	}
+
+	public function testProviderAddedAfterBootIsBootedOnce(): void {
+
+		CountingProvider::reset();
 
 		static::$app->provider( CountingProvider::class );
 
@@ -95,42 +101,53 @@ class ApplicationTest extends TestCase {
 		$this->assertSame( 1, CountingProvider::$booted );
 	}
 
-	public function testDefaultServicesResolve(): void {
+	public function testEachProviderInstanceIsBooted(): void {
 
-		$this->assertInstanceOf( Attributes::class, static::$app->resolve( 'attr', [ 'name' => 'test' ] ) );
-		$this->assertInstanceOf( Language::class, static::$app->resolve( 'language' ) );
-		$this->assertInstanceOf( Manager::class, static::$app->resolve( 'template/manager' ) );
-		$this->assertInstanceOf( Hierarchy::class, static::$app->resolve( 'template/hierarchy' ) );
-		$this->assertInstanceOf( Engine::class, static::$app->resolve( 'view/engine' ) );
+		CountingProvider::reset();
 
-		// Shared bindings return the same instance.
-		$this->assertSame( static::$app->resolve( 'view/engine' ), static::$app->resolve( 'view/engine' ) );
+		$app = new Application();
+		$app->provider( new CountingProvider( $app ) );
+		$app->provider( new CountingProvider( $app ) );
+		$app->boot();
+
+		$this->assertSame( 2, CountingProvider::$booted );
 	}
 
-	public function testPathAndVersionHelpers(): void {
+	public function testProxyAliasWithLeadingBackslash(): void {
 
-		$src = str_replace( '\\', '/', dirname( __DIR__, 2 ) . '/src' );
+		$app = new Application();
+		$app->proxy( \Backdrop\Proxies\App::class, '\Backdrop\Tests\Unit\LeadingSlashAlias' );
+		$app->boot();
 
-		$this->assertSame( $src, str_replace( '\\', '/', \Backdrop\path() ) );
-		$this->assertSame( $src . '/Core/Application.php', str_replace( '\\', '/', \Backdrop\path( '/Core/Application.php' ) ) );
-		$this->assertSame( Application::VERSION, \Backdrop\version() );
+		$this->assertTrue( class_exists( 'Backdrop\Tests\Unit\LeadingSlashAlias', false ) );
 	}
 
-	/**
-	 * Counts the callbacks registered for a hook.
-	 *
-	 * @param  string $hook Hook name.
-	 * @return int
-	 */
-	protected function countCallbacks( $hook ) {
+	public function testProxyAliasCheckDoesNotUseTheAutoloader(): void {
 
-		$count = 0;
+		$alias    = 'Backdrop\Tests\Unit\NotAutoloadedAlias';
+		$autoload = function ( $class ) use ( $alias ) {
+			if ( $class === $alias ) {
+				$this->fail( 'The autoloader was called for a proxy alias.' );
+			}
+		};
 
-		foreach ( isset( $GLOBALS['wp_test_hooks'][ $hook ] ) ? $GLOBALS['wp_test_hooks'][ $hook ] : [] as $callbacks ) {
-			$count += count( $callbacks );
+		spl_autoload_register( $autoload );
+
+		try {
+			$app = new Application();
+			$app->proxy( \Backdrop\Proxies\App::class, $alias );
+			$app->boot();
+		} finally {
+			spl_autoload_unregister( $autoload );
 		}
 
-		return $count;
+		$this->assertTrue( class_exists( $alias, false ) );
+	}
+
+	public function testVersion(): void {
+
+		$this->assertSame( '2.0.0', Application::VERSION );
+		$this->assertSame( Application::VERSION, static::$app->resolve( 'version' ) );
 	}
 }
 
@@ -143,6 +160,12 @@ class CountingProvider extends ServiceProvider {
 
 	public static $booted = 0;
 
+	public static function reset() {
+
+		static::$registered = 0;
+		static::$booted     = 0;
+	}
+
 	public function register(): void {
 
 		static::$registered++;
@@ -153,5 +176,18 @@ class CountingProvider extends ServiceProvider {
 	public function boot(): void {
 
 		static::$booted++;
+	}
+}
+
+/**
+ * Service provider that uses `Backdrop\app()` while registering.
+ */
+class UsesAppProvider extends ServiceProvider {
+
+	public static $seen;
+
+	public function register(): void {
+
+		static::$seen = \Backdrop\app();
 	}
 }

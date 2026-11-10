@@ -2,7 +2,7 @@
 /**
  * App static proxy class.
  *
- * Static proxy class for the application instance.
+ * Static proxy for the application instance.
  *
  * @package   Backdrop
  * @author    Benjamin Lu <benlumia007@gmail.com>
@@ -28,7 +28,7 @@ class App extends Proxy {
 	 * @access protected
 	 * @return string
 	 */
-	protected static function accessor() {
+	protected static function accessor(): string {
 
 		return 'app';
 	}

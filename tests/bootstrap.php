@@ -2,8 +2,8 @@
 /**
  * PHPUnit bootstrap.
  *
- * Loads the WordPress stubs and the framework, then provides a shared base
- * test case and a helper for getting the application instance.
+ * Loads Composer's autoloader (which also loads `backdrop-dev/contracts`) and
+ * provides a shared base test case.
  *
  * @package   Backdrop
  * @author    Benjamin Lu <benlumia007@gmail.com>
@@ -14,32 +14,12 @@
 
 namespace {
 
-	define( 'BACKDROP_TEST_THEME_DIR', __DIR__ . '/fixtures/theme' );
-
-	require_once __DIR__ . '/wordpress-stubs.php';
-
-	wp_test_reset();
-
-	// Use Composer's autoloader when it's available so the `autoload`
-	// configuration in `composer.json` is tested too.
-	if ( file_exists( dirname( __DIR__ ) . '/vendor/autoload.php' ) ) {
-		require_once dirname( __DIR__ ) . '/vendor/autoload.php';
-	} else {
-		spl_autoload_register( function( $class ) {
-
-			if ( 0 !== strpos( $class, 'Backdrop\\' ) ) {
-				return;
-			}
-
-			$file = dirname( __DIR__ ) . '/src/' . str_replace( '\\', '/', substr( $class, 9 ) ) . '.php';
-
-			if ( file_exists( $file ) ) {
-				require $file;
-			}
-		} );
-
-		require_once dirname( __DIR__ ) . '/src/bootstrap-backdrop.php';
+	if ( ! file_exists( dirname( __DIR__ ) . '/vendor/autoload.php' ) ) {
+		fwrite( STDERR, "Run `composer install` before running the tests.\n" );
+		exit( 1 );
 	}
+
+	require_once dirname( __DIR__ ) . '/vendor/autoload.php';
 }
 
 namespace Backdrop\Tests {
@@ -67,15 +47,7 @@ namespace Backdrop\Tests {
 	}
 
 	/**
-	 * Base test case that resets the WordPress test state.
+	 * Base test case.
 	 */
-	abstract class TestCase extends BaseTestCase {
-
-		protected function setUp(): void {
-
-			parent::setUp();
-
-			wp_test_reset();
-		}
-	}
+	abstract class TestCase extends BaseTestCase {}
 }

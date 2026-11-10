@@ -1,51 +1,32 @@
 # Changelog
 
-## 1.0.1 - November 7, 2026
-Fixed:
-* A site with a plugin that uses Backdrop 2.0 and a theme that uses Backdrop 1.0 crashed with "Cannot redeclare Backdrop\booted()". `Backdrop\booted()` and `Backdrop\app()` are now only declared if they don't exist yet.
-
-## 1.0.0 - November 7, 2026
-The first official release of Backdrop, the themes framework.
-
+## Unreleased
 Added:
-* PHPUnit test suite covering the container, application, helpers, attributes, views, templates, pagination, and theme functions.
+* PHPUnit test suite for the container, application, proxies, and service providers.
 * GitHub Actions workflow that runs the tests on PHP 7.4 through 8.5 and scans for PHP 7.4 compatibility.
-* `Backdrop\booted()` helper and `Application::isBooted()` so a child theme can reuse an existing application.
-* Integration tests that run against a real ClassicPress or WordPress install (with SQLite), in CI on the latest ClassicPress release, the latest WordPress release, and WordPress 6.6.
-* Locale variants such as `de_DE_formal` include their base locale (`de-de`) in `Backdrop\Lang\hierarchy()`.
+* `Application::isBooted()` and `Proxy::hasContainer()`.
 
 Changed:
-* Framework strings (the `backdrop` textdomain) are translated with the parent theme's translations through the `gettext_backdrop` filters. `Language::loadTextdomain()` and `Language::overrideLoadTextdomain()` are no longer hooked and are deprecated.
-* A theme without a `Domain Path` header now uses `/languages` for its locale functions file and child theme translations, like WordPress, instead of the theme's root folder.
-* Backdrop is documented as a themes-only framework. The core-only package lives on the `2.0` branch.
-* `Backdrop\app()` works as soon as the application is created, not only after `boot()`.
-* `boot()` only runs once, providers are only booted once, and existing `Backdrop\App` aliases are not redeclared.
-* Service providers added after `boot()` are registered and booted immediately.
-* Pagination previous and next links have default "Previous" and "Next" text.
-* `composer.json` is included in release archives, and it no longer sets `minimum-stability`.
+* Backdrop only includes the application, the service container, and the static proxies. The theme features from 1.0 are separate packages; see "Upgrading from Backdrop 1.0" in the readme.
+* `Application::VERSION` is now `2.0.0`.
+* `add()`, `singleton()`, `$container['key'] = ...`, and `$container->key = ...` now replace an existing binding (and its shared instance) instead of silently keeping the first one, matching `bind()` and the `develop` branch.
+* Extensions added with `extend()` are kept when the binding is added or replaced later.
+* `composer.json` is included in release archives.
+* Requires the stable `backdrop-dev/contracts` 1.0 release instead of its `develop` branch, so `composer.json` no longer sets `minimum-stability`.
 
 Fixed:
-* `attr( 'post' )`, `attr( 'entry' )`, and `attr( 'comment' )` added the attribute name (e.g., `post`) as an extra class. Context modifiers (e.g., `post--archive`) and classes passed in are kept. `attr( 'body' )` with a context had the same problem.
-* Month archive titles started with a space (" March 2026"), including in the document title.
-* Menu items without custom classes had a trailing space in their class attribute.
-* The generator meta tag had a trailing space when the theme has no `Version` header.
-* The Customizer component used the `Backdrop\App` alias, which only exists after booting. It now uses `Backdrop\Proxies\App`.
-* Framework strings were never translated on WordPress 6.7 and later, which loads theme translations just in time. On older versions, they also weren't translated when a theme loaded its translations on `init` or after `switch_to_locale()`.
-* `Backdrop\Lang\region()` returned values like `de_formal` for locale variants such as `de_DE_formal`. It now returns the region (`de`).
-* The container now stores and resolves falsy values (`0`, `''`, `false`, `[]`, `null`).
-* The container no longer tries to build abstract classes or fails on intersection types.
-* Extensions added before a binding are kept.
-* PHP 8.1+ deprecation notices from the container's `ArrayAccess` methods and PHP 8.4 notices from `View`.
-* `replace_html_class()` and the comment reply link corrupted HTML when the class attribute was empty.
-* The comments link showed on posts with comments closed and no comments.
-* `Backdrop\Comment\is_approved()` checked the global comment instead of the one passed in.
-* `attr()` names such as `render` or `all` caused infinite recursion.
-* The archive description filter could return a `WP_Error`.
-* Custom comments templates in a parent theme weren't found from a child theme.
-* Body and post class filters could warn when no object was queried.
-* The privacy policy page template wasn't part of the template hierarchy.
-* Duplicate entries in the language hierarchy (e.g., `fr_FR`).
-* Radio image control URLs containing encoded characters such as `%20`.
-* `hex_to_rgb()` warnings on invalid colors.
-* `View\Engine` now implements the `Engine` contract.
-* `html_entity_decode()` and `trim()` calls now pass explicit flags and characters so behavior is identical on PHP 7.4 through 8.x.
+* The container stores and resolves falsy values (`0`, `'0'`, `''`, `false`, `[]`) and `null` instances.
+* Abstract classes and classes that can't be instantiated resolve to `false` instead of causing a fatal error.
+* `remove()` works with an alias and also removes the binding's extensions.
+* Service providers added after `boot()` are booted immediately.
+* Two instances of the same service provider class are now both booted.
+* `extend()` crashed with "Instantiation of class Closure is not allowed". Extensions now run as closures, before a shared instance is stored.
+* Constructor auto-wiring could shift arguments into the wrong position. Interface types are now resolved, union types receive one argument, and a required dependency that can't be resolved throws a clear `RuntimeException`.
+* `Backdrop\app()` works as soon as an application is created, including inside a service provider's `register()` method, and gives a clear error if no application exists.
+* A second application (for example, from a child theme) no longer replaces the first one used by `Backdrop\app()`.
+* The readme's boot example called `Backdrop\booted` without parentheses and put the application object in a hook name.
+* Added the missing `backdrop-dev/contracts` dependency. `Application` and `ServiceProvider` implement `Backdrop\Contracts\Bootable`, so creating an application failed with "Interface Backdrop\Contracts\Bootable not found" on a fresh install.
+* Proxy aliases with a leading backslash (e.g., `\Backdrop\App`) weren't recognized as the same alias, and checking whether an alias exists called the autoloader.
+
+## 1.0.0 - November 7, 2026
+The first official release of Backdrop, the themes framework. 1.0 is maintained on the `develop` branch; see its changelog for details.

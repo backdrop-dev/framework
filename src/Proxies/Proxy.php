@@ -1,9 +1,6 @@
 <?php
 /**
- * Static proxy class.
- *
- * The base static proxy class. This allows us to create easy-to-use static
- * classes around objects registered with the container.
+ * Proxy class
  *
  * @package   Backdrop
  * @author    Benjamin Lu <benlumia007@gmail.com>
@@ -14,7 +11,8 @@
 
 namespace Backdrop\Proxies;
 
-use Backdrop\Contracts\Container\Container;
+use Backdrop\Core\Container;
+use ReflectionException;
 use RuntimeException;
 
 /**
@@ -30,21 +28,18 @@ class Proxy {
 	 *
 	 * @since  1.0.0
 	 * @access protected
-	 *
-	 * @var Container|null
+	 * @var    Container
 	 */
 	protected static $container;
 
 	/**
-	 * Returns the name of the accessor for the object registered in the
-	 * container.
+	 * Returns the name of the accessor for object registered in the container.
 	 *
 	 * @since  1.0.0
 	 * @access protected
-	 *
 	 * @return string
 	 */
-	protected static function accessor() {
+	protected static function accessor(): string {
 
 		return '';
 	}
@@ -54,21 +49,18 @@ class Proxy {
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 *
-	 * @param  Container $container Container instance.
 	 * @return void
 	 */
-	public static function setContainer( Container $container ) {
+	public static function setContainer( $container ) {
 
 		static::$container = $container;
 	}
 
 	/**
-	 * Determines whether a container has been set on the proxy.
+	 * Determines whether a container has been set.
 	 *
-	 * @since  1.0.0
+	 * @since  2.0.0
 	 * @access public
-	 *
 	 * @return bool
 	 */
 	public static function hasContainer(): bool {
@@ -81,16 +73,15 @@ class Proxy {
 	 *
 	 * @since  1.0.0
 	 * @access protected
-	 *
-	 * @return mixed
-	 *
-	 * @throws RuntimeException If the container has not been set.
+	 * @throws ReflectionException
+	 * @throws RuntimeException If no application has been created.
+	 * @return object
 	 */
 	protected static function instance() {
 
-		if ( ! static::$container ) {
+		if ( null === static::$container ) {
 			throw new RuntimeException(
-				'The container has not been set on the proxy.'
+				'No Backdrop application has been created. Create one with `new Backdrop\Core\Application()` before using `Backdrop\app()` or a proxy.'
 			);
 		}
 
@@ -98,19 +89,20 @@ class Proxy {
 	}
 
 	/**
-	 * Calls the requested method on the object registered with the container.
+	 * Calls the requested method from the object registered with the
+	 * container statically.
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 *
-	 * @param  string $method Method name.
-	 * @param  array  $args   Method arguments.
+	 * @param string $method
+	 * @param array $args
+	 * @throws ReflectionException
 	 * @return mixed
 	 */
-	public static function __callStatic( $method, $args ) {
+	public static function __callStatic( string $method, array $args ) {
 
 		$instance = static::instance();
 
-		return $instance ? $instance->$method( ...$args ) : null;
+		return $instance->$method(...$args);
 	}
 }

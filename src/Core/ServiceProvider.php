@@ -14,65 +14,49 @@
 
 namespace Backdrop\Core;
 
-use Backdrop\Contracts\Core\Application;
+use Backdrop\Contracts\Bootable;
 
-/**
- * Service provider class.
- *
- * @since  1.0.0
- * @access public
- */
-abstract class ServiceProvider {
+abstract class ServiceProvider implements Bootable {
 
 	/**
-	 * Application instance.
-	 *
-	 * Subclasses should use this property to access the application container
-	 * to add, remove, or resolve bindings.
+	 * Application instance. Subclasses should use this property to access
+	 * the application (container) to add, remove, or resolve bindings.
 	 *
 	 * @since  1.0.0
 	 * @access protected
-	 *
-	 * @var Application
+	 * @var    Container
 	 */
 	protected $app;
 
 	/**
 	 * Accepts the application and sets it to the `$app` property.
 	 *
-	 * @since  1.0.0
-	 * @access public
-	 *
-	 * @param  Application $app Application instance.
+	 * @param Container $app
 	 * @return void
+	 *@since  1.0.0
+	 * @access public
 	 */
-	public function __construct( Application $app ) {
+	public function __construct( Container $app ) {
 
 		$this->app = $app;
 	}
 
 	/**
-	 * Callback executed when the application registers providers.
-	 *
-	 * Subclasses may override this method to register bindings, singletons,
-	 * aliases, or other services with the application container.
+	 * Callback executed when the `Application` class registers providers.
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 *
 	 * @return void
 	 */
 	public function register(): void {}
 
 	/**
-	 * Callback executed after all service providers have been registered.
-	 *
-	 * Subclasses may override this method to perform initialization that
-	 * depends on services registered by other providers.
+	 * Callback executed after all the service providers have been registered.
+	 * This is particularly useful for single-instance container objects that
+	 * only need to be loaded once per page and need to be resolved early.
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 *
 	 * @return void
 	 */
 	public function boot(): void {}
