@@ -52,6 +52,7 @@ class Hierarchy implements TemplateHierarchy {
 		'frontpage',
 		'page',
 		'paged',
+		'privacypolicy',
 		'search',
 		'single',
 		'singular',

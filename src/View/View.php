@@ -88,7 +88,7 @@ class View implements ViewContract {
 	 * @param array|string    $slugs Optional view slugs.
 	 * @param Collection|null $data  Data passed to the view.
 	 */
-	public function __construct( $name, $slugs = [], Collection $data = null ) {
+	public function __construct( $name, $slugs = [], ?Collection $data = null ) {
 
 		$this->name  = $name;
 		$this->slugs = (array) $slugs;
@@ -149,6 +149,12 @@ class View implements ViewContract {
 
 		// Build the template hierarchy from the configured slugs.
 		foreach ( $this->slugs as $slug ) {
+
+			// Skip empty slugs, which would create `{$name}/.php`.
+			if ( '' === (string) $slug ) {
+				continue;
+			}
+
 			$templates[] = "{$this->name}/{$slug}.php";
 		}
 

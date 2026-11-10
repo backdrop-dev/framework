@@ -17,22 +17,48 @@ namespace Backdrop;
 use Backdrop\Proxies\App;
 use Backdrop\Tools\Collection;
 
-/**
- * Returns the application instance or resolves an item from the container.
- *
- * If an abstract is passed, the corresponding value is resolved from the
- * container. Otherwise, the application instance is returned.
- *
- * @since  1.0.0
- * @access public
- *
- * @param  string $abstract The abstract type or binding key.
- * @param  array  $params   Parameters to pass when resolving.
- * @return mixed
- */
-function app( $abstract = '', $params = [] ) {
+// Backdrop 2.0 declares `booted()` and `app()` too. A plugin that uses 2.0 is
+// loaded before a theme that uses 1.0, so only declare these functions if
+// they don't exist yet. Redeclaring a function is a fatal error.
+if ( ! function_exists( __NAMESPACE__ . '\\booted' ) ) {
 
-	return App::resolve( $abstract ?: 'app', $params );
+	/**
+	 * Determines whether an application has been booted.
+	 *
+	 * Use this before creating a new application. If one has already been
+	 * booted (for example, by a parent theme), use the existing instance via
+	 * `app()`.
+	 *
+	 * @since  1.0.0
+	 * @access public
+	 *
+	 * @return bool
+	 */
+	function booted(): bool {
+
+		return defined( 'BACKDROP_BOOTED' ) && true === BACKDROP_BOOTED;
+	}
+}
+
+if ( ! function_exists( __NAMESPACE__ . '\\app' ) ) {
+
+	/**
+	 * Returns the application instance or resolves an item from the container.
+	 *
+	 * If an abstract is passed, the corresponding value is resolved from the
+	 * container. Otherwise, the application instance is returned.
+	 *
+	 * @since  1.0.0
+	 * @access public
+	 *
+	 * @param  string $abstract The abstract type or binding key.
+	 * @param  array  $params   Parameters to pass when resolving.
+	 * @return mixed
+	 */
+	function app( $abstract = '', $params = [] ) {
+
+		return App::resolve( $abstract ?: 'app', $params );
+	}
 }
 
 /**
@@ -119,11 +145,20 @@ function sprintf_theme_uri( $value ) {
 function hex_to_rgb( $hex ) {
 
 	// Remove "#" if it was added.
-	$color = trim( $hex, '#' );
+	$color = trim( (string) $hex, '# ' );
 
 	// If the color is three characters, convert it to six.
 	if ( 3 === strlen( $color ) ) {
 		$color = $color[0] . $color[0] . $color[1] . $color[1] . $color[2] . $color[2];
+	}
+
+	// Bail with black if this isn't a valid hex color.
+	if ( ! preg_match( '/^[0-9a-f]{6}$/i', $color ) ) {
+		return [
+			'r' => 0,
+			'g' => 0,
+			'b' => 0,
+		];
 	}
 
 	// Get the red, green, and blue values.
@@ -170,9 +205,11 @@ function is_script_debug() {
  */
 function replace_html_class( $class, $html ) {
 
+	// Match the opening quote and the same closing quote so that empty
+	// class attributes and apostrophes inside the value are handled.
 	return preg_replace(
-		"/class=(['\"]).+?(['\"])/i",
-		'class=$1' . esc_attr( $class ) . '$2',
+		'/class=([\'"])(?:(?!\1).)*\1/i',
+		'class=${1}' . esc_attr( $class ) . '${1}',
 		$html,
 		1
 	);

@@ -15,6 +15,7 @@
 
 namespace Backdrop\View;
 
+use Backdrop\Contracts\View\Engine as EngineContract;
 use Backdrop\Contracts\View\View;
 use Backdrop\Proxies\App;
 use Backdrop\Tools\Collection;
@@ -25,7 +26,7 @@ use Backdrop\Tools\Collection;
  * @since  1.0.0
  * @access public
  */
-class Engine {
+class Engine implements EngineContract {
 
 	/**
 	 * Creates and returns a view object.

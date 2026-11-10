@@ -49,11 +49,14 @@ class RadioImage extends Control {
 
 			// Replaces `%s` or `%1$s` with the template directory
 			// URI and `%2$s` with the stylesheet directory URI.
+			// Replace the placeholders directly rather than using
+			// `sprintf()`, which breaks on URL-encoded characters
+			// such as `%20`.
 			$args['url'] = esc_url(
-				sprintf(
-					$args['url'],
-					get_template_directory_uri(),
-					get_stylesheet_directory_uri()
+				str_replace(
+					[ '%1$s', '%2$s' ],
+					[ get_template_directory_uri(), get_stylesheet_directory_uri() ],
+					$args['url']
 				)
 			);
 		} );

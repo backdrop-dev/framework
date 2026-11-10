@@ -345,7 +345,7 @@ function render_reply_link( array $args = [] ) {
 	$args = wp_parse_args( $args, [
 		'before'    => '',
 		'after'     => '',
-		'depth'     => intval( $GLOBALS['comment_depth'] ),
+		'depth'     => isset( $GLOBALS['comment_depth'] ) ? intval( $GLOBALS['comment_depth'] ) : 1,
 		'max_depth' => get_option( 'thread_comments_depth' ),
 		'class'     => 'comment-reply'
 	] );
@@ -359,8 +359,8 @@ function render_reply_link( array $args = [] ) {
 
 	if ( $html ) {
 		$html = preg_replace(
-			"/class=(['\"]).+?(['\"])/i",
-			'class=$1' . esc_attr( $args['class'] ) . ' comment-reply-link$2',
+			'/class=([\'"])(?:(?!\1).)*\1/i',
+			'class=${1}' . esc_attr( $args['class'] ) . ' comment-reply-link${1}',
 			$html,
 			1
 		);
@@ -408,8 +408,11 @@ function render_parent_link( $args = [] ) {
 
 	// Only display the link if the current comment is greater than or equal
 	// to the requested depth.
-	if ( $args['depth'] <= $GLOBALS['comment_depth'] ) {
-		$parent = get_comment()->comment_parent;
+	$comment = get_comment();
+	$depth   = isset( $GLOBALS['comment_depth'] ) ? intval( $GLOBALS['comment_depth'] ) : 0;
+
+	if ( $comment && $args['depth'] <= $depth ) {
+		$parent = $comment->comment_parent;
 
 		if ( 0 < $parent ) {
 			$url  = get_comment_link( $parent );
@@ -442,5 +445,5 @@ function is_approved( $comment = null ) {
 
 	$comment = get_comment( $comment );
 
-	return 'approved' === wp_get_comment_status( $comment->ID );
+	return $comment && 'approved' === wp_get_comment_status( $comment->comment_ID );
 }

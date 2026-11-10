@@ -33,6 +33,12 @@ class TemplatesServiceProvider extends ServiceProvider {
 	 */
 	public function register(): void {
 
+		// Bind the templates collection explicitly. Auto-wiring the
+		// `ArrayObject` constructor isn't reliable across PHP versions.
+		$this->app->singleton( Templates::class, function() {
+			return new Templates();
+		} );
+
 		$this->app->singleton(
 			Manager::class
 		);

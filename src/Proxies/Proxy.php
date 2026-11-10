@@ -64,6 +64,19 @@ class Proxy {
 	}
 
 	/**
+	 * Determines whether a container has been set on the proxy.
+	 *
+	 * @since  1.0.0
+	 * @access public
+	 *
+	 * @return bool
+	 */
+	public static function hasContainer(): bool {
+
+		return null !== static::$container;
+	}
+
+	/**
 	 * Returns the instance from the container.
 	 *
 	 * @since  1.0.0
